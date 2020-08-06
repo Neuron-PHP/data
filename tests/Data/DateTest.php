@@ -12,6 +12,84 @@ class DateUtilTest extends PHPUnit\Framework\TestCase
 	{
 	}
 
+	public function testQuarters()
+	{
+		$Q = Date::getQuarter( 0, '2010' );
+
+		$Current = date( 'm' );
+		$Month = 0;
+		if( $Current < 4 )
+		{
+			$Month = "01";
+		}
+		else if( $Current >= 4 && $Current <= 6 )
+		{
+			$Month = "04";
+		}
+		else if( $Current >= 7 && $Current <= 9)
+		{
+			$Month = "07";
+		}
+		else if( $Current > 9 )
+		{
+			$Month = "10";
+		}
+
+		$this->assertEquals(
+			"2010-$Month-01",
+			$Q->Start
+		);
+
+		$Q1 = Date::getQuarter( 1, '2010' );
+
+		$this->assertEquals(
+			'2010-01-01',
+			$Q1->Start
+		);
+
+		$this->assertEquals(
+			'2010-03-31',
+			$Q1->End
+		);
+
+		$Q2 = Date::getQuarter( 2, '2010' );
+
+		$this->assertEquals(
+			'2010-04-01',
+			$Q2->Start
+		);
+
+		$this->assertEquals(
+			'2010-06-30',
+			$Q2->End
+		);
+
+		$Q3 = Date::getQuarter( 3, '2010' );
+
+		$this->assertEquals(
+			'2010-07-01',
+			$Q3->Start
+		);
+
+		$this->assertEquals(
+			'2010-09-30',
+			$Q3->End
+		);
+
+		$Q4 = Date::getQuarter( 4, '2010' );
+
+		$this->assertEquals(
+			'2010-10-01',
+			$Q4->Start
+		);
+
+		$this->assertEquals(
+			'2010-12-31',
+			$Q4->End
+		);
+
+	}
+
 	public function testDateOnly()
 	{
 		$this->assertEquals(
