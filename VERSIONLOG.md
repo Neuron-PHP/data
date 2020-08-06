@@ -1,4 +1,4 @@
-## 0.5.2
+## 0.5.2 2020-08-05
 * Added getQuarter to Date. Gets the date range for the specified fiscal quarter.
 
 ## 0.5.1
