@@ -1,4 +1,5 @@
 ## 0.5.2
+* Added getQuarter to Date. Gets the date range for the specified fiscal quarter.
 
 ## 0.5.1
 

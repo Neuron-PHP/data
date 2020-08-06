@@ -7,6 +7,50 @@ use Neuron\Util;
 
 class Date
 {
+	private static $_Quarters = [
+		1 => [
+			"01-01",
+			"03-31"
+		],
+		2 => [
+			"04-01",
+			"06-30"
+		],
+		3 => [
+			"07-01",
+			"09-30"
+		],
+		4 => [
+			"10-01",
+			"12-31"
+		]
+	];
+
+	/**
+	 * Returns the date range for the specified fiscal quarter.
+	 * @param int $Quarter
+	 * @param string $Year
+	 * @return DateRange
+	 */
+	static function getQuarter( int $Quarter = 0, string $Year = '' ) : DateRange
+	{
+		if( !$Quarter )
+		{
+			$Month = date( 'm' );
+			$Quarter = ceil( $Month / 3 );
+		}
+
+		if( !$Year )
+		{
+			$Year = date( 'Y' );
+		}
+
+		return new DateRange(
+			$Year.'-'.self::$_Quarters[ $Quarter ][ 0 ],
+			$Year.'-'.self::$_Quarters[ $Quarter ][ 1 ]
+		);
+	}
+
 	/**
 	 * Return today's date
 	 * @return false|string

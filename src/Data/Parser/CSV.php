@@ -4,35 +4,35 @@ namespace Neuron\Data\Parser;
 
 class CSV implements IParser
 {
-	public $_aResults;
+	public array $_Results;
 
 	/**
 	 * @param $Text
-	 * @param array $columns
+	 * @param array $Columns
 	 * @return array|bool
 	 */
 
-	public function parse($Text, $columns = array() )
+	public function parse( $Text, $Columns = array() )
 	{
-		$aResults = array();
+		$Results = array();
 
-		$aData = str_getcsv( $Text );
+		$Data = str_getcsv( $Text );
 
 		$idx = 0;
 
-		foreach($columns as $sColumn )
+		foreach( $Columns as $Column )
 		{
-			$aResults[ $sColumn ] = $aData[ $idx ];
+			$Results[ $Column ] = $Data[ $idx ];
 			++$idx;
 		}
 
-		if( count( $columns ) != count( $aData ) )
+		if( count( $Columns ) != count( $Data ) )
 		{
-			$this->_aResults = $aResults;
+			$this->_Results = $Results;
 			return false;
 		}
 
-		return $aResults;
+		return $Results;
 	}
 }
 
