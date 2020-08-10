@@ -1,3 +1,5 @@
+## 0.5.4
+
 ## 0.5.3 2020-08-10
 * added getDateRangeForWeek to get the date range for a specific year/week number.
 
