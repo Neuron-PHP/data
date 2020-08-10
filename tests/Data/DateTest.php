@@ -12,9 +12,40 @@ class DateUtilTest extends PHPUnit\Framework\TestCase
 	{
 	}
 
-	public function testQuarters()
+	public function testWeekDateRange()
 	{
-		$Q = Date::getQuarter( 0, '2010' );
+		$Range = Date::getDateRangeForWeek( 1, 2020 );
+
+		$this->assertEquals(
+			"2019-12-30",
+			$Range->Start
+		);
+
+		$this->assertEquals(
+			"2020-01-05",
+			$Range->End
+		);
+	}
+
+	public function testMonthDateRange()
+	{
+		$Range = Date::getDateRangeForMonth( 1, 2020 );
+
+		$this->assertEquals(
+			"2020-01-01",
+			$Range->Start
+		);
+
+		$this->assertEquals(
+			"2020-01-31",
+			$Range->End
+		);
+
+	}
+
+	public function testQuarterDateRange()
+	{
+		$Q = Date::getDateRangeForQuarter( 0, '2010' );
 
 		$Current = date( 'm' );
 		$Month = 0;
@@ -40,7 +71,7 @@ class DateUtilTest extends PHPUnit\Framework\TestCase
 			$Q->Start
 		);
 
-		$Q1 = Date::getQuarter( 1, '2010' );
+		$Q1 = Date::getDateRangeForQuarter( 1, '2010' );
 
 		$this->assertEquals(
 			'2010-01-01',
@@ -52,7 +83,7 @@ class DateUtilTest extends PHPUnit\Framework\TestCase
 			$Q1->End
 		);
 
-		$Q2 = Date::getQuarter( 2, '2010' );
+		$Q2 = Date::getDateRangeForQuarter( 2, '2010' );
 
 		$this->assertEquals(
 			'2010-04-01',
@@ -64,7 +95,7 @@ class DateUtilTest extends PHPUnit\Framework\TestCase
 			$Q2->End
 		);
 
-		$Q3 = Date::getQuarter( 3, '2010' );
+		$Q3 = Date::getDateRangeForQuarter( 3, '2010' );
 
 		$this->assertEquals(
 			'2010-07-01',
@@ -76,7 +107,7 @@ class DateUtilTest extends PHPUnit\Framework\TestCase
 			$Q3->End
 		);
 
-		$Q4 = Date::getQuarter( 4, '2010' );
+		$Q4 = Date::getDateRangeForQuarter( 4, '2010' );
 
 		$this->assertEquals(
 			'2010-10-01',
