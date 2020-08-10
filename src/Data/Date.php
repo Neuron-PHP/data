@@ -7,7 +7,7 @@ use Neuron\Util;
 
 class Date
 {
-	private static $_Quarters = [
+	private static array $_Quarters = [
 		1 => [
 			"01-01",
 			"03-31"
@@ -32,11 +32,11 @@ class Date
 	 * @param string $Year
 	 * @return DateRange
 	 */
-	static function getQuarter( int $Quarter = 0, string $Year = '' ) : DateRange
+	static function getDateRangeForQuarter( int $Quarter = 0, string $Year = '' ) : DateRange
 	{
 		if( !$Quarter )
 		{
-			$Month = date( 'm' );
+			$Month   = date( 'm' );
 			$Quarter = ceil( $Month / 3 );
 		}
 
@@ -49,6 +49,90 @@ class Date
 			$Year.'-'.self::$_Quarters[ $Quarter ][ 0 ],
 			$Year.'-'.self::$_Quarters[ $Quarter ][ 1 ]
 		);
+	}
+
+	/**
+	 * Returns the date range for a year/month number.
+	 * @param int $Month
+	 * @param string $Year
+	 * @return DateRange
+	 */
+	static function getDateRangeForMonth( int $Month = 0, string $Year = '' ) : DateRange
+	{
+		if( !$Month )
+		{
+			$Month = date( 'm' );
+		}
+
+		if( !$Year )
+		{
+			$Year = date( 'Y' );
+		}
+
+		$Start = "$Year-$Month-01";
+		$End   = "$Year-$Month-".self::getDaysInMonth( $Month, $Year );
+
+		return new DateRange(
+			$Start,
+			$End
+		);
+	}
+
+	/**
+	 * Returns the date range for a specific year/week number.
+	 * @param int $Week
+	 * @param string $Year
+	 * @return DateRange
+	 */
+	static function getDateRangeForWeek( int $Week = 0, string $Year = '' ) : DateRange
+	{
+		if( !$Week )
+		{
+			$DayOfYear = date('z') + 1;
+			$Week      = ceil( $DayOfYear / 7 );
+		}
+		else
+		{
+			$Week -= 1;
+		}
+
+		if( !$Year )
+		{
+			$Year = date( 'Y' );
+		}
+
+		$DayOfYear = $Week * 7;
+
+		$Julian = self::dateToJulian( "$Year-01-01" );
+
+		$Julian += $DayOfYear;
+
+		// If the first day isn't a Monday then back up until
+		// one is found.
+
+		$WeekDay = self::getWeekday( self::julianToDate( $Julian ) );
+
+		while( $WeekDay != 1 )
+		{
+			$Julian--;
+			$WeekDay = self::getWeekday( self::julianToDate( $Julian ) );
+		}
+
+		$JulianEnd = $Julian + 6;
+
+		return new DateRange(
+			self::julianToDate( $Julian ),
+			self::julianToDate( $JulianEnd )
+		);
+	}
+
+	/**
+	 * @param string $Date
+	 * @return int
+	 */
+	static function getWeekday( string $Date ) : int
+	{
+		return date('w', strtotime( $Date ) );
 	}
 
 	/**
