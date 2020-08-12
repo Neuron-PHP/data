@@ -91,10 +91,8 @@ class Date
 			$DayOfYear = date('z') + 1;
 			$Week      = ceil( $DayOfYear / 7 );
 		}
-		else
-		{
-			$Week -= 1;
-		}
+
+		$Week -= 1;
 
 		if( !$Year )
 		{
