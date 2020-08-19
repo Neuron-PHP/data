@@ -1,3 +1,6 @@
+## 0.5.5 2020-08-19
+* Added SettingManager.
+
 ## 0.5.4
 * Fixed an issue with getDateRangeForWeek
 
