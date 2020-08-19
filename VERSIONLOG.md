@@ -1,3 +1,5 @@
+## 0.5.6
+
 ## 0.5.5 2020-08-19
 * Added SettingManager.
 
