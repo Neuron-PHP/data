@@ -28,6 +28,7 @@ class Date
 
 	/**
 	 * Returns the date range for the specified fiscal quarter.
+	 *
 	 * @param int $Quarter
 	 * @param string $Year
 	 * @return DateRange
@@ -53,6 +54,7 @@ class Date
 
 	/**
 	 * Returns the date range for a year/month number.
+	 *
 	 * @param int $Month
 	 * @param string $Year
 	 * @return DateRange
@@ -80,6 +82,7 @@ class Date
 
 	/**
 	 * Returns the date range for a specific year/week number.
+	 *
 	 * @param int $Week
 	 * @param string $Year
 	 * @return DateRange
@@ -125,6 +128,9 @@ class Date
 	}
 
 	/**
+	 * Returns an int representing the day of the week.
+	 * 0 = Sunday .. 6 = Saturday
+	 *
 	 * @param string $Date
 	 * @return int
 	 */
@@ -135,6 +141,7 @@ class Date
 
 	/**
 	 * Return today's date
+	 *
 	 * @return false|string
 	 */
 	static function today()
@@ -144,6 +151,7 @@ class Date
 
 	/**
 	 * Return tomorrow's date
+	 *
 	 * @return false|string
 	 */
 	static function tomorrow()
@@ -153,6 +161,7 @@ class Date
 
 	/**
 	 * Return yesterday's date
+	 *
 	 * @return false|string
 	 */
 	static function yesterday()
@@ -162,6 +171,7 @@ class Date
 
 	/**
 	 * Get the day name for a date.
+	 *
 	 * @param $Date
 	 * @return false|string
 	 */
@@ -172,6 +182,7 @@ class Date
 
 	/**
 	 * Is the date on a weekend?
+	 *
 	 * @param $Date
 	 * @return bool
 	 */
@@ -183,6 +194,7 @@ class Date
 
 	/**
 	 * Get the number of working days in a date range.
+	 *
 	 * @param DateRange $Range
 	 * @return int
 	 */
@@ -205,6 +217,8 @@ class Date
 	}
 
 	/**
+	 * If present, strips the time element from a date.
+	 *
 	 * @param $DateTime
 	 * @return false|string
 	 */
@@ -214,6 +228,8 @@ class Date
 	}
 
 	/**
+	 *
+	 *
 	 * @param $Days
 	 * @return mixed|string
 	 */
@@ -294,6 +310,8 @@ class Date
 	}
 
 	/**
+	 * Returns true if the date ia leap year.
+	 *
 	 * @param $iYear
 	 * @return bool
 	 */
@@ -322,13 +340,11 @@ class Date
 		return Date::julianToDate( $julian );
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	///
-	/// Returns the current month starting date.
-	///
-	/// @return A string in yyyy-mm-dd mysql format.
-	///
-	//////////////////////////////////////////////////////////////////////////
+	/**
+	 * Returns the current month starting date.
+	 *
+	 * @return string A string in yyyy-mm-dd mysql format.
+	 */
 
 	static function getCurrentMonthStartDate()
 	{
@@ -338,33 +354,21 @@ class Date
 		return $date;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	///
-	/// Returns the number of days in the specified month.
-	/// Being as it dosn't take the year as a parameter, it can't handle
-	/// leap year.
-	///
-	/// @param $iMonth The month number - 1-12
-	/// @param $iYear
-	///
-	/// @return
-	///	1-31
-	/// @SuppressWarnings(PHPMD)
-	//////////////////////////////////////////////////////////////////////////
-
 	/**
 	 * @SuppressWarnings(PHPMD)
+	 *
+	 * Returns the number of days in the specified month.
+	 *
+	 * @param $iMonth
+	 * @param null $iYear
+	 * @return int
 	 */
-
 	static function getDaysInMonth( $iMonth, $iYear = null )
 	{
 		$days = 0;
 
 		switch( $iMonth )
 		{
-			case 1:
-				$days = 31;
-				break;
 			case 2:
 				if( self::isLeapYear( $iYear ) )
 				{
@@ -375,35 +379,21 @@ class Date
 					$days = 28;
 				}
 				break;
+
+			case 1:
 			case 3:
+			case 5:
+			case 7:
+			case 8:
+			case 10:
+			case 12:
 				$days = 31;
 				break;
 			case 4:
-				$days = 30;
-				break;
-			case 5:
-				$days = 31;
-				break;
 			case 6:
-				$days = 30;
-				break;
-			case 7:
-				$days = 31;
-				break;
-			case 8:
-				$days = 31;
-				break;
 			case 9:
-				$days = 30;
-				break;
-			case 10:
-				$days = 31;
-				break;
 			case 11:
 				$days = 30;
-				break;
-			case 12:
-				$days = 31;
 				break;
 		}
 

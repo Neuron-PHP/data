@@ -1,4 +1,5 @@
 ## 0.5.5
+* Added SettingManager.
 
 ## 0.5.4
 * Fixed an issue with getDateRangeForWeek
