@@ -9,7 +9,7 @@ class Get implements IFilter
 		return filter_input( INPUT_GET, $Data );
 	}
 
-	public function filterArray( $Data )
+	public function filterArray( array $Data )
 	{
 		return filter_input(INPUT_GET, $Data,FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 	}
