@@ -1,3 +1,6 @@
+## 0.5.6 2020-08-25
+* Updated filters to use newer IFilter interface.
+
 ## 0.5.5 2020-08-19
 * Added SettingManager.
 
