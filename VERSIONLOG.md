@@ -1,4 +1,5 @@
-## 0.5.7
+## 0.5.7 2020-08-26
+* Refactored filters to use static methods.
 
 ## 0.5.6 2020-08-25
 * Updated filters to use newer IFilter interface.
