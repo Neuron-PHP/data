@@ -1,3 +1,5 @@
+## 0.5.8
+
 ## 0.5.7 2020-08-26
 * Refactored filters to use static methods.
 
