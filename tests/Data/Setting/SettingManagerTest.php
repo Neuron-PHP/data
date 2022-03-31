@@ -9,9 +9,7 @@ class SettingManagerTest extends TestCase
 	{
 		$Source = new \Neuron\Data\Setting\Source\Ini( 'examples/test.ini' );
 
-		$this->_App->setSettingSource( $Source );
-
-		$Value = $this->_App->getSetting( 'name', 'test' );
+		$Value = $Source->get( 'test', 'name' );
 
 		$this->assertEquals(
 			'value',
@@ -21,13 +19,11 @@ class SettingManagerTest extends TestCase
 
 	public function testSetSetting()
 	{
-		$Source = new \Neuron\Setting\Source\Ini( 'examples/test.ini' );
+		$Source = new \Neuron\Data\Setting\Source\Ini( 'examples/test.ini' );
 
-		$this->_App->setSettingSource( $Source );
+		$Source->set( 'test', 'newname',  'value' );
 
-		$this->_App->setSetting( 'newname', 'value',  'test' );
-
-		$Value = $this->_App->getSetting( 'newname', 'test' );
+		$Value = $Source->get( 'test', 'newname' );
 
 		$this->assertEquals(
 			'value',

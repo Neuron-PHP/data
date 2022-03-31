@@ -2,16 +2,8 @@
 
 use Neuron\Data\Date;
 
-class DateUtilTest extends PHPUnit\Framework\TestCase
+class DateTest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp()
-	{
-	}
-
-	protected function tearDown()
-	{
-	}
-
 	public function testWeekDateRange()
 	{
 		$Range = Date::getDateRangeForWeek( 1, 2020 );
