@@ -1,6 +1,6 @@
-## 0.5.8
+## 0.5.8 2022-03-31
 * Updated tests.
-* 
+
 ## 0.5.7 2020-08-26
 * Refactored filters to use static methods.
 
