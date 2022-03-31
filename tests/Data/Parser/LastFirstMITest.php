@@ -4,10 +4,6 @@ use Neuron\Data\Parser;
 
 class LastFirstMITest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp()
-	{
-	}
-
 	public function testPass()
 	{
 		$Parser = new Parser\LastFirstMI();
@@ -18,9 +14,5 @@ class LastFirstMITest extends PHPUnit\Framework\TestCase
 		$this->assertEquals( $sFirst,		'Alfred' );
 		$this->assertEquals( $sMiddle,	'E' );
 		$this->assertEquals( $sLast,		'Newman' );
-	}
-
-	protected function tearDown()
-	{
 	}
 }

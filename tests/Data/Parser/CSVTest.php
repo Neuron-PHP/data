@@ -2,10 +2,6 @@
 
 class CSVTest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp()
-	{
-	}
-
 	public function testCSV()
 	{
 		$Parser = new \Neuron\Data\Parser\CSV;
@@ -18,9 +14,5 @@ class CSVTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals( 'text2', $aRet[ 'col2' ] );
 		$this->assertEquals( 'text3', $aRet[ 'col3' ] );
 		$this->assertEquals( 'text4', $aRet[ 'col4' ] );
-	}
-
-	protected function tearDown()
-	{
 	}
 }

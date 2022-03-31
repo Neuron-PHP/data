@@ -15,7 +15,7 @@
         "ext-calendar": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "7.*"
+        "phpunit/phpunit": "9.*"
     },
     "autoload": {
         "psr-4": {
