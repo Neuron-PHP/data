@@ -2,6 +2,9 @@
 
 namespace Neuron\Data\Setting\Source;
 
+/**
+ * Internal array based setting source.
+ */
 class Memory implements ISettingSource
 {
 	private array $_Settings = array();

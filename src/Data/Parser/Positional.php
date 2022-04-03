@@ -6,15 +6,15 @@ class Positional implements IParser
 {
    /**
     * @param $Text
-    * @param array $Locations name, start, length
+    * @param array $UserData name, start, length
     * @return array
     */
 
-   public function parse( $Text, $Locations = array() )
+   public function parse( $Text, $UserData = array() ) : array
    {
       $Results = array();
 
-      foreach( $Locations as $Pos )
+      foreach( $UserData as $Pos )
       {
          $Results[ $Pos[ 'name' ] ] = trim( substr( $Text, $Pos[ 'start' ], $Pos[ 'length' ] ) );
       }

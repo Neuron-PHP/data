@@ -2,6 +2,9 @@
 
 namespace Neuron\Data\Filter;
 
+/**
+ * Filter interface
+ */
 interface IFilter
 {
 	public static function filterScalar( $Data );

@@ -2,6 +2,9 @@
 
 namespace Neuron\Data\Object;
 
+/**
+ * Object for loading/parsing version information.
+ */
 class Version
 {
 	public $Major;

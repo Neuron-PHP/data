@@ -2,6 +2,9 @@
 
 namespace Neuron\Data\Parser;
 
+/**
+ * Parses last, first m
+ */
 
 class LastFirstMI implements IParser
 {
@@ -9,13 +12,13 @@ class LastFirstMI implements IParser
 	 * Parses Last, First M
 	 *
 	 * @param $Text
-	 * @param array $Locations
+	 * @param array $UserData
 	 * @return array first, middle, last
 	 *
 	 * @SuppressWarnings(PHPMD)
 	 */
 
-	public function parse($Text, $Locations = array() )
+	public function parse( $Text, $UserData = array() ) : array
 	{
 		$aName = explode( ',', $Text );
 

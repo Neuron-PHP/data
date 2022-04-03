@@ -5,6 +5,9 @@ namespace Neuron\Data;
 use Neuron\Data\Object\DateRange;
 use Neuron\Util;
 
+/**
+ * General date functions.
+ */
 class Date
 {
 	private static array $_Quarters = [
