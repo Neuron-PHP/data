@@ -2,20 +2,22 @@
 
 namespace Neuron\Data\Parser;
 
-
+/**
+ * Parses first name middle initial.
+ */
 class FirstMI implements IParser
 {
 	/**
 	 * Parses First M
 	 *
 	 * @param $Text
-	 * @param array $Locations
+	 * @param array $UserData
 	 * @return array first, middle, last
 	 *
 	 * @SuppressWarnings(PHPMD)
 	 */
 
-	public function parse( $Text, $Locations = array() )
+	public function parse( $Text, $UserData = array() ) : array
 	{
 		$Text  = str_replace( '.', '', $Text );
 		$Parts = explode( ' ', $Text );

@@ -6,6 +6,9 @@
 
 namespace Neuron\Data;
 
+/**
+ * General array help.
+ */
 class ArrayHelper
 {
 	/**
@@ -15,7 +18,7 @@ class ArrayHelper
 	 * @return bool
 	 */
 
-	public static function contains( array $aData, $Value, $Key = null )
+	public static function contains( array $aData, $Value, $Key = null ) : bool
 	{
 		if( !$Key )
 		{
@@ -43,7 +46,7 @@ class ArrayHelper
 	 * @return bool
 	 */
 
-	public static function hasKey( array $aData, $Key )
+	public static function hasKey( array $aData, $Key ) : bool
 	{
 		if ( isset( $aData[ $Key ] ) || array_key_exists( $Key, $aData ) )
 		{
@@ -60,7 +63,7 @@ class ArrayHelper
 	 * @return mixed|null
 	 */
 
-	public static function getElement( array $aData, $sKey, $Default = null )
+	public static function getElement( array $aData, $sKey, $Default = null ) : mixed
 	{
 		if( array_key_exists( $sKey, $aData ) )
 		{
@@ -92,7 +95,7 @@ class ArrayHelper
 	 * @return bool
 	 */
 
-	public static function remove( array &$aData, $Item )
+	public static function remove( array &$aData, $Item ) : bool
 	{
 		$Index = self::indexOf( $aData, $Item );
 

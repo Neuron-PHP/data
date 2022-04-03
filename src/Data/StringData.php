@@ -2,6 +2,9 @@
 
 namespace Neuron\Data;
 
+/**
+ * String wrapper functions.
+ */
 class StringData
 {
 	public $Value;

@@ -1,6 +1,9 @@
 <?php
 namespace Neuron\Data\Filter;
 
+/**
+ * Filters session data.
+ */
 class Session implements IFilter
 {
 	public static function filterScalar( $Data )

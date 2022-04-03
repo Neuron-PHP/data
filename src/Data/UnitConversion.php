@@ -2,6 +2,9 @@
 
 namespace Neuron\Data;
 
+/**
+ * Unit conversion functions.
+ */
 class UnitConversion
 {
 	const MILLILITERS_PER_OUNCE = 0.03381413;

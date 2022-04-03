@@ -2,6 +2,9 @@
 
 namespace Neuron\Data\Parser;
 
+/**
+ * Parses a line of CSV data to an associative array.
+ */
 class CSV implements IParser
 {
 	public array $_Results;
@@ -12,7 +15,7 @@ class CSV implements IParser
 	 * @return array|bool
 	 */
 
-	public function parse( $Text, $Columns = array() )
+	public function parse( $Text, $Columns = array() ) : array
 	{
 		$Results = array();
 

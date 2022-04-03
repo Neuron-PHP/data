@@ -2,6 +2,9 @@
 
 namespace Neuron\Data\Object;
 
+/**
+ * Object for holding numeric ranges.
+ */
 class NumericRange
 {
 	public $Minimum;

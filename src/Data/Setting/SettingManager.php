@@ -4,6 +4,9 @@ namespace Neuron\Data\Setting;
 
 use Neuron\Data\Setting\Source\ISettingSource;
 
+/**
+ * Generic settings manager.
+ */
 class SettingManager
 {
 	private ISettingSource $_Source;

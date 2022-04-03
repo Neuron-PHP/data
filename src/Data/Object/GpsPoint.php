@@ -3,8 +3,7 @@
 namespace Neuron\Data\Object;
 
 /**
- * Class GpsPoint
- * @package Neuron\Data\Object
+ * Object for holding lot/lon data.
  */
 
 class GpsPoint

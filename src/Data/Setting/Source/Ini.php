@@ -2,6 +2,9 @@
 
 namespace Neuron\Data\Setting\Source;
 
+/**
+ * .ini file source.
+ */
 class Ini implements ISettingSource
 {
 	private array $_Settings = array();
