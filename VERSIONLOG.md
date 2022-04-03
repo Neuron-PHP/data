@@ -1,3 +1,5 @@
+## 0.5.10
+
 ## 0.5.9 2022-04-03
 * Updated composer and documentation.
 
