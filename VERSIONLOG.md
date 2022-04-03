@@ -1,4 +1,5 @@
-## 0.5.9
+## 0.5.9 2022-04-03
+* Updated composer and documentation.
 
 ## 0.5.8 2022-03-31
 * Updated tests.
