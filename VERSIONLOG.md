@@ -1,4 +1,5 @@
-## 0.5.10
+## 0.5.10 2022-04-04
+* Scheduled release
 
 ## 0.5.9 2022-04-03
 * Updated composer and documentation.
