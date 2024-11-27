@@ -9,7 +9,7 @@ class Memory implements ISettingSource
 {
 	private array $_Settings = array();
 
-	public function get( string $SectionName, string $Name )
+	public function get( string $SectionName, string $Name ) : ?string
 	{
 		if( array_key_exists( $SectionName, $this->_Settings ) )
 		{
@@ -20,25 +20,27 @@ class Memory implements ISettingSource
 				return $Section[ $Name ];
 			}
 		}
-		return false;
+
+		return null;
 	}
 
-	public function set( $sSection, $sName, $sValue)
+	public function set( string $Section, string $Name, string $Value ) : ISettingSource
 	{
-		$this->_Settings[ $sSection ][ $sName ] = $sValue;
+		$this->_Settings[ $Section ][ $Name ] = $Value;
+		return $this;
 	}
 
-	public function getSectionNames()
+	public function getSectionNames() : array
 	{
 		return array_keys( $this->_Settings );
 	}
 
-	public function getSectionSettingNames( $sSection )
+	public function getSectionSettingNames( string $Section ) : array
 	{
-		return array_keys( $this->_Settings[ $sSection ] );
+		return array_keys( $this->_Settings[ $Section ] );
 	}
 
-	public function save()
+	public function save() : bool
 	{
 		return false;
 	}

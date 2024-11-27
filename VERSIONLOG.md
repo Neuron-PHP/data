@@ -1,4 +1,5 @@
-## 0.6.2
+## 0.6.2 2024-11-27
+* Fixed an issue in ini get.
 
 ## 0.6.1 2024-11-27
 * Refactored the settings interface.

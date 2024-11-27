@@ -19,23 +19,23 @@ class Ini implements ISettingSource
 		$this->_Settings = parse_ini_file( $File, true );
 	}
 
-	public function get( string $Section, string $Name ) : bool
+	public function get( string $SectionName, string $Name ) : ?string
 	{
-		if( array_key_exists( $Section, $this->_Settings ) )
+		if( array_key_exists( $SectionName, $this->_Settings ) )
 		{
-			$aSection = $this->_Settings[ $Section ];
+			$Section = $this->_Settings[ $SectionName ];
 
-			if( array_key_exists( $Name, $aSection ) )
+			if( array_key_exists( $Name, $Section ) )
 			{
-				return $aSection[ $Name ];
+				return $Section[ $Name ];
 			}
 		}
-		return false;
+		return null;
 	}
 
-	public function set( string $Section, string $Name, string $Value ) : ISettingSource
+	public function set( string $SectionName, string $Name, string $Value ) : ISettingSource
 	{
-		$this->_Settings[ $Section ][ $Name ] = $Value;
+		$this->_Settings[ $SectionName ][ $Name ] = $Value;
 		return $this;
 	}
 
