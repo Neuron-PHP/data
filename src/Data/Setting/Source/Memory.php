@@ -9,15 +9,15 @@ class Memory implements ISettingSource
 {
 	private array $_Settings = array();
 
-	public function get( $sSection, $sName)
+	public function get( string $SectionName, string $Name )
 	{
-		if( array_key_exists( $sSection, $this->_Settings ) )
+		if( array_key_exists( $SectionName, $this->_Settings ) )
 		{
-			$aSection = $this->_Settings[ $sSection ];
+			$Section = $this->_Settings[ $SectionName ];
 
-			if( array_key_exists( $sName, $aSection ) )
+			if( array_key_exists( $Name, $Section ) )
 			{
-				return $aSection[ $sName ];
+				return $Section[ $Name ];
 			}
 		}
 		return false;

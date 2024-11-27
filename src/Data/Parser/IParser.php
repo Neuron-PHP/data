@@ -3,9 +3,9 @@
 namespace Neuron\Data\Parser;
 
 /**
- * Parser interface.
+ * Generic parsing capabilities.
  */
 interface IParser
 {
-	public function parse($Text, $UserData = array() ) : array;
+	public function parse( $Text, $UserData = array() ) : array;
 }
