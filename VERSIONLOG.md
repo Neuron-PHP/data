@@ -1,3 +1,5 @@
+## 0.6.2
+
 ## 0.6.1 2024-11-27
 * Refactored the settings interface.
 
