@@ -2,12 +2,15 @@
 
 namespace Neuron\Data\Setting\Source;
 
+/**
+ * Access to setting based services.
+ */
 interface ISettingSource
 {
-	public function get( $sSection, $sName );
-	public function set( $sName, $sSection, $sValue );
-	public function getSectionNames();
-	public function getSectionSettingNames( $sSection );
+	public function get( string $SectionName, string $Name );
+	public function set( string $SectionName, string $Name, string $Value ) : ISettingSource;
+	public function getSectionNames() : array;
+	public function getSectionSettingNames( string $Section ) : array;
 
-	public function save();
+	public function save() : bool;
 }

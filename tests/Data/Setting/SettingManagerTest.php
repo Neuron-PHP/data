@@ -1,13 +1,14 @@
 <?php
 
 use Neuron\Data\Setting\SettingManager;
+use Neuron\Data\Setting\Source\Ini;
 use PHPUnit\Framework\TestCase;
 
 class SettingManagerTest extends TestCase
 {
-	public function testSettings()
+	public function testGetSetting()
 	{
-		$Source = new \Neuron\Data\Setting\Source\Ini( 'examples/test.ini' );
+		$Source = new Ini( 'examples/test.ini' );
 
 		$Value = $Source->get( 'test', 'name' );
 
@@ -19,7 +20,7 @@ class SettingManagerTest extends TestCase
 
 	public function testSetSetting()
 	{
-		$Source = new \Neuron\Data\Setting\Source\Ini( 'examples/test.ini' );
+		$Source = new Ini( 'examples/test.ini' );
 
 		$Source->set( 'test', 'newname',  'value' );
 
@@ -30,5 +31,4 @@ class SettingManagerTest extends TestCase
 			$Value
 		);
 	}
-
 }

@@ -24,7 +24,7 @@ class SettingManager
 	 * @return mixed
 	 */
 
-	public function getSource()
+	public function getSource() : ISettingSource
 	{
 		return $this->_Source;
 	}
@@ -33,50 +33,51 @@ class SettingManager
 	 * @param ISettingSource $Source
 	 */
 
-	public function setSource( ISettingSource $Source )
+	public function setSource( ISettingSource $Source ) : SettingManager
 	{
 		$this->_Source = $Source;
+		return $this;
 	}
 
 	/**
-	 * @param $sSection
-	 * @param $sName
+	 * @param string $Section
+	 * @param string $Name
 	 * @return mixed
 	 */
 
-	public function get( $sSection, $sName )
+	public function get( string $Section, string $Name )
 	{
-		return $this->getSource()->get( $sSection, $sName );
+		return $this->getSource()->get( $Section, $Name );
 	}
 
 	/**
-	 * @param $sSection
-	 * @param $sName
-	 * @param $sValue
+	 * @param string $Section
+	 * @param string $Name
+	 * @param string $Value
 	 */
 
-	public function set( $sSection, $sName, $sValue )
+	public function set( string $Section, string $Name, string $Value )
 	{
-		$this->getSource()->set( $sSection, $sName, $sValue );
+		$this->getSource()->set( $Section, $Name, $Value );
 		$this->getSource()->save();
 	}
 
 	/**
-	 * @return mixed
+	 * @return array
 	 */
 
-	public function getSectionNames()
+	public function getSectionNames() : array
 	{
 		return $this->getSource()->getSectionNames();
 	}
 
 	/**
-	 * @param $sSection
-	 * @return mixed
+	 * @param string $Section
+	 * @return array
 	 */
 
-	public function getSectionSettingNames( $sSection )
+	public function getSectionSettingNames( string $Section ) : array
 	{
-		return $this->getSource()->getSectionSettingNames( $sSection );
+		return $this->getSource()->getSectionSettingNames( $Section );
 	}
 }

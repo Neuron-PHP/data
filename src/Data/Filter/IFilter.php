@@ -3,7 +3,7 @@
 namespace Neuron\Data\Filter;
 
 /**
- * Filter interface
+ * Interface for sanitizing external PHP variables.
  */
 interface IFilter
 {

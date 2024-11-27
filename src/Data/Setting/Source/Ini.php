@@ -9,46 +9,47 @@ class Ini implements ISettingSource
 {
 	private array $_Settings = array();
 
-	public function __construct( $sFile )
+	public function __construct( $File )
 	{
-		if( !file_exists( $sFile ) )
+		if( !file_exists( $File ) )
 		{
-			throw new \Exception( "Setting\Source\Ini Cannot open $sFile" );
+			throw new \Exception( "Setting\Source\Ini Cannot open $File" );
 		}
 
-		$this->_Settings = parse_ini_file( $sFile, true );
+		$this->_Settings = parse_ini_file( $File, true );
 	}
 
-	public function get( $sSection, $sName)
+	public function get( string $Section, string $Name ) : bool
 	{
-		if( array_key_exists( $sSection, $this->_Settings ) )
+		if( array_key_exists( $Section, $this->_Settings ) )
 		{
-			$aSection = $this->_Settings[ $sSection ];
+			$aSection = $this->_Settings[ $Section ];
 
-			if( array_key_exists( $sName, $aSection ) )
+			if( array_key_exists( $Name, $aSection ) )
 			{
-				return $aSection[ $sName ];
+				return $aSection[ $Name ];
 			}
 		}
 		return false;
 	}
 
-	public function set( $sSection, $sName, $sValue)
+	public function set( string $Section, string $Name, string $Value ) : ISettingSource
 	{
-		$this->_Settings[ $sSection ][ $sName ] = $sValue;
+		$this->_Settings[ $Section ][ $Name ] = $Value;
+		return $this;
 	}
 
-	public function getSectionNames()
+	public function getSectionNames() : array
 	{
 		return array_keys( $this->_Settings );
 	}
 
-	public function getSectionSettingNames( $sSection )
+	public function getSectionSettingNames( string $Section ) : array
 	{
-		return array_keys( $this->_Settings[ $sSection ] );
+		return array_keys( $this->_Settings[ $Section ] );
 	}
 
-	public function save()
+	public function save() : bool
 	{
 		return false;
 	}

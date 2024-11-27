@@ -1,3 +1,7 @@
+## 0.6.1 2024-11-27
+* Refactored the settings interface.
+
+## 0.6.0
 * Scheduled release
 
 ## 0.5.10 2022-04-04
