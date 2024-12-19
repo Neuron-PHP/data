@@ -12,7 +12,7 @@ class SettingManager
 	private ISettingSource $_Source;
 
 	/**
-	 * @param Source\ISettingSource $Source
+	 * @param \Neuron\Data\Setting\Source\ISettingSource $Source
 	 */
 
 	public function __construct( ISettingSource $Source )

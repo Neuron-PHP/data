@@ -1,3 +1,10 @@
+## 0.6.4 2024-12-18
+* Moved env class to this package.
+* Added a setting source for environment variables.
+
+## 0.6.3 2024-12-16
+* Updated interfaces.
+
 ## 0.6.2 2024-11-27
 * Fixed an issue in ini get.
 
