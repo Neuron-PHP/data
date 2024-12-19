@@ -4,24 +4,30 @@ namespace Neuron\Data;
 
 class Env
 {
-	private static $instance = null;
+	private static ?Env 		$instance = null;
+	private 			?string	$_FileName;
 
 	/**
-	 * @param string $File
+	 * Env constructor.
+	 * @param string|null $FileName
 	 */
-	private function __construct( string $File = null)
+	private function __construct( string $FileName = null )
 	{
-		if( file_exists( $File ) )
+		$this->_FileName = $FileName;
+
+		if( is_null( $this->_FileName ) )
 		{
-			$this->loadEnvFile( $File );
+			$this->_FileName = "{$_SERVER['DOCUMENT_ROOT']}/.env";
 		}
+
+		$this->loadEnvFile();
 	}
 
 	/**
 	 * @param null $envFile
 	 * @return Env|null
 	 */
-	public static function getInstance( $envFile = null )
+	public static function getInstance( $envFile = null ): ?Env
 	{
 		if ( is_null( self::$instance ) )
 		{
@@ -32,45 +38,38 @@ class Env
 	}
 
 	/**
-	 * @param string $File
+	 * @return void
 	 */
-	public function loadEnvFile( string $File )
+	public function loadEnvFile(): void
 	{
-		if ( is_null( $File ) )
+		$Configs = file( $this->_FileName );
+
+		foreach( $Configs as $Config )
 		{
-			$File = "{$_SERVER['DOCUMENT_ROOT']}/.env";
-		}
+			$Config = trim( str_replace( "\n", "", $Config ) );
 
-		$envConfigsArr = file( $File );
-
-		foreach ( $envConfigsArr as $config )
-		{
-			$config = str_replace( "\n", "", $config );
-
-			if( $config )
+			if( $Config && $Config[ 0 ] != '#')
 			{
-				$this->put( $config );
+				$this->put( $Config );
 			}
 		}
 	}
 
 	/**
 	 * @param $config
+	 * @return bool
 	 */
-	public function put( $config )
+	public function put( $config ): bool
 	{
-		if( $config[0] != '#' )
-		{
-			putenv( $config );
-		}
+		return putenv( $config );
 	}
 
 	/**
 	 * @param $key
 	 * @return array|false|string
 	 */
-	public function get( $key )
+	public function get( $key ): bool|array|string
 	{
-		return trim( getenv( $key ) );
+		return trim( getenv( trim( $key ) ) );
 	}
 }

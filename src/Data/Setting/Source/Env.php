@@ -13,9 +13,9 @@ class Env implements ISettingSource
 
 	/**
 	 * This method is used to get the value of a setting stored in an environment variable.
-	 * The section and name will be concatinated with an underscore and the value will be
+	 * The section and name will be concatenated with an underscore and the value will be
 	 * uppercased.
-	 * get( 'test', 'name' ) will look for the environment variable TEST_NAME.
+	 * e.g. get( 'test', 'name' ) will look for the environment variable TEST_NAME.
 	 *
 	 * @param string $SectionName
 	 * @param string $Name
@@ -30,6 +30,11 @@ class Env implements ISettingSource
 
 	public function set( string $SectionName, string $Name, string $Value ): ISettingSource
 	{
+		$SectionName = strtoupper( $SectionName );
+		$Name = strtoupper( $Name );
+
+		$this->_Env->put( "{$SectionName}_{$Name}=$Value" );
+
 		return $this;
 	}
 
