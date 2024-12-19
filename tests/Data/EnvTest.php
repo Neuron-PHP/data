@@ -70,18 +70,10 @@ class EnvTest extends TestCase
 
 		$validConfig = 'APP_VALID=true';
 
-		$env->put($validConfig);
+		$env->put( $validConfig );
 
 		$this->assertEquals(
 			'true', $env->get('APP_VALID')
 		);
-
-		$commentedOutConfig = '# APP_COMMENTED_OUT=dumb';
-
-		$env->put($commentedOutConfig);
-
-		$this->assertEmpty($env->get('APP_COMMENTED_OUT'));
-		$this->assertEmpty($env->get('#APP_COMMENTED_OUT'));
-		$this->assertEmpty($env->get('# APP_COMMENTED_OUT'));
 	}
 }

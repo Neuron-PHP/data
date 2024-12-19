@@ -1,3 +1,6 @@
+## 0.6.5 2024-12-18
+* Refactored Env.
+
 ## 0.6.4 2024-12-18
 * Moved env class to this package.
 * Added a setting source for environment variables.
