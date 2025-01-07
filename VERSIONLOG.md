@@ -1,4 +1,5 @@
 ## 0.6.6
+* Added yaml setting source.
 
 ## 0.6.5 2024-12-18
 * Refactored Env.
