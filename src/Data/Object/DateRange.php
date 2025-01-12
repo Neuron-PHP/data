@@ -10,10 +10,10 @@ use Neuron\Data\Date;
  */
 class DateRange
 {
-	public $Start;
-	public $End;
+	public string $Start;
+	public string $End;
 
-	public function __construct( $Start, $End )
+	public function __construct( string $Start, string $End )
 	{
 		$Date = new \Neuron\Formatters\Date();
 		$this->Start = $Date->format( $Start );

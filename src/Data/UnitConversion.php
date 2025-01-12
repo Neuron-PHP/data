@@ -12,7 +12,7 @@ class UnitConversion
 
 	/**
 	 * @param float $Milliliters
-	 * @return float|int
+	 * @return float
 	 */
 	public static function millilitersToUsFlOunces( float $Milliliters ) : float
 	{
@@ -21,7 +21,7 @@ class UnitConversion
 
 	/**
 	 * @param float $Ounces
-	 * @return float|int
+	 * @return float
 	 */
 	public static function usFlOuncesToMilliliters( float $Ounces ) : float
 	{

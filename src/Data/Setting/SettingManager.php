@@ -5,7 +5,7 @@ namespace Neuron\Data\Setting;
 use Neuron\Data\Setting\Source\ISettingSource;
 
 /**
- * Generic settings manager.
+ * Generic settings manager. Allows generic interaction with settings from different sources such as .ini, .yaml etc.
  */
 class SettingManager
 {

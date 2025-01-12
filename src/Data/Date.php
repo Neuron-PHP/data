@@ -147,7 +147,7 @@ class Date
 	 *
 	 * @return false|string
 	 */
-	static function today()
+	static function today(): bool|string
 	{
 		return date( 'Y-m-d' );
 	}
@@ -157,7 +157,7 @@ class Date
 	 *
 	 * @return false|string
 	 */
-	static function tomorrow()
+	static function tomorrow(): bool|string
 	{
 		return date( 'Y-m-d', strtotime( 'tomorrow' ) );
 	}
@@ -167,7 +167,7 @@ class Date
 	 *
 	 * @return false|string
 	 */
-	static function yesterday()
+	static function yesterday(): bool|string
 	{
 		return date( 'Y-m-d', strtotime( '-1 day' ) );
 	}
@@ -178,7 +178,7 @@ class Date
 	 * @param $Date
 	 * @return false|string
 	 */
-	static function getDay( $Date )
+	static function getDay( $Date ): bool|string
 	{
 		return date('l', strtotime( $Date ) );
 	}
@@ -189,7 +189,7 @@ class Date
 	 * @param $Date
 	 * @return bool
 	 */
-	static function isWeekend( $Date )
+	static function isWeekend( $Date ): bool
 	{
 		return ( self::getDay( $Date ) == 'Saturday' ||
 					self::getDay( $Date ) == 'Sunday' );
@@ -201,7 +201,7 @@ class Date
 	 * @param DateRange $Range
 	 * @return int
 	 */
-	static function getWorkingDays( DateRange $Range )
+	static function getWorkingDays( DateRange $Range ): int
 	{
 		$Days = 0;
 
@@ -225,7 +225,7 @@ class Date
 	 * @param $DateTime
 	 * @return false|string
 	 */
-	static function only( $DateTime )
+	static function only( $DateTime ): bool|string
 	{
 		return date( 'Y-m-d', strtotime( $DateTime ) );
 	}
@@ -236,7 +236,7 @@ class Date
 	 * @param $Days
 	 * @return mixed|string
 	 */
-	static function daysAsText( $Days )
+	static function daysAsText( $Days ): mixed
 	{
 		$Units = [
 			365 => 'year',
@@ -280,7 +280,7 @@ class Date
 	 * @return string
 	 */
 
-	static function differenceUnitAsText( $Time, $Until = null )
+	static function differenceUnitAsText( $Time, $Until = null ): string
 	{
 		if( $Until == null )
 		{
@@ -319,7 +319,7 @@ class Date
 	 * @return bool
 	 */
 
-	static function isLeapYear( $iYear )
+	static function isLeapYear( $iYear ): bool
 	{
 		return ( ( ( $iYear % 4 ) == 0 ) && ( ( ( $iYear % 100 ) != 0 ) || ( ( $iYear % 400 ) == 0 ) ) );
 	}
@@ -330,7 +330,7 @@ class Date
 	 * @return bool|string - new date
 	 */
 
-	static function subtractDays( $iDays, $sDate = '' )
+	static function subtractDays( $iDays, $sDate = '' ): bool|string
 	{
 		if( !$sDate )
 		{
@@ -349,7 +349,7 @@ class Date
 	 * @return string A string in yyyy-mm-dd mysql format.
 	 */
 
-	static function getCurrentMonthStartDate()
+	static function getCurrentMonthStartDate(): string
 	{
 		$date  = date( "Y-m" );
 		$date .= "-1";
@@ -366,7 +366,7 @@ class Date
 	 * @param null $iYear
 	 * @return int
 	 */
-	static function getDaysInMonth( $iMonth, $iYear = null )
+	static function getDaysInMonth( $iMonth, $iYear = null ): int
 	{
 		$days = 0;
 
@@ -411,7 +411,7 @@ class Date
 	/// A string in yyyy-mm-dd mysql format.
 	//////////////////////////////////////////////////////////////////////////
 
-	static function getCurrentMonthEndDate()
+	static function getCurrentMonthEndDate(): string
 	{
 		$date = date( "Y-m" );
 
@@ -505,7 +505,7 @@ class Date
 	///	Julian date.
 	//////////////////////////////////////////////////////////////////////////
 
-	static function dateToJulian( $Date )
+	static function dateToJulian( $Date ): int
 	{
 		$Date = self::only( $Date );
 
@@ -527,7 +527,7 @@ class Date
 	///	A string in yyyy-mm-dd mysql format.
 	//////////////////////////////////////////////////////////////////////////
 
-	static function julianToDate( $dt1 )
+	static function julianToDate( $dt1 ): string
 	{
 		$date = jdtogregorian( $dt1 );
 

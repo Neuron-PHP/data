@@ -2,6 +2,9 @@
 
 namespace Neuron\Data\Setting\Source;
 
+/**
+ * environment variable based settings.
+ */
 class Env implements ISettingSource
 {
 	private \Neuron\Data\Env $_Env;

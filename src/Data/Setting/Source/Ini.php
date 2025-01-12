@@ -3,7 +3,7 @@
 namespace Neuron\Data\Setting\Source;
 
 /**
- * .ini file source.
+ * .ini file based settings.
  */
 class Ini implements ISettingSource
 {
