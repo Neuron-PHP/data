@@ -7,7 +7,7 @@ use Symfony\Component\Yaml\Yaml as YamlParser;
 use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
- * .yaml file source.
+ * .yaml based setting source.
  */
 class Yaml implements ISettingSource
 {

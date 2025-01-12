@@ -7,13 +7,13 @@ namespace Neuron\Data;
  */
 class StringData
 {
-	public $Value;
+	public string $Value;
 
 	/**
 	 * StringData constructor.
-	 * @param $String
+	 * @param string $String
 	 */
-	public function __construct( $String )
+	public function __construct( string $String )
 	{
 		$this->Value = $String;
 	}
@@ -21,35 +21,35 @@ class StringData
 	/**
 	 * @return int
 	 */
-	public function length()
+	public function length(): int
 	{
 		return strlen( $this->Value );
 	}
 
 	/**
-	 * @param $Length
+	 * @param int $Length
 	 * @return string
 	 */
-	public function left( $Length )
+	public function left( int $Length ): string
 	{
 		return $this->mid( 0, $Length - 1 );
 	}
 
 	/**
-	 * @param $Length
+	 * @param int $Length
 	 * @return string
 	 */
-	public function right( $Length )
+	public function right( int $Length ): string
 	{
 		return $this->mid( $this->length() - $Length, $this->length() );
 	}
 
 	/**
-	 * @param $Start
-	 * @param $End
+	 * @param int $Start
+	 * @param int $End
 	 * @return string
 	 */
-	public function mid( $Start, $End )
+	public function mid( int $Start, int $End ): string
 	{
 		return substr( $this->Value, $Start, $End - $Start + 1 );
 	}
@@ -57,7 +57,7 @@ class StringData
 	/**
 	 * @return string
 	 */
-	public function trim()
+	public function trim(): string
 	{
 		return trim( $this->Value );
 	}
@@ -65,7 +65,7 @@ class StringData
 	/**
 	 * @return string
 	 */
-	public function deQuote()
+	public function deQuote(): string
 	{
 		return trim( $this->Value, '"' );
 	}
@@ -73,7 +73,7 @@ class StringData
 	/**
 	 * @return string
 	 */
-	public function quote()
+	public function quote(): string
 	{
 		return '"'.$this->trim().'"';
 	}
@@ -82,7 +82,7 @@ class StringData
 	 * @param bool $CapitalizeFirst
 	 * @return mixed|string
 	 */
-	public function toCamelCase( bool $CapitalizeFirst = true )
+	public function toCamelCase( bool $CapitalizeFirst = true ): mixed
 	{
 		$Str = str_replace('_', '', ucwords( $this->Value, '_'));
 
@@ -97,7 +97,7 @@ class StringData
 	/**
 	 * @return string
 	 */
-	public function toSnakeCase()
+	public function toSnakeCase(): string
 	{
 		return strtolower( preg_replace('/(?<!^)[A-Z]/', '_$0', $this->Value ) );
 	}

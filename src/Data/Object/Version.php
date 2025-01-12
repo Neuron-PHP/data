@@ -7,10 +7,10 @@ namespace Neuron\Data\Object;
  */
 class Version
 {
-	public $Major;
-	public $Minor;
-	public $Patch;
-	public $Build;
+	public int $Major;
+	public int $Minor;
+	public int $Patch;
+	public int $Build;
 
 	/**
 	 * Version constructor.
@@ -24,10 +24,11 @@ class Version
 	}
 
 	/**
-	 * @param $Data
+	 * Parses version information from a json string.
+	 * @param string $Data
 	 * @throws \Exception
 	 */
-	public function loadFromString( string $Data )
+	public function loadFromString( string $Data ): void
 	{
 		$Json = json_decode( $Data,true );
 
@@ -47,10 +48,11 @@ class Version
 	}
 
 	/**
+	 * Loads version information from a json file.
 	 * @param string $File
 	 * @throws \Exception
 	 */
-	public function loadFromFile( string $File = 'version.json' )
+	public function loadFromFile( string $File = 'version.json' ): void
 	{
 		if( !file_exists( $File ) )
 		{
@@ -63,6 +65,7 @@ class Version
 	}
 
 	/**
+	 * Returns the version as a string.
 	 * @return string
 	 */
 	public function getAsString() : string

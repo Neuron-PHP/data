@@ -1,4 +1,15 @@
-# About Neuron/Data
+[![Build Status](https://app.travis-ci.com/Neuron-PHP/data.svg?token=F8zCwpT7x7Res7J2N4vF&branch=master)](https://app.travis-ci.com/Neuron-PHP/data)
+# Neuron-PHP Data
+
+## Overview
+
+## Installation
+
+Install php composer from https://getcomposer.org/
+
+Install the neuron data component:
+
+    composer require neuron-php/data
 
 ## Filtering
 
@@ -34,3 +45,7 @@ formatters package.
 ## Unit Conversion
 
 ## ArrayHelper
+
+# More Information
+
+You can read more about the Neuron components at [neuronphp.com](http://neuronphp.com)
