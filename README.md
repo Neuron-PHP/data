@@ -21,6 +21,16 @@ Wrappers for filter_input.
 * Server
 * Session
 
+All filters use the following interface:
+```php
+interface IFilter
+{
+	public static function filterScalar( $Data ): mixed;
+	public static function filterArray( array $Data ): array|false|null;
+}
+```
+
+
 ## Data Objects
 
 * DateRange
@@ -36,13 +46,6 @@ command line utility to reference version information from version.json
 The string class supports the BASIC string manipulation
 commands such as left, right, mid and trim.
 Also, quote, dequote, toCamelCase and toSnakeCase.
-
-## Formatter
-
-The formatter class is deprecated and being replaced by the
-formatters package.
-
-## Unit Conversion
 
 ## ArrayHelper
 
