@@ -1,3 +1,5 @@
+## 0.6.11
+
 ## 0.6.10 2025-01-15
 * Added fallback capability to the setting manager so that it will read from environment variables if the setting is not found in the ini file.
 
