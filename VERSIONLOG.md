@@ -1,7 +1,7 @@
--e ## 0.6.10
+## 0.6.10
+* Added fallback capability to the setting manager so that it will read from environment variables if the setting is not found in the ini file.
 
--e ## 0.6.9
-
+## 0.6.9
 ## 0.6.8
 ## 0.6.7
 ## 0.6.6

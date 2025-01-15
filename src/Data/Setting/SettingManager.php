@@ -2,6 +2,7 @@
 
 namespace Neuron\Data\Setting;
 
+use Neuron\Data\Setting\Source\Env;
 use Neuron\Data\Setting\Source\ISettingSource;
 
 /**
@@ -10,9 +11,10 @@ use Neuron\Data\Setting\Source\ISettingSource;
 class SettingManager
 {
 	private ISettingSource $_Source;
+	private ?ISettingSource $_Fallback = null;
 
 	/**
-	 * @param \Neuron\Data\Setting\Source\ISettingSource $Source
+	 * @param ISettingSource $Source
 	 */
 
 	public function __construct( ISettingSource $Source )
@@ -40,6 +42,26 @@ class SettingManager
 	}
 
 	/**
+	 * @return ISettingSource
+	 */
+	public function getFallback(): ?ISettingSource
+	{
+		return $this->_Fallback;
+	}
+
+	/**
+	 * @param ISettingSource $Fallback
+	 * @return SettingManager
+	 */
+	public function setFallback( ISettingSource $Fallback ): SettingManager
+	{
+		$this->_Fallback = $Fallback;
+		return $this;
+	}
+
+
+
+	/**
 	 * @param string $Section
 	 * @param string $Name
 	 * @return mixed
@@ -47,7 +69,15 @@ class SettingManager
 
 	public function get( string $Section, string $Name )
 	{
-		return $this->getSource()->get( $Section, $Name );
+		$Value = $this->getSource()->get( $Section, $Name );
+
+		if( $Value )
+		{
+			return $Value;
+		}
+
+		return $this->getFallback()
+						?->get( $Section, $Name );
 	}
 
 	/**
