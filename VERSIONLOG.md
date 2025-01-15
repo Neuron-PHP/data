@@ -1,4 +1,4 @@
-## 0.6.11
+## 0.6.11 2025-01-15
 * Missing .env files no longer return an error.
 
 ## 0.6.10 2025-01-15
