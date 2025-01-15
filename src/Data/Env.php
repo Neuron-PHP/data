@@ -42,6 +42,11 @@ class Env
 	 */
 	public function loadEnvFile(): void
 	{
+		if( !file_exists( $this->_FileName ) )
+		{
+			return;
+		}
+
 		$Configs = file( $this->_FileName );
 
 		foreach( $Configs as $Config )

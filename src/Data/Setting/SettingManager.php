@@ -2,7 +2,6 @@
 
 namespace Neuron\Data\Setting;
 
-use Neuron\Data\Setting\Source\Env;
 use Neuron\Data\Setting\Source\ISettingSource;
 
 /**
