@@ -11,7 +11,7 @@ class Env
 	 * Env constructor.
 	 * @param string|null $FileName
 	 */
-	private function __construct( string $FileName = null )
+	private function __construct( ?string $FileName = null )
 	{
 		$this->_FileName = $FileName;
 
