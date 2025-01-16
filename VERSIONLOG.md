@@ -1,4 +1,5 @@
 ## 0.6.12
+* Updated env constructor signature.
 
 ## 0.6.11 2025-01-15
 * Missing .env files no longer return an error.
