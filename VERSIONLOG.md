@@ -1,4 +1,4 @@
-## 0.6.12
+## 0.6.12 2025-01-16
 * Updated env constructor signature.
 
 ## 0.6.11 2025-01-15
