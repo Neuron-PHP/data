@@ -12,29 +12,31 @@ namespace Neuron\Data;
 class ArrayHelper
 {
 	/**
-	 * @param array $aData
+	 * @param array $Data
 	 * @param $Value
 	 * @param $Key
 	 * @return bool
 	 */
 
-	public static function contains( array $aData, $Value, $Key = null ) : bool
+	public static function contains( array $Data, $Value, $Key = null ) : bool
 	{
 		if( !$Key )
 		{
-			if( in_array( $Value, $aData ) )
+			if( in_array( $Value, $Data ) )
 			{
 				return true;
 			}
 		}
 		else
 		{
-			foreach( $aData as $Item )
+			if( !self::hasKey( $Data, $Key ) )
 			{
-				if( $Item[ $Key ] == $Value )
-				{
-					return true;
-				}
+				return false;
+			}
+
+			if( $Data[ $Key ] == $Value )
+			{
+				return true;
 			}
 		}
 		return false;

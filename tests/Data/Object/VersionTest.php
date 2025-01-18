@@ -1,10 +1,12 @@
 <?php
 
+use Neuron\Data\Object\Version;
+
 class VersionTest extends PHPUnit\Framework\TestCase
 {
 	public function testGetAsString()
 	{
-		$Version = new \Neuron\Data\Object\Version();
+		$Version = new Version();
 
 		$Version->loadFromString(
 			"{\"major\":1,\"minor\":2,\"patch\":3}"
@@ -27,7 +29,7 @@ class VersionTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadFromString()
 	{
-		$Version = new \Neuron\Data\Object\Version();
+		$Version = new Version();
 
 		$Version->loadFromString(
 			"{\"major\":1,\"minor\":2,\"patch\":3}"
@@ -40,7 +42,7 @@ class VersionTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadFromStringBuild()
 	{
-		$Version = new \Neuron\Data\Object\Version();
+		$Version = new Version();
 
 		$Version->loadFromString(
 			"{\"major\":1,\"minor\":2,\"patch\":3,\"build\":4}"
@@ -54,7 +56,7 @@ class VersionTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadFromFile()
 	{
-		$Version = new \Neuron\Data\Object\Version();
+		$Version = new Version();
 
 		$Version->loadFromFile( 'examples/version.json' );
 
@@ -65,7 +67,7 @@ class VersionTest extends PHPUnit\Framework\TestCase
 
 	public function testFailLoadFromFile()
 	{
-		$Version = new \Neuron\Data\Object\Version();
+		$Version = new Version();
 
 		$Success = true;
 
@@ -83,7 +85,7 @@ class VersionTest extends PHPUnit\Framework\TestCase
 
 	public function testFailLoadFromString()
 	{
-		$Version = new \Neuron\Data\Object\Version();
+		$Version = new Version();
 
 		$Pass = false;
 

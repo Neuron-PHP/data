@@ -7,5 +7,5 @@ namespace Neuron\Data\Parser;
  */
 interface IParser
 {
-	public function parse( string $Text, array $UserData = array() ) : array;
+	public function parse( string $Text, array $UserData = array() ) : ?array;
 }

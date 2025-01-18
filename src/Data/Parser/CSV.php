@@ -12,10 +12,10 @@ class CSV implements IParser
 	/**
 	 * @param $Text
 	 * @param array $Columns
-	 * @return array|bool
+	 * @return ?array
 	 */
 
-	public function parse( $Text, $Columns = array() ) : array
+	public function parse( $Text, $Columns = array() ) : ?array
 	{
 		$Results = array();
 
@@ -25,14 +25,14 @@ class CSV implements IParser
 
 		foreach( $Columns as $Column )
 		{
+			if( !isset( $Data[ $idx ] ) )
+			{
+				$this->_Results = $Results;
+				return null;
+			}
+
 			$Results[ $Column ] = $Data[ $idx ];
 			++$idx;
-		}
-
-		if( count( $Columns ) != count( $Data ) )
-		{
-			$this->_Results = $Results;
-			return false;
 		}
 
 		return $Results;

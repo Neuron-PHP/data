@@ -13,78 +13,105 @@ class ArrayHelperTest extends PHPUnit\Framework\TestCase
 {
 	public function testContains()
 	{
-		$aTest = [
+		$Test = [
 			'one',
 			'two',
 			'three'
 		];
 
 		// sad
-		$this->assertFalse( ArrayHelper::contains( $aTest, 'twenty' ) );
+		$this->assertFalse( ArrayHelper::contains( $Test, 'twenty' ) );
 
 		// happy
-		$this->assertTrue( ArrayHelper::contains( $aTest, 'two' ) );
+		$this->assertTrue( ArrayHelper::contains( $Test, 'two' ) );
 	}
 
-	public function testHasKey()
+	public function testContainsKeyValue()
 	{
-		$aTest = [
+		$Test = [
 			'one' => 1,
 			'two' => 2,
 			'three' => 3
 		];
 
 		// sad
-		$this->assertFalse( ArrayHelper::hasKey( $aTest, 'four' ) );
+		$this->assertFalse( ArrayHelper::contains( $Test, 'four' ) );
 
 		// happy
-		$this->assertTrue( ArrayHelper::hasKey( $aTest, 'two' ) );
+		$this->assertTrue( ArrayHelper::contains( $Test, 2 ) );
+
+		// sad
+		$this->assertFalse( ArrayHelper::contains( $Test, 1, 'four' ) );
+
+		// happy
+		$this->assertTrue( ArrayHelper::contains( $Test, 2, 'two' ) );
+	}
+
+	public function testHasKey()
+	{
+		$Test = [
+			'one' => 1,
+			'two' => 2,
+			'three' => 3
+		];
+
+		// sad
+		$this->assertFalse( ArrayHelper::hasKey( $Test, 'four' ) );
+
+		// happy
+		$this->assertTrue( ArrayHelper::hasKey( $Test, 'two' ) );
+
+		// sad
+		$this->assertFalse( ArrayHelper::hasKey( $Test, 'four', 1 ) );
+
+		// happy
+		$this->assertTrue( ArrayHelper::hasKey( $Test, 'two', 2 ) );
 	}
 
 	public function testGetElement()
 	{
-		$aTest = [
+		$Test = [
 			'one'   => 1,
 			'two'   => 2,
 			'three' => 3
 		];
 
 		// sad
-		$this->assertEquals( null, ArrayHelper::getElement( $aTest, 'five' ) );
+		$this->assertEquals( null, ArrayHelper::getElement( $Test, 'five' ) );
 
 		// happy
-		$this->assertEquals( 1,    ArrayHelper::getElement( $aTest, 'one' ) );
-		$this->assertEquals( 20,   ArrayHelper::getElement( $aTest, 'five', 20 ) );
+		$this->assertEquals( 1,    ArrayHelper::getElement( $Test, 'one' ) );
+		$this->assertEquals( 20,   ArrayHelper::getElement( $Test, 'five', 20 ) );
 	}
 
 	public function testIndexOf()
 	{
-		$aTest = [
+		$Test = [
 			'one',
 			'two',
 			'three'
 		];
 
 		// sad
-		$this->assertEquals( false, ArrayHelper::indexOf( $aTest, 'twelve' ) );
+		$this->assertEquals( false, ArrayHelper::indexOf( $Test, 'twelve' ) );
 
 		// happy
-		$this->assertEquals( 1, ArrayHelper::indexOf( $aTest, 'two' ) );
+		$this->assertEquals( 1, ArrayHelper::indexOf( $Test, 'two' ) );
 	}
 
 	public function testRemove()
 	{
-		$aTest = [
+		$Test = [
 			'one',
 			'two',
 			'three'
 		];
 
 		// sad
-		$this->assertEquals( false, ArrayHelper::remove( $aTest, 'twelve' ) );
+		$this->assertEquals( false, ArrayHelper::remove( $Test, 'twelve' ) );
 
 		// happy
-		$this->assertEquals( true, ArrayHelper::remove( $aTest, 'two' ) );
-		$this->assertEquals( false, ArrayHelper::contains( $aTest, 'two' ) );
+		$this->assertEquals( true, ArrayHelper::remove( $Test, 'two' ) );
+		$this->assertEquals( false, ArrayHelper::contains( $Test, 'two' ) );
 	}
 }

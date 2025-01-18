@@ -9,22 +9,29 @@ use PHPUnit\Framework\TestCase;
 
 class SettingManagerTest extends TestCase
 {
+	public SettingManager $Manager;
+
+	protected function setUp(): void
+	{
+		$this->Manager = new SettingManager(
+			new Source\Ini( 'examples/test.ini' )
+		);
+
+		parent::setUp();
+	}
+
 	public function testGetSetting()
 	{
-		$Source = new Source\Ini( 'examples/test.ini' );
-
-		$Value = $Source->get( 'test', 'name' );
+		$Value = $this->Manager->get( 'test', 'name' );
 
 		$this->assertEquals( 'value', $Value );
 	}
 
 	public function testSetSetting()
 	{
-		$Source = new Source\Ini( 'examples/test.ini' );
+		$this->Manager->set( 'test', 'newname', 'value' );
 
-		$Source->set( 'test', 'newname', 'value' );
-
-		$Value = $Source->get( 'test', 'newname' );
+		$Value = $this->Manager->get( 'test', 'newname' );
 
 		$this->assertEquals( 'value', $Value );
 	}
@@ -40,5 +47,19 @@ class SettingManagerTest extends TestCase
 		$Value = $Manager->get( 'test', 'not_there' );
 
 		$this->assertEquals( 'no', $Value );
+	}
+
+	public function testGetSectionNames()
+	{
+		$Sections = $this->Manager->getSectionNames();
+
+		$this->assertEquals( 'test', $Sections[ 0 ] );
+	}
+
+	public function testGetSectionSettingNames()
+	{
+		$Names = $this->Manager->getSectionSettingNames( 'test' );
+
+		$this->assertEquals( 'name', $Names[ 0 ] );
 	}
 }

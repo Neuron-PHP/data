@@ -352,7 +352,7 @@ class Date
 	static function getCurrentMonthStartDate(): string
 	{
 		$date  = date( "Y-m" );
-		$date .= "-1";
+		$date .= "-01";
 
 		return $date;
 	}
@@ -403,97 +403,20 @@ class Date
 		return $days;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	///
-	/// Returns the end date for the current month.
-	///
-	/// @return
-	/// A string in yyyy-mm-dd mysql format.
-	//////////////////////////////////////////////////////////////////////////
-
+	/**
+	 * @return string
+	 */
 	static function getCurrentMonthEndDate(): string
 	{
 		$date = date( "Y-m" );
 
-		$days = Util\Date::getDaysInMonth( date( "n" ) );
+		$days = self::getDaysInMonth( date( "n" ) );
 
 		$date .= "-" . $days;
 
 		return $date;
 	}
 
-	static function isSqlDateTime( $date_time )
-	{
-		if( $date_time[ 4 ] == '-' )
-		{
-			return $date_time;
-		}         // already in sql format..
-
-		if( strlen( $date_time ) == 0 )
-		{
-			return "0000-00-00";
-		}
-
-		return null;
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	///
-	/// Takes a date/time stringin dd-mm-yyyy format and returns it in
-	/// yyyy-mm-dd format.
-	///
-	/// @param $date_time A string containing the date/time in dd-mm-yyyy ttt.. format.
-	///
-	/// @return A string in yyyy-mm-dd tt... mysql format.
-	///
-	//////////////////////////////////////////////////////////////////////////
-
-	// 17-12-2005 10:10:27
-
-	static function getMySqlDateTime( $date_time )
-	{
-		$sqldatetime = self::isSqlDateTime( $date_time );
-
-		if( $sqldatetime )
-		{
-			return $sqldatetime;
-		}
-
-		$dt1 = substr( $date_time, 6, 4 );
-		$dt1 .= "-";
-		$dt1 .= substr( $date_time, 3, 2 );
-		$dt1 .= "-";
-		$dt1 .= substr( $date_time, 0, 2 );
-		$dt1 .= " ";
-		$dt1 .= substr( $date_time, 11, 8 );
-
-		return $dt1;
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	///
-	/// Takes a date in dd-mm-yyyy format and returns it in yyyy-mm-dd format.
-	///
-	/// @param $date A string containing the date in dd-mm-yyyy format.
-	///
-	/// @return A string in yyyy-mm-dd mysql format.
-	///
-	//////////////////////////////////////////////////////////////////////////
-
-	static function getMySqlDate( $date_time )
-	{
-		$sqldatetime = self::isSqlDateTime( $date_time );
-		if( $sqldatetime )
-			return $sqldatetime;
-
-		$dt1 = substr( $date_time, 6, 4 );
-		$dt1 .= "-";
-		$dt1 .= substr( $date_time, 3, 2 );
-		$dt1 .= "-";
-		$dt1 .= substr( $date_time, 0, 2 );
-
-		return $dt1;
-	}
 
 	//////////////////////////////////////////////////////////////////////////
 	///

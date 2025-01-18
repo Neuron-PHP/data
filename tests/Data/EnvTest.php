@@ -19,6 +19,14 @@ class EnvTest extends TestCase
 		$this->_envFile = 'examples/.env';
 	}
 
+	public function testNoFile()
+	{
+		$Env = Env::getInstance();
+
+		$this->assertIsObject( $Env );
+		$Env->reset();
+	}
+
 	public function testEnv()
 	{
 		$env = Env::getInstance( $this->_envFile );

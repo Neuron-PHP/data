@@ -24,6 +24,14 @@ class Env
 	}
 
 	/**
+	 * @return void
+	 */
+	public function reset() : void
+	{
+		self::$instance = null;
+	}
+
+	/**
 	 * @param null $envFile
 	 * @return Env|null
 	 */
@@ -73,8 +81,15 @@ class Env
 	 * @param $key
 	 * @return array|false|string
 	 */
-	public function get( $key ): bool|array|string
+	public function get( $key ): null|array|string
 	{
-		return trim( getenv( trim( $key ) ) );
+		$Value = getenv( trim( $key ) );
+
+		if( $Value === false )
+		{
+			return null;
+		}
+
+		return trim( $Value );
 	}
 }
