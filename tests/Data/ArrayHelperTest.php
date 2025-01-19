@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: lee
- * Date: 8/2/16
- * Time: 4:13 PM
- */
-
 use Neuron\Data\ArrayHelper;
 
 class ArrayHelperTest extends PHPUnit\Framework\TestCase

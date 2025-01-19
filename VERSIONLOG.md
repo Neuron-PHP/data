@@ -1,5 +1,5 @@
 ## 0.6.13
-* Updated tests.
+* Updated tests to 100% coverage.
 
 ## 0.6.12 2025-01-16
 * Updated env constructor signature.
