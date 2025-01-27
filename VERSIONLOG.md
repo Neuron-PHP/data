@@ -1,3 +1,5 @@
+## 0.7.1
+
 ## 0.7.0 2025-01-27
 * Updated tests to 100% coverage.
 * Changed from StringData to NString
