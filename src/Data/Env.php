@@ -24,9 +24,19 @@ class Env
 	}
 
 	/**
+	 * @return void
+	 */
+
+	public function reset() : void
+	{
+		self::$instance = null;
+	}
+
+	/**
 	 * @param null $envFile
 	 * @return Env|null
 	 */
+
 	public static function getInstance( $envFile = null ): ?Env
 	{
 		if ( is_null( self::$instance ) )
@@ -40,6 +50,7 @@ class Env
 	/**
 	 * @return void
 	 */
+
 	public function loadEnvFile(): void
 	{
 		if( !file_exists( $this->_FileName ) )
@@ -64,6 +75,7 @@ class Env
 	 * @param $config
 	 * @return bool
 	 */
+
 	public function put( $config ): bool
 	{
 		return putenv( $config );
@@ -73,8 +85,16 @@ class Env
 	 * @param $key
 	 * @return array|false|string
 	 */
-	public function get( $key ): bool|array|string
+
+	public function get( $key ): null | array | string
 	{
-		return trim( getenv( trim( $key ) ) );
+		$Value = getenv( trim( $key ) );
+
+		if( $Value === false )
+		{
+			return null;
+		}
+
+		return trim( $Value );
 	}
 }

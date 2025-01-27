@@ -13,6 +13,11 @@ class DateRange
 	public string $Start;
 	public string $End;
 
+	/**
+	 * @param string $Start
+	 * @param string $End
+	 */
+
 	public function __construct( string $Start, string $End )
 	{
 		$Date = new \Neuron\Formatters\Date();
@@ -24,6 +29,7 @@ class DateRange
 	 * Returns the number of days between start and end.
 	 * @return int
 	 */
+
 	public function getLengthInDays() : int
 	{
 		return Date::diff( $this->End, $this->Start );

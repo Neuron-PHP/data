@@ -32,6 +32,7 @@ class SettingManager
 
 	/**
 	 * @param ISettingSource $Source
+	 * @return SettingManager
 	 */
 
 	public function setSource( ISettingSource $Source ) : SettingManager
@@ -41,8 +42,9 @@ class SettingManager
 	}
 
 	/**
-	 * @return ISettingSource
+	 * @return ISettingSource|null
 	 */
+
 	public function getFallback(): ?ISettingSource
 	{
 		return $this->_Fallback;
@@ -52,6 +54,7 @@ class SettingManager
 	 * @param ISettingSource $Fallback
 	 * @return SettingManager
 	 */
+
 	public function setFallback( ISettingSource $Fallback ): SettingManager
 	{
 		$this->_Fallback = $Fallback;
@@ -63,7 +66,7 @@ class SettingManager
 	/**
 	 * @param string $Section
 	 * @param string $Name
-	 * @return mixed
+	 * @return string|null
 	 */
 
 	public function get( string $Section, string $Name )

@@ -6,12 +6,27 @@ namespace Neuron\Data\Filter;
  */
 class Session implements IFilter
 {
-	public static function filterScalar( $Data )
+	/**
+	 * @param string $Data
+	 * @return mixed
+	 */
+
+	public static function filterScalar( $Data ) : mixed
 	{
-		return filter_var( $_SESSION[ $Data ] );
+		if( !isset( $_SESSION[ $Data ] ) )
+		{
+			return null;
+		}
+
+		return filter_var( $_SESSION[ $Data ]) ;
 	}
 
-	public static function filterArray( array $Data )
+	/**
+	 * @param array $Data
+	 * @return array|false|null
+	 */
+
+	public static function filterArray( array $Data ) : array | false | null
 	{
 		return filter_var_array( $Data );
 	}

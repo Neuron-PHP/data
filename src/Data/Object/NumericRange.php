@@ -7,10 +7,15 @@ namespace Neuron\Data\Object;
  */
 class NumericRange
 {
-	public $Minimum;
-	public $Maximum;
+	public int | float $Minimum;
+	public int | float $Maximum;
 
-	public function __construct( $Minimum, $Maximum )
+	/**
+	 * @param int|float $Minimum
+	 * @param int|float $Maximum
+	 */
+
+	public function __construct( int | float $Minimum, int | float $Maximum )
 	{
 		$this->Minimum = $Minimum;
 		$this->Maximum = $Maximum;

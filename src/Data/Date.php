@@ -36,6 +36,7 @@ class Date
 	 * @param string $Year
 	 * @return DateRange
 	 */
+
 	static function getDateRangeForQuarter( int $Quarter = 0, string $Year = '' ) : DateRange
 	{
 		if( !$Quarter )
@@ -62,6 +63,7 @@ class Date
 	 * @param string $Year
 	 * @return DateRange
 	 */
+
 	static function getDateRangeForMonth( int $Month = 0, string $Year = '' ) : DateRange
 	{
 		if( !$Month )
@@ -90,6 +92,7 @@ class Date
 	 * @param string $Year
 	 * @return DateRange
 	 */
+
 	static function getDateRangeForWeek( int $Week = 0, string $Year = '' ) : DateRange
 	{
 		if( !$Week )
@@ -137,6 +140,7 @@ class Date
 	 * @param string $Date
 	 * @return int
 	 */
+
 	static function getWeekday( string $Date ) : int
 	{
 		return date('w', strtotime( $Date ) );
@@ -147,6 +151,7 @@ class Date
 	 *
 	 * @return false|string
 	 */
+
 	static function today(): bool|string
 	{
 		return date( 'Y-m-d' );
@@ -157,6 +162,7 @@ class Date
 	 *
 	 * @return false|string
 	 */
+
 	static function tomorrow(): bool|string
 	{
 		return date( 'Y-m-d', strtotime( 'tomorrow' ) );
@@ -167,6 +173,7 @@ class Date
 	 *
 	 * @return false|string
 	 */
+
 	static function yesterday(): bool|string
 	{
 		return date( 'Y-m-d', strtotime( '-1 day' ) );
@@ -178,6 +185,7 @@ class Date
 	 * @param $Date
 	 * @return false|string
 	 */
+
 	static function getDay( $Date ): bool|string
 	{
 		return date('l', strtotime( $Date ) );
@@ -189,6 +197,7 @@ class Date
 	 * @param $Date
 	 * @return bool
 	 */
+
 	static function isWeekend( $Date ): bool
 	{
 		return ( self::getDay( $Date ) == 'Saturday' ||
@@ -201,6 +210,7 @@ class Date
 	 * @param DateRange $Range
 	 * @return int
 	 */
+
 	static function getWorkingDays( DateRange $Range ): int
 	{
 		$Days = 0;
@@ -225,6 +235,7 @@ class Date
 	 * @param $DateTime
 	 * @return false|string
 	 */
+
 	static function only( $DateTime ): bool|string
 	{
 		return date( 'Y-m-d', strtotime( $DateTime ) );
@@ -234,9 +245,10 @@ class Date
 	 *
 	 *
 	 * @param $Days
-	 * @return mixed|string
+	 * @return string
 	 */
-	static function daysAsText( $Days ): mixed
+
+	static function daysAsText( $Days ): string
 	{
 		$Units = [
 			365 => 'year',
@@ -352,7 +364,7 @@ class Date
 	static function getCurrentMonthStartDate(): string
 	{
 		$date  = date( "Y-m" );
-		$date .= "-1";
+		$date .= "-01";
 
 		return $date;
 	}
@@ -403,97 +415,20 @@ class Date
 		return $days;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	///
-	/// Returns the end date for the current month.
-	///
-	/// @return
-	/// A string in yyyy-mm-dd mysql format.
-	//////////////////////////////////////////////////////////////////////////
-
+	/**
+	 * @return string
+	 */
 	static function getCurrentMonthEndDate(): string
 	{
 		$date = date( "Y-m" );
 
-		$days = Util\Date::getDaysInMonth( date( "n" ) );
+		$days = self::getDaysInMonth( date( "n" ) );
 
 		$date .= "-" . $days;
 
 		return $date;
 	}
 
-	static function isSqlDateTime( $date_time )
-	{
-		if( $date_time[ 4 ] == '-' )
-		{
-			return $date_time;
-		}         // already in sql format..
-
-		if( strlen( $date_time ) == 0 )
-		{
-			return "0000-00-00";
-		}
-
-		return null;
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	///
-	/// Takes a date/time stringin dd-mm-yyyy format and returns it in
-	/// yyyy-mm-dd format.
-	///
-	/// @param $date_time A string containing the date/time in dd-mm-yyyy ttt.. format.
-	///
-	/// @return A string in yyyy-mm-dd tt... mysql format.
-	///
-	//////////////////////////////////////////////////////////////////////////
-
-	// 17-12-2005 10:10:27
-
-	static function getMySqlDateTime( $date_time )
-	{
-		$sqldatetime = self::isSqlDateTime( $date_time );
-
-		if( $sqldatetime )
-		{
-			return $sqldatetime;
-		}
-
-		$dt1 = substr( $date_time, 6, 4 );
-		$dt1 .= "-";
-		$dt1 .= substr( $date_time, 3, 2 );
-		$dt1 .= "-";
-		$dt1 .= substr( $date_time, 0, 2 );
-		$dt1 .= " ";
-		$dt1 .= substr( $date_time, 11, 8 );
-
-		return $dt1;
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	///
-	/// Takes a date in dd-mm-yyyy format and returns it in yyyy-mm-dd format.
-	///
-	/// @param $date A string containing the date in dd-mm-yyyy format.
-	///
-	/// @return A string in yyyy-mm-dd mysql format.
-	///
-	//////////////////////////////////////////////////////////////////////////
-
-	static function getMySqlDate( $date_time )
-	{
-		$sqldatetime = self::isSqlDateTime( $date_time );
-		if( $sqldatetime )
-			return $sqldatetime;
-
-		$dt1 = substr( $date_time, 6, 4 );
-		$dt1 .= "-";
-		$dt1 .= substr( $date_time, 3, 2 );
-		$dt1 .= "-";
-		$dt1 .= substr( $date_time, 0, 2 );
-
-		return $dt1;
-	}
 
 	//////////////////////////////////////////////////////////////////////////
 	///

@@ -17,6 +17,9 @@ class DateTest extends PHPUnit\Framework\TestCase
 			"2020-01-05",
 			$Range->End
 		);
+
+		$this->assertIsObject( Date::getDateRangeForWeek() );
+
 	}
 
 	public function testMonthDateRange()
@@ -33,6 +36,9 @@ class DateTest extends PHPUnit\Framework\TestCase
 			$Range->End
 		);
 
+		$Range = Date::getDateRangeForMonth();
+
+		$this->assertIsObject( $Range );
 	}
 
 	public function testQuarterDateRange()
@@ -111,6 +117,9 @@ class DateTest extends PHPUnit\Framework\TestCase
 			$Q4->End
 		);
 
+		$Q4 = Date::getDateRangeForQuarter();
+
+		$this->assertIsObject( $Q4 );
 	}
 
 	public function testDateOnly()
@@ -272,6 +281,9 @@ class DateTest extends PHPUnit\Framework\TestCase
 			'1 second'
 		);
 
+		$this->assertIsString(
+			Neuron\Data\Date::differenceUnitAsText( 1 ),
+		);
 	}
 
 	public function testLeapYear()
@@ -298,6 +310,38 @@ class DateTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue(
 			Neuron\Data\Date::getDaysInMonth( 2, 1805 ) == 28
 		);
+
+		$this->assertTrue(
+			Neuron\Data\Date::getDaysInMonth( 3, 1805 ) == 31
+		);
+		$this->assertTrue(
+			Neuron\Data\Date::getDaysInMonth( 4, 1805 ) == 30
+		);
+		$this->assertTrue(
+			Neuron\Data\Date::getDaysInMonth( 5, 1805 ) == 31
+		);
+		$this->assertTrue(
+			Neuron\Data\Date::getDaysInMonth( 6, 1805 ) == 30
+		);
+		$this->assertTrue(
+			Neuron\Data\Date::getDaysInMonth( 7, 1805 ) == 31
+		);
+		$this->assertTrue(
+			Neuron\Data\Date::getDaysInMonth( 8, 1805 ) == 31
+		);
+		$this->assertTrue(
+			Neuron\Data\Date::getDaysInMonth( 9, 1805 ) == 30
+		);
+		$this->assertTrue(
+			Neuron\Data\Date::getDaysInMonth( 10, 1805 ) == 31
+		);
+		$this->assertTrue(
+			Neuron\Data\Date::getDaysInMonth( 11, 1805 ) == 30
+		);
+		$this->assertTrue(
+			Neuron\Data\Date::getDaysInMonth( 12, 1805 ) == 31
+		);
+
 	}
 
 	public function testDiff()
@@ -316,6 +360,26 @@ class DateTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse(
 			Neuron\Data\Date::subtractDays( 8, '2015-01-30' ) == '2015-01-21'
 		);
+
+		$this->assertIsString(
+			Neuron\Data\Date::subtractDays( 15 )
+		);
+
+	}
+
+	public function testGetCurrentMonthStartDate()
+	{
+		$this->assertEquals(
+			date( 'Y-m-01' ),
+			Neuron\Data\Date::getCurrentMonthStartDate(),
+		);
+	}
+
+	public function testGetCurrentMonthEndDate()
+	{
+		$Date = Neuron\Data\Date::getCurrentMonthEndDate();
+
+		$this->assertIsString( $Date );
 	}
 
 	public function testDiffDateTime()

@@ -6,7 +6,7 @@
  * Date: 1/31/17
  * Time: 9:58 AM
  */
-class StringDataTest extends PHPUnit\Framework\TestCase
+class NStringTest extends PHPUnit\Framework\TestCase
 {
 	const DATA = '123456789';
 
@@ -14,14 +14,14 @@ class StringDataTest extends PHPUnit\Framework\TestCase
 
 	protected function setUp() : void
 	{
-		$this->String = new \Neuron\Data\StringData( $this::DATA );
+		$this->String = new \Neuron\Data\NString( $this::DATA );
 
 		parent::setUp();
 	}
 
 	public function testConstruct()
 	{
-		$this->String = new \Neuron\Data\StringData( $this::DATA );
+		$this->String = new \Neuron\Data\NString( $this::DATA );
 
 		$this->assertEquals(
 			$this::DATA,

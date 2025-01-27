@@ -13,11 +13,15 @@ class Yaml implements ISettingSource
 {
 	private array $_Settings = array();
 
+	/**
+	 * @throws \Exception
+	 */
+
 	public function __construct( $File )
 	{
 		if( !file_exists( $File ) )
 		{
-			throw new \Exception( "Setting\Source\Yaml Cannot open $File" );
+			throw new \Exception( "Setting\Source\Yaml Cannot find $File" );
 		}
 
 		try
@@ -26,10 +30,15 @@ class Yaml implements ISettingSource
 		}
 		catch( ParseException $exception )
 		{
-			Log::error( "Failed to load schedule: ".$exception->getMessage() );
-			return [];
+			throw new \Exception( "Setting\Source\Yaml Cannot parse $File" );
 		}
 	}
+
+	/**
+	 * @param string $SectionName
+	 * @param string $Name
+	 * @return string|null
+	 */
 
 	public function get( string $SectionName, string $Name ) : ?string
 	{
@@ -42,8 +51,16 @@ class Yaml implements ISettingSource
 				return $Section[ $Name ];
 			}
 		}
+
 		return null;
 	}
+
+	/**
+	 * @param string $SectionName
+	 * @param string $Name
+	 * @param string $Value
+	 * @return ISettingSource
+	 */
 
 	public function set( string $SectionName, string $Name, string $Value ) : ISettingSource
 	{
@@ -51,15 +68,28 @@ class Yaml implements ISettingSource
 		return $this;
 	}
 
+	/**
+	 * @return array
+	 */
+
 	public function getSectionNames() : array
 	{
 		return array_keys( $this->_Settings );
 	}
 
+	/**
+	 * @param string $Section
+	 * @return array
+	 */
+
 	public function getSectionSettingNames( string $Section ) : array
 	{
 		return array_keys( $this->_Settings[ $Section ] );
 	}
+
+	/**
+	 * @return bool
+	 */
 
 	public function save() : bool
 	{

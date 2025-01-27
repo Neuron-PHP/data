@@ -7,12 +7,22 @@ namespace Neuron\Data\Filter;
  */
 class Cookie implements IFilter
 {
-	public static function filterScalar( $Data )
+	/**
+	 * @param string $Data
+	 * @return mixed
+	 */
+
+	public static function filterScalar( $Data ) : mixed
 	{
 		return filter_input(INPUT_COOKIE, $Data );
 	}
 
-	public static function filterArray( array $Data )
+	/**
+	 * @param array $Data
+	 * @return array|false|null
+	 */
+
+	public static function filterArray( array $Data ) : array | false | null
 	{
 		return filter_input_array(INPUT_COOKIE, $Data,FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 	}
