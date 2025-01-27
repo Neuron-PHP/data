@@ -14,6 +14,7 @@ class Ini implements ISettingSource
 	 * @param $File
 	 * @throws \Exception
 	 */
+
 	public function __construct( $File )
 	{
 		if( !file_exists( $File ) )
@@ -29,6 +30,7 @@ class Ini implements ISettingSource
 	 * @param string $Name
 	 * @return string|null
 	 */
+
 	public function get( string $SectionName, string $Name ) : ?string
 	{
 		if( array_key_exists( $SectionName, $this->_Settings ) )
@@ -49,6 +51,7 @@ class Ini implements ISettingSource
 	 * @param string $Value
 	 * @return ISettingSource
 	 */
+
 	public function set( string $SectionName, string $Name, string $Value ) : ISettingSource
 	{
 		$this->_Settings[ $SectionName ][ $Name ] = $Value;
@@ -67,6 +70,7 @@ class Ini implements ISettingSource
 	 * @param string $Section
 	 * @return array
 	 */
+
 	public function getSectionSettingNames( string $Section ) : array
 	{
 		return array_keys( $this->_Settings[ $Section ] );
@@ -75,6 +79,7 @@ class Ini implements ISettingSource
 	/**
 	 * @return bool
 	 */
+
 	public function save() : bool
 	{
 		// @todo: Implement saving.

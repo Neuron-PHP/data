@@ -7,12 +7,22 @@ namespace Neuron\Data\Filter;
  */
 class Post implements IFilter
 {
-	public static function filterScalar( $Data )
+	/**
+	 * @param $Data
+	 * @return mixed
+	 */
+
+	public static function filterScalar( $Data ): mixed
 	{
 		return filter_input(INPUT_POST, $Data );
 	}
 
-	public static function filterArray( array $Data )
+	/**
+	 * @param array $Data
+	 * @return false|array|null
+	 */
+
+	public static function filterArray( array $Data ): false|array|null
 	{
 		return filter_input_array(INPUT_POST, $Data,FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 	}

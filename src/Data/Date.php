@@ -36,6 +36,7 @@ class Date
 	 * @param string $Year
 	 * @return DateRange
 	 */
+
 	static function getDateRangeForQuarter( int $Quarter = 0, string $Year = '' ) : DateRange
 	{
 		if( !$Quarter )
@@ -62,6 +63,7 @@ class Date
 	 * @param string $Year
 	 * @return DateRange
 	 */
+
 	static function getDateRangeForMonth( int $Month = 0, string $Year = '' ) : DateRange
 	{
 		if( !$Month )
@@ -90,6 +92,7 @@ class Date
 	 * @param string $Year
 	 * @return DateRange
 	 */
+
 	static function getDateRangeForWeek( int $Week = 0, string $Year = '' ) : DateRange
 	{
 		if( !$Week )
@@ -137,6 +140,7 @@ class Date
 	 * @param string $Date
 	 * @return int
 	 */
+
 	static function getWeekday( string $Date ) : int
 	{
 		return date('w', strtotime( $Date ) );
@@ -147,6 +151,7 @@ class Date
 	 *
 	 * @return false|string
 	 */
+
 	static function today(): bool|string
 	{
 		return date( 'Y-m-d' );
@@ -157,6 +162,7 @@ class Date
 	 *
 	 * @return false|string
 	 */
+
 	static function tomorrow(): bool|string
 	{
 		return date( 'Y-m-d', strtotime( 'tomorrow' ) );
@@ -167,6 +173,7 @@ class Date
 	 *
 	 * @return false|string
 	 */
+
 	static function yesterday(): bool|string
 	{
 		return date( 'Y-m-d', strtotime( '-1 day' ) );
@@ -178,6 +185,7 @@ class Date
 	 * @param $Date
 	 * @return false|string
 	 */
+
 	static function getDay( $Date ): bool|string
 	{
 		return date('l', strtotime( $Date ) );
@@ -189,6 +197,7 @@ class Date
 	 * @param $Date
 	 * @return bool
 	 */
+
 	static function isWeekend( $Date ): bool
 	{
 		return ( self::getDay( $Date ) == 'Saturday' ||
@@ -201,6 +210,7 @@ class Date
 	 * @param DateRange $Range
 	 * @return int
 	 */
+
 	static function getWorkingDays( DateRange $Range ): int
 	{
 		$Days = 0;
@@ -225,6 +235,7 @@ class Date
 	 * @param $DateTime
 	 * @return false|string
 	 */
+
 	static function only( $DateTime ): bool|string
 	{
 		return date( 'Y-m-d', strtotime( $DateTime ) );
@@ -234,9 +245,10 @@ class Date
 	 *
 	 *
 	 * @param $Days
-	 * @return mixed|string
+	 * @return string
 	 */
-	static function daysAsText( $Days ): mixed
+
+	static function daysAsText( $Days ): string
 	{
 		$Units = [
 			365 => 'year',

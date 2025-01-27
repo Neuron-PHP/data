@@ -1,5 +1,6 @@
-## 0.6.13
+## 0.7.0
 * Updated tests to 100% coverage.
+* Changed from StringData to NString
 
 ## 0.6.12 2025-01-16
 * Updated env constructor signature.

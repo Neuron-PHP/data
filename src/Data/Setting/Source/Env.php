@@ -42,6 +42,7 @@ class Env implements ISettingSource
 	 * @param string $Value
 	 * @return ISettingSource
 	 */
+
 	public function set( string $SectionName, string $Name, string $Value ): ISettingSource
 	{
 		$SectionName = strtoupper( $SectionName );
@@ -58,6 +59,7 @@ class Env implements ISettingSource
 	 *
 	 * @return array
 	 */
+
 	public function getSectionNames(): array
 	{
 		return [];
@@ -70,6 +72,7 @@ class Env implements ISettingSource
 	 * @param string $Section
 	 * @return array
 	 */
+
 	public function getSectionSettingNames( string $Section ): array
 	{
 		return [];
@@ -81,6 +84,7 @@ class Env implements ISettingSource
 	 *
 	 * @return bool
 	 */
+
 	public function save(): bool
 	{
 		return false;

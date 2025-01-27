@@ -10,6 +10,7 @@ class Session implements IFilter
 	 * @param string $Data
 	 * @return mixed
 	 */
+
 	public static function filterScalar( $Data ) : mixed
 	{
 		if( !isset( $_SESSION[ $Data ] ) )
@@ -24,7 +25,8 @@ class Session implements IFilter
 	 * @param array $Data
 	 * @return array|false|null
 	 */
-	public static function filterArray( array $Data ) : array|false|null
+
+	public static function filterArray( array $Data ) : array | false | null
 	{
 		return filter_var_array( $Data );
 	}

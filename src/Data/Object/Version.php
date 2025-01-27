@@ -15,6 +15,7 @@ class Version
 	/**
 	 * Version constructor.
 	 */
+
 	public function __construct()
 	{
 		$this->Major = 0;
@@ -28,6 +29,7 @@ class Version
 	 * @param string $Data
 	 * @throws \Exception
 	 */
+
 	public function loadFromString( string $Data ): void
 	{
 		$Json = json_decode( $Data,true );
@@ -52,6 +54,7 @@ class Version
 	 * @param string $File
 	 * @throws \Exception
 	 */
+
 	public function loadFromFile( string $File = 'version.json' ): void
 	{
 		if( !file_exists( $File ) )
@@ -68,6 +71,7 @@ class Version
 	 * Returns the version as a string.
 	 * @return string
 	 */
+
 	public function getAsString() : string
 	{
 		$Release = "{$this->Major}.{$this->Minor}.{$this->Patch}";

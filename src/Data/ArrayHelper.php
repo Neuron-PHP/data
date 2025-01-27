@@ -86,7 +86,7 @@ class ArrayHelper
 	 * @return mixed
 	 */
 
-	public static function indexOf( array $aData, $Item )
+	public static function indexOf( array $aData, $Item ): mixed
 	{
 		return array_search( $Item, $aData );
 	}
