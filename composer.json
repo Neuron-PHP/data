@@ -13,7 +13,7 @@
         "ext-curl": "*",
         "ext-json": "*",
         "ext-calendar": "*",
-        "neuron-php/formatting": "0.6.*",
+        "neuron-php/formatting": "0.7.*",
         "symfony/yaml": "^6.4"
     },
     "require-dev": {
