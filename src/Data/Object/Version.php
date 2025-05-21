@@ -55,7 +55,7 @@ class Version
 	 * @throws \Exception
 	 */
 
-	public function loadFromFile( string $File = 'version.json' ): void
+	public function loadFromFile( string $File = '.version.json' ): void
 	{
 		if( !file_exists( $File ) )
 		{
