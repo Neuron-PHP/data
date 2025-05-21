@@ -8,7 +8,6 @@ class PositionalTest extends PHPUnit\Framework\TestCase
 	{
 		$Parser = new Parser\Positional();
 
-
 		$aRet = $Parser->parse( "text1,text2,text3,text4",
 			[
 				[
@@ -16,7 +15,8 @@ class PositionalTest extends PHPUnit\Framework\TestCase
 					'start'	=> 6,
 					'length'	=> 5
 				]
-			]);
+			]
+		);
 
 		$this->assertEquals( 'text2', $aRet[ 'col2' ] );
 	}
