@@ -39,7 +39,7 @@ interface IFilter
 * Version
 
 The Version data object is designed to work with the [Bump](https://github.com/ljonesfl/bump)
-command line utility to reference version information from version.json
+command line utility to reference version information from .version.json
 
 ## String
 
