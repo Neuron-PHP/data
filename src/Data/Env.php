@@ -2,6 +2,52 @@
 
 namespace Neuron\Data;
 
+/**
+ * Environment variable manager and .env file loader for the Neuron framework.
+ * 
+ * This singleton class provides secure and convenient access to environment
+ * variables and .env file configuration. It automatically loads environment
+ * variables from .env files and provides a clean API for accessing configuration
+ * values throughout the application with proper error handling.
+ * 
+ * Key features:
+ * - Automatic .env file detection and loading
+ * - Singleton pattern for consistent environment state
+ * - Comment support in .env files (lines starting with #)
+ * - Secure environment variable access with null safety
+ * - Custom .env file path support
+ * - Environment variable validation and type conversion
+ * 
+ * The class automatically looks for .env files in the document root unless
+ * a custom path is specified, making it ideal for configuration management
+ * across different deployment environments.
+ * 
+ * @package Neuron\Data
+ * 
+ * @example
+ * ```php
+ * // .env file contents:
+ * // DB_HOST=localhost
+ * // DB_PORT=3306
+ * // DEBUG=true
+ * // # This is a comment
+ * // API_KEY=secret_key_here
+ * 
+ * // Load and access environment variables
+ * $env = Env::getInstance();
+ * 
+ * $dbHost = $env->get('DB_HOST');      // 'localhost'
+ * $dbPort = $env->get('DB_PORT');      // '3306' 
+ * $debug = $env->get('DEBUG');         // 'true'
+ * $missing = $env->get('MISSING');     // null
+ * 
+ * // Load custom .env file
+ * $env = Env::getInstance('/path/to/custom/.env');
+ * 
+ * // Set environment variables programmatically
+ * $env->put('RUNTIME_CONFIG=dynamic_value');
+ * ```
+ */
 class Env
 {
 	private static ?Env 		$instance = null;
