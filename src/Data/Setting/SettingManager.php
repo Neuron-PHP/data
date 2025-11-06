@@ -112,4 +112,24 @@ class SettingManager
 	{
 		return $this->getSource()->getSectionSettingNames( $Section );
 	}
+
+	/**
+	 * Get entire section as an array
+	 *
+	 * @param string $Section
+	 * @return array|null
+	 */
+
+	public function getSection( string $Section ) : ?array
+	{
+		$Value = $this->getSource()->getSection( $Section );
+
+		if( $Value )
+		{
+			return $Value;
+		}
+
+		return $this->getFallback()
+						?->getSection( $Section );
+	}
 }

@@ -77,6 +77,18 @@ class Ini implements ISettingSource
 	}
 
 	/**
+	 * Get entire section as an array
+	 *
+	 * @param string $SectionName
+	 * @return array|null
+	 */
+
+	public function getSection( string $SectionName ) : ?array
+	{
+		return $this->_Settings[ $SectionName ] ?? null;
+	}
+
+	/**
 	 * @return bool
 	 */
 
