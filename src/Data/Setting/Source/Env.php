@@ -79,6 +79,19 @@ class Env implements ISettingSource
 	}
 
 	/**
+	 * Get entire section as an array.
+	 * This is not possible with environment variables so this method will always return null.
+	 *
+	 * @param string $SectionName
+	 * @return array|null
+	 */
+
+	public function getSection( string $SectionName ): ?array
+	{
+		return null;
+	}
+
+	/**
 	 * This method is used to save the settings to the environment variables.
 	 * This is not possible so this method will always return false.
 	 *

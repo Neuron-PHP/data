@@ -18,8 +18,7 @@ class CSV implements IParser
 	public function parse( $Text, $Columns = array() ) : ?array
 	{
 		$Results = array();
-
-		$Data = str_getcsv( $Text );
+		$Data = str_getcsv($Text, ",", "\"", "\\");
 
 		$idx = 0;
 

@@ -11,5 +11,6 @@ interface ISettingSource
 	public function set( string $SectionName, string $Name, string $Value ) : ISettingSource;
 	public function getSectionNames() : array;
 	public function getSectionSettingNames( string $Section ) : array;
+	public function getSection( string $SectionName ) : ?array;
 	public function save() : bool;
 }

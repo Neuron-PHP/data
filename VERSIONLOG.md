@@ -1,6 +1,5 @@
-## 0.7.2
-
-## 0.7.2
+## 0.8.0 2025-11-06
+* Added getSection method to the setting manager.
 
 ## 0.7.1 2025-02-06
 
