@@ -62,4 +62,35 @@ class SettingManagerTest extends TestCase
 
 		$this->assertEquals( 'name', $Names[ 0 ] );
 	}
+
+	public function testGetSection()
+	{
+		$Section = $this->Manager->getSection( 'test' );
+
+		$this->assertIsArray( $Section );
+		$this->assertArrayHasKey( 'name', $Section );
+		$this->assertEquals( 'value', $Section[ 'name' ] );
+	}
+
+	public function testGetSectionNotFound()
+	{
+		$Section = $this->Manager->getSection( 'nonexistent' );
+
+		$this->assertNull( $Section );
+	}
+
+	public function testGetSectionWithFallback()
+	{
+		$Source = new Source\Ini( 'examples/test.ini' );
+		$Fallback = new Source\Env( Data\Env::getInstance('examples/.env' ) );
+
+		$Manager = new SettingManager( $Source );
+		$Manager->setFallback( $Fallback );
+
+		// Test getting section from fallback when not in primary source
+		$Section = $Manager->getSection( 'test' );
+
+		$this->assertIsArray( $Section );
+		$this->assertArrayHasKey( 'name', $Section );
+	}
 }
