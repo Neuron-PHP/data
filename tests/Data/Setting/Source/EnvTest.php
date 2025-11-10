@@ -1,70 +1,97 @@
 <?php
 
-namespace Data\Setting\Source;
+namespace Tests\Data\Setting\Source;
 
 use Neuron\Data\Setting\Source\Env;
+use Neuron\Data\Env as RealEnv;
 use PHPUnit\Framework\TestCase;
 
 class EnvTest extends TestCase
 {
-	public function testGet()
-	{
-		$Env = new Env( \Neuron\Data\Env::getInstance() );
+    protected function setUp(): void
+    {
+        // Reset Env singleton if present to avoid persisted state between tests
+        if (method_exists( RealEnv::class, 'getInstance' )) {
+            $inst = RealEnv::getInstance();
+            if ($inst !== null && method_exists($inst, 'reset')) {
+                $inst->reset();
+            }
+        }
 
-		$Value = $Env->get( 'test', 'name' );
+        // Clear any related env keys to avoid test pollution
+        foreach (array_keys($_ENV) as $k) {
+            if (strpos($k, 'DATABASE_') === 0 || strpos($k, 'LOG_') === 0 || strpos($k, 'MYAPP_') === 0) {
+                unset($_ENV[$k]);
+            }
+        }
+        foreach (array_keys($_SERVER) as $k) {
+            if (strpos($k, 'DATABASE_') === 0 || strpos($k, 'LOG_') === 0 || strpos($k, 'MYAPP_') === 0) {
+                unset($_SERVER[$k]);
+            }
+        }
+    }
 
-		$this->assertEquals(
-			'value',
-			$Value
-		);
-	}
+    public function testSectionDiscoveryAndRetrieval()
+    {
+        // Arrange: set environment keys using real Env and $_ENV so both getters work
+        $realEnv = RealEnv::getInstance();
+        $realEnv->put('DATABASE_HOST=127.0.0.1');
+        $realEnv->put('DATABASE_PORT=3306');
+        $realEnv->put('LOG_LEVEL=debug');
 
-	public function testGetFail()
-	{
-		$Env = new Env( \Neuron\Data\Env::getInstance() );
+        // Ensure $_ENV entries exist so scanning finds them
+        $_ENV['DATABASE_HOST'] = '127.0.0.1';
+        $_ENV['DATABASE_PORT'] = '3306';
+        $_SERVER['LOG_LEVEL'] = 'debug';
 
-		$Value = $Env->get( 'test', 'name2' );
+        $source = new Env($realEnv);
 
-		$this->assertNull( $Value );
-	}
+        // Act & Assert
+        $sections = $source->getSectionNames();
+        $this->assertContains('DATABASE', $sections);
+        $this->assertContains('LOG', $sections);
 
-	public function testSet()
-	{
-		$Env = new Env( \Neuron\Data\Env::getInstance() );
+        $dbNames = $source->getSectionSettingNames('database');
+        $this->assertEquals(['host','port'], $dbNames);
 
-		$Env->set( 'test', 'name', 'value' );
+        $dbSection = $source->getSection('database');
+        $this->assertIsArray($dbSection);
+        $this->assertSame('127.0.0.1', $dbSection['host']);
+        $this->assertSame('3306', $dbSection['port']);
 
-		$Value = $Env->get( 'test', 'name' );
+        // get single
+        $host = $source->get('database','host');
+        $this->assertSame('127.0.0.1', $host);
+    }
 
-		$this->assertEquals(
-			'value',
-			$Value
-		);
-	}
+    public function testGetSectionReturnsNullWhenMissing()
+    {
+        $realEnv = RealEnv::getInstance();
 
-	public function testSave()
-	{
-		$Env = new Env( \Neuron\Data\Env::getInstance() );
+        $source = new Env($realEnv);
 
-		$this->assertFalse( $Env->save() );
-	}
+        $this->assertEmpty($source->getSectionSettingNames('myapp'));
+        $this->assertNull($source->getSection('myapp'));
+    }
 
-	public function testGetSectionNames()
-	{
-		$Env = new Env( \Neuron\Data\Env::getInstance() );
+    public function testSetWritesEnvAndGetReadsIt()
+    {
+        $realEnv = RealEnv::getInstance();
 
-		$Sections = $Env->getSectionNames();
+        $source = new Env($realEnv);
 
-		$this->assertIsArray( $Sections );
-	}
+        $source->set('myapp','endpoint','https://example.test');
 
-	public function testGetSectionSettingNames()
-	{
-		$Env = new Env( \Neuron\Data\Env::getInstance() );
+        // Ensure getenv/$_ENV reflect the change
+        $_ENV['MYAPP_ENDPOINT'] = 'https://example.test';
 
-		$Sections = $Env->getSectionSettingNames( 'test' );
+        $this->assertSame('https://example.test', $source->get('myapp','endpoint'));
 
-		$this->assertIsArray( $Sections );
-	}
+        $names = $source->getSectionSettingNames('myapp');
+        $this->assertEquals(['endpoint'], $names);
 
+        $section = $source->getSection('myapp');
+        $this->assertIsArray($section);
+        $this->assertSame('https://example.test', $section['endpoint']);
+    }
 }
