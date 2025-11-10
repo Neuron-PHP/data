@@ -1,4 +1,5 @@
 ## 0.8.1
+* Env setting source now supports getting entire sections.
 
 ## 0.8.0 2025-11-06
 * Added getSection method to the setting manager.

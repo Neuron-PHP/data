@@ -55,19 +55,40 @@ class Env implements ISettingSource
 
 	/**
 	 * This method is used to get the section names.
-	 * This is not possible so this method will always return an empty array.
+	 * For environment variables we can infer section names by scanning environment
+	 * keys that contain an underscore and returning the prefix before the underscore.
 	 *
 	 * @return array
 	 */
 
 	public function getSectionNames(): array
 	{
-		return [];
+		$keys = array_merge( array_keys( $_ENV ?? [] ), array_keys( $_SERVER ?? [] ) );
+
+		$sections = [];
+		foreach( $keys as $k )
+		{
+			if( !is_string( $k ) )
+			{
+				continue;
+			}
+
+			$kup = strtoupper( $k );
+			$pos = strpos( $kup, '_' );
+			if( $pos !== false && $pos > 0 )
+			{
+				$sec = substr( $kup, 0, $pos );
+				$sections[$sec] = true;
+			}
+		}
+
+		return array_values( array_keys( $sections ) );
 	}
 
 	/**
 	 * This method is used to get the setting names for a section.
-	 * This is not possible so this method will always return an empty array.
+	 * We scan environment variable keys for those starting with SECTIONNAME_ and
+	 * return the suffix names in lowercase (matching other sources' expectations).
 	 *
 	 * @param string $Section
 	 * @return array
@@ -75,12 +96,41 @@ class Env implements ISettingSource
 
 	public function getSectionSettingNames( string $Section ): array
 	{
-		return [];
+		$section = strtoupper( $Section );
+		$keys = array_merge( array_keys( $_ENV ?? [] ), array_keys( $_SERVER ?? [] ) );
+
+		$names = [];
+		$prefix = $section . '_';
+		$plen = strlen( $prefix );
+
+		foreach( $keys as $k )
+		{
+			if( !is_string( $k ) )
+			{
+				continue;
+			}
+
+			$kup = strtoupper( $k );
+			if( strncmp( $kup, $prefix, $plen ) === 0 )
+			{
+				$suffix = substr( $kup, $plen );
+				if( $suffix !== '' )
+				{
+					$names[] = strtolower( $suffix );
+				}
+			}
+		}
+
+		// unique and preserve order
+		$names = array_values( array_unique( $names ) );
+
+		return $names;
 	}
 
 	/**
-	 * Get entire section as an array.
-	 * This is not possible with environment variables so this method will always return null.
+	 * Get the entire section as an array.
+	 * For environment variables we scan matching keys and return an associative array
+	 * of name => value. Returns null if a section not present.
 	 *
 	 * @param string $SectionName
 	 * @return array|null
@@ -88,12 +138,31 @@ class Env implements ISettingSource
 
 	public function getSection( string $SectionName ): ?array
 	{
-		return null;
+		$section = strtoupper( $SectionName );
+		$names = $this->getSectionSettingNames( $section );
+
+		if( empty( $names ) )
+		{
+			return null;
+		}
+
+		$config = [];
+		foreach( $names as $name )
+		{
+			$key = strtoupper( $section . '_' . $name );
+			$value = $this->_Env->get( $key );
+			if( $value !== null )
+			{
+				$config[$name] = $value;
+			}
+		}
+
+		return $config;
 	}
 
 	/**
 	 * This method is used to save the settings to the environment variables.
-	 * This is not possible so this method will always return false.
+	 * This is not possible, so this method will always return false.
 	 *
 	 * @return bool
 	 */
