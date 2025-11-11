@@ -9,22 +9,22 @@ class Get implements IFilter
 {
 
 	/**
-	 * @param $Data
+	 * @param $data
 	 * @return mixed
 	 */
 
-	public static function filterScalar( $Data ) : mixed
+	public static function filterScalar( $data ) : mixed
 	{
-		return filter_input( INPUT_GET, $Data );
+		return filter_input( INPUT_GET, $data );
 	}
 
 	/**
-	 * @param array $Data
+	 * @param array $data
 	 * @return array|false|null
 	 */
 
-	public static function filterArray( array $Data ) : array | false | null
+	public static function filterArray( array $data ) : array | false | null
 	{
-		return filter_input_array(INPUT_GET, $Data,FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		return filter_input_array(INPUT_GET, $data,FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 	}
 }

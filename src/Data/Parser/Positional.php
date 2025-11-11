@@ -5,20 +5,20 @@ namespace Neuron\Data\Parser;
 class Positional implements IParser
 {
    /**
-    * @param $Text
-    * @param array $UserData name, start, length
+    * @param $text
+    * @param array $userData name, start, length
     * @return array
     */
 
-   public function parse( $Text, $UserData = array() ) : array
+   public function parse( $text, $userData = array() ) : array
    {
-      $Results = array();
+      $results = array();
 
-      foreach( $UserData as $Pos )
+      foreach( $userData as $pos )
       {
-         $Results[ $Pos[ 'name' ] ] = trim( substr( $Text, $Pos[ 'start' ], $Pos[ 'length' ] ) );
+         $results[ $pos[ 'name' ] ] = trim( substr( $text, $pos[ 'start' ], $pos[ 'length' ] ) );
       }
 
-      return $Results;
+      return $results;
    }
 }

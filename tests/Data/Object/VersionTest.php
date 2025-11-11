@@ -35,9 +35,9 @@ class VersionTest extends PHPUnit\Framework\TestCase
 			"{\"major\":1,\"minor\":2,\"patch\":3}"
 		);
 
-		$this->assertEquals( 1, $Version->Major );
-		$this->assertEquals( 2, $Version->Minor );
-		$this->assertEquals( 3, $Version->Patch );
+		$this->assertEquals( 1, $Version->major );
+		$this->assertEquals( 2, $Version->minor );
+		$this->assertEquals( 3, $Version->patch );
 	}
 
 	public function testLoadFromStringBuild()
@@ -48,10 +48,10 @@ class VersionTest extends PHPUnit\Framework\TestCase
 			"{\"major\":1,\"minor\":2,\"patch\":3,\"build\":4}"
 		);
 
-		$this->assertEquals( 1, $Version->Major );
-		$this->assertEquals( 2, $Version->Minor );
-		$this->assertEquals( 3, $Version->Patch );
-		$this->assertEquals( 4, $Version->Build );
+		$this->assertEquals( 1, $Version->major );
+		$this->assertEquals( 2, $Version->minor );
+		$this->assertEquals( 3, $Version->patch );
+		$this->assertEquals( 4, $Version->build );
 	}
 
 	public function testLoadFromFile()
@@ -60,9 +60,9 @@ class VersionTest extends PHPUnit\Framework\TestCase
 
 		$Version->loadFromFile( 'examples/version.json' );
 
-		$this->assertEquals( 1, $Version->Major );
-		$this->assertEquals( 2, $Version->Minor );
-		$this->assertEquals( 3, $Version->Patch );
+		$this->assertEquals( 1, $Version->major );
+		$this->assertEquals( 2, $Version->minor );
+		$this->assertEquals( 3, $Version->patch );
 	}
 
 	public function testFailLoadFromFile()

@@ -7,22 +7,22 @@ namespace Neuron\Data\Filter;
 class Server implements IFilter
 {
 	/**
-	 * @param $Data
+	 * @param $data
 	 * @return mixed
 	 */
 
-	public static function filterScalar( $Data ): mixed
+	public static function filterScalar( $data ): mixed
 	{
-		return filter_input( INPUT_SERVER, $Data );
+		return filter_input( INPUT_SERVER, $data );
 	}
 
 	/**
-	 * @param array $Data
+	 * @param array $data
 	 * @return array|false|null
 	 */
 
-	public static function filterArray( array $Data ): false|array|null
+	public static function filterArray( array $data ): false|array|null
 	{
-		return filter_input_array(INPUT_SERVER, $Data,FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		return filter_input_array(INPUT_SERVER, $data,FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 	}
 }

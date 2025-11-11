@@ -10,32 +10,32 @@ class FirstMI implements IParser
 	/**
 	 * Parses First M
 	 *
-	 * @param $Text
-	 * @param array $UserData
+	 * @param $text
+	 * @param array $userData
 	 * @return array first, middle, last
 	 *
 	 * @SuppressWarnings(PHPMD)
 	 */
 
-	public function parse( $Text, $UserData = array() ) : array
+	public function parse( $text, $userData = array() ) : array
 	{
-		$Text  = str_replace( '.', '', $Text );
-		$Parts = explode( ' ', $Text );
+		$text  = str_replace( '.', '', $text );
+		$parts = explode( ' ', $text );
 
-		$Middle = '';
+		$middle = '';
 
-		if( count( $Parts ) > 1 )
+		if( count( $parts ) > 1 )
 		{
-			$Parts[ 1 ] = trim( $Parts[ 1 ] );
+			$parts[ 1 ] = trim( $parts[ 1 ] );
 
-			if( strlen( $Parts[ 1 ] ) == 1 )
+			if( strlen( $parts[ 1 ] ) == 1 )
 			{
-				$Middle = $Parts[ 1 ];
+				$middle = $parts[ 1 ];
 			}
 		}
 
-		$First = trim( $Parts[ 0 ] );
+		$first = trim( $parts[ 0 ] );
 
-		return [ $First, $Middle ];
+		return [ $first, $middle ];
 	}
 }

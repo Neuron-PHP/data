@@ -67,29 +67,29 @@ namespace Neuron\Data;
 class ArrayHelper
 {
 	/**
-	 * @param array $Data
-	 * @param $Value
-	 * @param $Key
+	 * @param array $data
+	 * @param $value
+	 * @param $key
 	 * @return bool
 	 */
 
-	public static function contains( array $Data, $Value, $Key = null ) : bool
+	public static function contains( array $data, $value, $key = null ) : bool
 	{
-		if( !$Key )
+		if( !$key )
 		{
-			if( in_array( $Value, $Data ) )
+			if( in_array( $value, $data ) )
 			{
 				return true;
 			}
 		}
 		else
 		{
-			if( !self::hasKey( $Data, $Key ) )
+			if( !self::hasKey( $data, $key ) )
 			{
 				return false;
 			}
 
-			if( $Data[ $Key ] == $Value )
+			if( $data[ $key ] == $value )
 			{
 				return true;
 			}
@@ -98,14 +98,14 @@ class ArrayHelper
 	}
 
 	/**
-	 * @param array $aData
-	 * @param $Key
+	 * @param array $data
+	 * @param $key
 	 * @return bool
 	 */
 
-	public static function hasKey( array $aData, $Key ) : bool
+	public static function hasKey( array $data, $key ) : bool
 	{
-		if ( isset( $aData[ $Key ] ) || array_key_exists( $Key, $aData ) )
+		if ( isset( $data[ $key ] ) || array_key_exists( $key, $data ) )
 		{
 			return true;
 		}
@@ -114,54 +114,54 @@ class ArrayHelper
 	}
 
 	/**
-	 * @param array $aData
-	 * @param $sKey
-	 * @param null $Default
+	 * @param array $data
+	 * @param $key
+	 * @param null $default
 	 * @return mixed|null
 	 */
 
-	public static function getElement( array $aData, $sKey, $Default = null ) : mixed
+	public static function getElement( array $data, $key, $default = null ) : mixed
 	{
-		if( array_key_exists( $sKey, $aData ) )
+		if( array_key_exists( $key, $data ) )
 		{
-			return $aData[ $sKey ];
+			return $data[ $key ];
 		}
 
-		if( $Default )
+		if( $default )
 		{
-			return $Default;
+			return $default;
 		}
 
 		return null;
 	}
 
 	/**
-	 * @param array $aData
-	 * @param $Item
+	 * @param array $data
+	 * @param $item
 	 * @return mixed
 	 */
 
-	public static function indexOf( array $aData, $Item ): mixed
+	public static function indexOf( array $data, $item ): mixed
 	{
-		return array_search( $Item, $aData );
+		return array_search( $item, $data );
 	}
 
 	/**
-	 * @param array $aData
-	 * @param $Item
+	 * @param array $data
+	 * @param $item
 	 * @return bool
 	 */
 
-	public static function remove( array &$aData, $Item ) : bool
+	public static function remove( array &$data, $item ) : bool
 	{
-		$Index = self::indexOf( $aData, $Item );
+		$index = self::indexOf( $data, $item );
 
-		if( $Index === false )
+		if( $index === false )
 		{
 			return false;
 		}
 
-		unset( $aData[ $Index ] );
+		unset( $data[ $index ] );
 
 		return true;
 	}

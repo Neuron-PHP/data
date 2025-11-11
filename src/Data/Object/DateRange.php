@@ -10,19 +10,19 @@ use Neuron\Data\Date;
  */
 class DateRange
 {
-	public string $Start;
-	public string $End;
+	public string $start;
+	public string $end;
 
 	/**
-	 * @param string $Start
-	 * @param string $End
+	 * @param string $start
+	 * @param string $end
 	 */
 
-	public function __construct( string $Start, string $End )
+	public function __construct( string $start, string $end )
 	{
-		$Date = new \Neuron\Formatters\Date();
-		$this->Start = $Date->format( $Start );
-		$this->End   = $Date->format( $End );
+		$date = new \Neuron\Formatters\Date();
+		$this->start = $date->format( $start );
+		$this->end   = $date->format( $end );
 	}
 
 	/**
@@ -32,6 +32,6 @@ class DateRange
 
 	public function getLengthInDays() : int
 	{
-		return Date::diff( $this->End, $this->Start );
+		return Date::diff( $this->end, $this->start );
 	}
 }

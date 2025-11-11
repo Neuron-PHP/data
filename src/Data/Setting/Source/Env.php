@@ -7,11 +7,11 @@ namespace Neuron\Data\Setting\Source;
  */
 class Env implements ISettingSource
 {
-	private \Neuron\Data\Env $_Env;
+	private \Neuron\Data\Env $env;
 
-	public function __construct( \Neuron\Data\Env $Env )
+	public function __construct( \Neuron\Data\Env $env )
 	{
-		$this->_Env = $Env;
+		$this->env = $env;
 	}
 
 	/**
@@ -20,15 +20,15 @@ class Env implements ISettingSource
 	 * uppercased.
 	 * e.g. get( 'test', 'name' ) will look for the environment variable TEST_NAME.
 	 *
-	 * @param string $SectionName
-	 * @param string $Name
+	 * @param string $sectionName
+	 * @param string $name
 	 * @return string|null
 	 */
-	public function get( string $SectionName, string $Name ): ?string
+	public function get( string $sectionName, string $name ): ?string
 	{
-		$SectionName = strtoupper( $SectionName );
-		$Name = strtoupper( $Name );
-		return $this->_Env->get( "{$SectionName}_{$Name}" );
+		$sectionName = strtoupper( $sectionName );
+		$name = strtoupper( $name );
+		return $this->env->get( "{$sectionName}_{$name}" );
 	}
 
 	/**
@@ -37,18 +37,18 @@ class Env implements ISettingSource
 	 * uppercased.
 	 * e.g. set( 'test', 'name', 'value' ) will set the environment variable TEST_NAME=value.
 	 *
-	 * @param string $SectionName
-	 * @param string $Name
-	 * @param string $Value
+	 * @param string $sectionName
+	 * @param string $name
+	 * @param string $value
 	 * @return ISettingSource
 	 */
 
-	public function set( string $SectionName, string $Name, string $Value ): ISettingSource
+	public function set( string $sectionName, string $name, string $value ): ISettingSource
 	{
-		$SectionName = strtoupper( $SectionName );
-		$Name = strtoupper( $Name );
+		$sectionName = strtoupper( $sectionName );
+		$name = strtoupper( $name );
 
-		$this->_Env->put( "{$SectionName}_{$Name}=$Value" );
+		$this->env->put( "{$sectionName}_{$name}=$value" );
 
 		return $this;
 	}
@@ -66,19 +66,19 @@ class Env implements ISettingSource
 		$keys = array_merge( array_keys( $_ENV ?? [] ), array_keys( $_SERVER ?? [] ) );
 
 		$sections = [];
-		foreach( $keys as $k )
+		foreach( $keys as $key )
 		{
-			if( !is_string( $k ) )
+			if( !is_string( $key ) )
 			{
 				continue;
 			}
 
-			$kup = strtoupper( $k );
-			$pos = strpos( $kup, '_' );
+			$keyUpper = strtoupper( $key );
+			$pos = strpos( $keyUpper, '_' );
 			if( $pos !== false && $pos > 0 )
 			{
-				$sec = substr( $kup, 0, $pos );
-				$sections[$sec] = true;
+				$section = substr( $keyUpper, 0, $pos );
+				$sections[$section] = true;
 			}
 		}
 
@@ -90,30 +90,30 @@ class Env implements ISettingSource
 	 * We scan environment variable keys for those starting with SECTIONNAME_ and
 	 * return the suffix names in lowercase (matching other sources' expectations).
 	 *
-	 * @param string $Section
+	 * @param string $section
 	 * @return array
 	 */
 
-	public function getSectionSettingNames( string $Section ): array
+	public function getSectionSettingNames( string $section ): array
 	{
-		$section = strtoupper( $Section );
+		$section = strtoupper( $section );
 		$keys = array_merge( array_keys( $_ENV ?? [] ), array_keys( $_SERVER ?? [] ) );
 
 		$names = [];
 		$prefix = $section . '_';
-		$plen = strlen( $prefix );
+		$prefixLength = strlen( $prefix );
 
-		foreach( $keys as $k )
+		foreach( $keys as $key )
 		{
-			if( !is_string( $k ) )
+			if( !is_string( $key ) )
 			{
 				continue;
 			}
 
-			$kup = strtoupper( $k );
-			if( strncmp( $kup, $prefix, $plen ) === 0 )
+			$keyUpper = strtoupper( $key );
+			if( strncmp( $keyUpper, $prefix, $prefixLength ) === 0 )
 			{
-				$suffix = substr( $kup, $plen );
+				$suffix = substr( $keyUpper, $prefixLength );
 				if( $suffix !== '' )
 				{
 					$names[] = strtolower( $suffix );
@@ -132,13 +132,13 @@ class Env implements ISettingSource
 	 * For environment variables we scan matching keys and return an associative array
 	 * of name => value. Returns null if a section not present.
 	 *
-	 * @param string $SectionName
+	 * @param string $sectionName
 	 * @return array|null
 	 */
 
-	public function getSection( string $SectionName ): ?array
+	public function getSection( string $sectionName ): ?array
 	{
-		$section = strtoupper( $SectionName );
+		$section = strtoupper( $sectionName );
 		$names = $this->getSectionSettingNames( $section );
 
 		if( empty( $names ) )
@@ -150,7 +150,7 @@ class Env implements ISettingSource
 		foreach( $names as $name )
 		{
 			$key = strtoupper( $section . '_' . $name );
-			$value = $this->_Env->get( $key );
+			$value = $this->env->get( $key );
 			if( $value !== null )
 			{
 				$config[$name] = $value;

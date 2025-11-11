@@ -51,19 +51,19 @@ namespace Neuron\Data;
 class Env
 {
 	private static ?Env 		$instance = null;
-	private 			?string	$_FileName;
+	private 			?string	$fileName;
 
 	/**
 	 * Env constructor.
-	 * @param string|null $FileName
+	 * @param string|null $fileName
 	 */
-	private function __construct( ?string $FileName = null )
+	private function __construct( ?string $fileName = null )
 	{
-		$this->_FileName = $FileName;
+		$this->fileName = $fileName;
 
-		if( is_null( $this->_FileName ) )
+		if( is_null( $this->fileName ) )
 		{
-			$this->_FileName = "{$_SERVER['DOCUMENT_ROOT']}/.env";
+			$this->fileName = "{$_SERVER['DOCUMENT_ROOT']}/.env";
 		}
 
 		$this->loadEnvFile();
@@ -99,20 +99,20 @@ class Env
 
 	public function loadEnvFile(): void
 	{
-		if( !file_exists( $this->_FileName ) )
+		if( !file_exists( $this->fileName ) )
 		{
 			return;
 		}
 
-		$Configs = file( $this->_FileName );
+		$configs = file( $this->fileName );
 
-		foreach( $Configs as $Config )
+		foreach( $configs as $config )
 		{
-			$Config = trim( str_replace( "\n", "", $Config ) );
+			$config = trim( str_replace( "\n", "", $config ) );
 
-			if( $Config && $Config[ 0 ] != '#')
+			if( $config && $config[ 0 ] != '#')
 			{
-				$this->put( $Config );
+				$this->put( $config );
 			}
 		}
 	}
@@ -134,13 +134,13 @@ class Env
 
 	public function get( $key ): null | array | string
 	{
-		$Value = getenv( trim( $key ) );
+		$value = getenv( trim( $key ) );
 
-		if( $Value === false )
+		if( $value === false )
 		{
 			return null;
 		}
 
-		return trim( $Value );
+		return trim( $value );
 	}
 }

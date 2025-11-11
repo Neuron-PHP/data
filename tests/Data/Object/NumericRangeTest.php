@@ -10,7 +10,7 @@ class NumericRangeTest extends TestCase
 	{
 		$Range = new NumericRange( 1.0, 2.0 );
 
-		$this->assertEquals( $Range->Minimum,  1.0 );
-		$this->assertEquals( $Range->Maximum, 2.0 );
+		$this->assertEquals( $Range->minimum,  1.0 );
+		$this->assertEquals( $Range->maximum, 2.0 );
 	}
 }

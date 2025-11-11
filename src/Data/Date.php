@@ -10,7 +10,7 @@ use Neuron\Util;
  */
 class Date
 {
-	private static array $_Quarters = [
+	private static array $quarters = [
 		1 => [
 			"01-01",
 			"03-31"
@@ -32,104 +32,104 @@ class Date
 	/**
 	 * Returns the date range for the specified fiscal quarter.
 	 *
-	 * @param int $Quarter
-	 * @param string $Year
+	 * @param int $quarter
+	 * @param string $year
 	 * @return DateRange
 	 */
 
-	static function getDateRangeForQuarter( int $Quarter = 0, string $Year = '' ) : DateRange
+	static function getDateRangeForQuarter( int $quarter = 0, string $year = '' ) : DateRange
 	{
-		if( !$Quarter )
+		if( !$quarter )
 		{
-			$Month   = date( 'm' );
-			$Quarter = ceil( $Month / 3 );
+			$month   = date( 'm' );
+			$quarter = ceil( $month / 3 );
 		}
 
-		if( !$Year )
+		if( !$year )
 		{
-			$Year = date( 'Y' );
+			$year = date( 'Y' );
 		}
 
 		return new DateRange(
-			$Year.'-'.self::$_Quarters[ $Quarter ][ 0 ],
-			$Year.'-'.self::$_Quarters[ $Quarter ][ 1 ]
+			$year.'-'.self::$quarters[ $quarter ][ 0 ],
+			$year.'-'.self::$quarters[ $quarter ][ 1 ]
 		);
 	}
 
 	/**
 	 * Returns the date range for a year/month number.
 	 *
-	 * @param int $Month
-	 * @param string $Year
+	 * @param int $month
+	 * @param string $year
 	 * @return DateRange
 	 */
 
-	static function getDateRangeForMonth( int $Month = 0, string $Year = '' ) : DateRange
+	static function getDateRangeForMonth( int $month = 0, string $year = '' ) : DateRange
 	{
-		if( !$Month )
+		if( !$month )
 		{
-			$Month = date( 'm' );
+			$month = date( 'm' );
 		}
 
-		if( !$Year )
+		if( !$year )
 		{
-			$Year = date( 'Y' );
+			$year = date( 'Y' );
 		}
 
-		$Start = "$Year-$Month-01";
-		$End   = "$Year-$Month-".self::getDaysInMonth( $Month, $Year );
+		$start = "$year-$month-01";
+		$end   = "$year-$month-".self::getDaysInMonth( $month, $year );
 
 		return new DateRange(
-			$Start,
-			$End
+			$start,
+			$end
 		);
 	}
 
 	/**
 	 * Returns the date range for a specific year/week number.
 	 *
-	 * @param int $Week
-	 * @param string $Year
+	 * @param int $week
+	 * @param string $year
 	 * @return DateRange
 	 */
 
-	static function getDateRangeForWeek( int $Week = 0, string $Year = '' ) : DateRange
+	static function getDateRangeForWeek( int $week = 0, string $year = '' ) : DateRange
 	{
-		if( !$Week )
+		if( !$week )
 		{
-			$DayOfYear = date('z') + 1;
-			$Week      = ceil( $DayOfYear / 7 );
+			$dayOfYear = date('z') + 1;
+			$week      = ceil( $dayOfYear / 7 );
 		}
 
-		$Week -= 1;
+		$week -= 1;
 
-		if( !$Year )
+		if( !$year )
 		{
-			$Year = date( 'Y' );
+			$year = date( 'Y' );
 		}
 
-		$DayOfYear = $Week * 7;
+		$dayOfYear = $week * 7;
 
-		$Julian = self::dateToJulian( "$Year-01-01" );
+		$julian = self::dateToJulian( "$year-01-01" );
 
-		$Julian += $DayOfYear;
+		$julian += $dayOfYear;
 
 		// If the first day isn't a Monday then back up until
 		// one is found.
 
-		$WeekDay = self::getWeekday( self::julianToDate( $Julian ) );
+		$weekDay = self::getWeekday( self::julianToDate( $julian ) );
 
-		while( $WeekDay != 1 )
+		while( $weekDay != 1 )
 		{
-			$Julian--;
-			$WeekDay = self::getWeekday( self::julianToDate( $Julian ) );
+			$julian--;
+			$weekDay = self::getWeekday( self::julianToDate( $julian ) );
 		}
 
-		$JulianEnd = $Julian + 6;
+		$julianEnd = $julian + 6;
 
 		return new DateRange(
-			self::julianToDate( $Julian ),
-			self::julianToDate( $JulianEnd )
+			self::julianToDate( $julian ),
+			self::julianToDate( $julianEnd )
 		);
 	}
 
@@ -137,13 +137,13 @@ class Date
 	 * Returns an int representing the day of the week.
 	 * 0 = Sunday .. 6 = Saturday
 	 *
-	 * @param string $Date
+	 * @param string $date
 	 * @return int
 	 */
 
-	static function getWeekday( string $Date ) : int
+	static function getWeekday( string $date ) : int
 	{
-		return date('w', strtotime( $Date ) );
+		return date('w', strtotime( $date ) );
 	}
 
 	/**
@@ -182,127 +182,127 @@ class Date
 	/**
 	 * Get the day name for a date.
 	 *
-	 * @param $Date
+	 * @param $date
 	 * @return false|string
 	 */
 
-	static function getDay( $Date ): bool|string
+	static function getDay( $date ): bool|string
 	{
-		return date('l', strtotime( $Date ) );
+		return date('l', strtotime( $date ) );
 	}
 
 	/**
 	 * Is the date on a weekend?
 	 *
-	 * @param $Date
+	 * @param $date
 	 * @return bool
 	 */
 
-	static function isWeekend( $Date ): bool
+	static function isWeekend( $date ): bool
 	{
-		return ( self::getDay( $Date ) == 'Saturday' ||
-					self::getDay( $Date ) == 'Sunday' );
+		return ( self::getDay( $date ) == 'Saturday' ||
+					self::getDay( $date ) == 'Sunday' );
 	}
 
 	/**
 	 * Get the number of working days in a date range.
 	 *
-	 * @param DateRange $Range
+	 * @param DateRange $range
 	 * @return int
 	 */
 
-	static function getWorkingDays( DateRange $Range ): int
+	static function getWorkingDays( DateRange $range ): int
 	{
-		$Days = 0;
+		$days = 0;
 
-		$Start = self::dateToJulian( $Range->Start );
-		$End   = self::dateToJulian( $Range->End );
+		$start = self::dateToJulian( $range->start );
+		$end   = self::dateToJulian( $range->end );
 
-		for( $Julian = $Start; $Julian < $End; $Julian++ )
+		for( $julian = $start; $julian < $end; $julian++ )
 		{
-			if( !self::isWeekend( self::julianToDate( $Julian ) ) )
+			if( !self::isWeekend( self::julianToDate( $julian ) ) )
 			{
-				$Days++;
+				$days++;
 			}
 		}
 
-		return $Days;
+		return $days;
 	}
 
 	/**
 	 * If present, strips the time element from a date.
 	 *
-	 * @param $DateTime
+	 * @param $dateTime
 	 * @return false|string
 	 */
 
-	static function only( $DateTime ): bool|string
+	static function only( $dateTime ): bool|string
 	{
-		return date( 'Y-m-d', strtotime( $DateTime ) );
+		return date( 'Y-m-d', strtotime( $dateTime ) );
 	}
 
 	/**
 	 *
 	 *
-	 * @param $Days
+	 * @param $days
 	 * @return string
 	 */
 
-	static function daysAsText( $Days ): string
+	static function daysAsText( $days ): string
 	{
-		$Units = [
+		$units = [
 			365 => 'year',
 			30  => 'month',
 			7   => 'week',
 			1   => 'day'
 		];
 
-		$Text = null;
+		$text = null;
 
-		foreach( $Units as $Length => $Unit )
+		foreach( $units as $length => $unit )
 		{
-			if( $Days >= $Length )
+			if( $days >= $length )
 			{
-				$Count = floor( $Days / $Length );
+				$count = floor( $days / $length );
 
-				if( $Text )
+				if( $text )
 				{
-					$Text .= ', ';
+					$text .= ', ';
 				}
 
-				$Text .= $Count.' '.$Unit;
+				$text .= $count.' '.$unit;
 
-				if( $Count > 1 )
+				if( $count > 1 )
 				{
-					$Text .= 's';
+					$text .= 's';
 				}
 
-				$Days -= ( $Count * $Length );
+				$days -= ( $count * $length );
 			}
 		}
 
-		return $Text;
+		return $text;
 	}
 
 	/**
 	 * Turns a time difference into a text format.
 	 *
-	 * @param $Time
-	 * @param $Until
+	 * @param $time
+	 * @param $until
 	 * @return string
 	 */
 
-	static function differenceUnitAsText( $Time, $Until = null ): string
+	static function differenceUnitAsText( $time, $until = null ): string
 	{
-		if( $Until == null )
+		if( $until == null )
 		{
-			$Until = time();
+			$until = time();
 		}
 
-		$Time = $Until - $Time;
-		$Time = ( $Time < 1 ) ? 1 : $Time;
+		$time = $until - $time;
+		$time = ( $time < 1 ) ? 1 : $time;
 
-		$Units = [
+		$units = [
 			31536000 => 'year',
 			2592000  => 'month',
 			604800   => 'week',
@@ -312,45 +312,45 @@ class Date
 			1        => 'second'
 		];
 
-		foreach( $Units as $Length => $Text )
+		foreach( $units as $length => $text )
 		{
-			if( $Time < $Length )
+			if( $time < $length )
 			{
 				continue;
 			}
-			$Count = floor( $Time / $Length );
+			$count = floor( $time / $length );
 
-			return $Count.' '.$Text.( ( $Count > 1) ? 's' : '' );
+			return $count.' '.$text.( ( $count > 1) ? 's' : '' );
 		}
 	}
 
 	/**
 	 * Returns true if the date ia leap year.
 	 *
-	 * @param $iYear
+	 * @param $year
 	 * @return bool
 	 */
 
-	static function isLeapYear( $iYear ): bool
+	static function isLeapYear( $year ): bool
 	{
-		return ( ( ( $iYear % 4 ) == 0 ) && ( ( ( $iYear % 100 ) != 0 ) || ( ( $iYear % 400 ) == 0 ) ) );
+		return ( ( ( $year % 4 ) == 0 ) && ( ( ( $year % 100 ) != 0 ) || ( ( $year % 400 ) == 0 ) ) );
 	}
 
 	/**
-	 * @param $iDays
-	 * @param string $sDate
+	 * @param $days
+	 * @param string $date
 	 * @return bool|string - new date
 	 */
 
-	static function subtractDays( $iDays, $sDate = '' ): bool|string
+	static function subtractDays( $days, $date = '' ): bool|string
 	{
-		if( !$sDate )
+		if( !$date )
 		{
-			$sDate = date( 'Y-m-d' );
+			$date = date( 'Y-m-d' );
 		}
 
-		$julian  = self::dateToJulian( $sDate );
-		$julian -= $iDays;
+		$julian  = self::dateToJulian( $date );
+		$julian -= $days;
 
 		return Date::julianToDate( $julian );
 	}
@@ -374,18 +374,18 @@ class Date
 	 *
 	 * Returns the number of days in the specified month.
 	 *
-	 * @param $iMonth
-	 * @param null $iYear
+	 * @param $month
+	 * @param null $year
 	 * @return int
 	 */
-	static function getDaysInMonth( $iMonth, $iYear = null ): int
+	static function getDaysInMonth( $month, $year = null ): int
 	{
 		$days = 0;
 
-		switch( $iMonth )
+		switch( $month )
 		{
 			case 2:
-				if( self::isLeapYear( $iYear ) )
+				if( self::isLeapYear( $year ) )
 				{
 					$days = 29;
 				}
@@ -440,16 +440,16 @@ class Date
 	///	Julian date.
 	//////////////////////////////////////////////////////////////////////////
 
-	static function dateToJulian( $Date ): int
+	static function dateToJulian( $date ): int
 	{
-		$Date = self::only( $Date );
+		$date = self::only( $date );
 
-		$dformat = "-";
+		$dateFormat = "-";
 
-		$date_parts = explode( $dformat, $Date );
-		$start_date = gregoriantojd( $date_parts[ 1 ], $date_parts[ 2 ], $date_parts[ 0 ] );
+		$dateParts = explode( $dateFormat, $date );
+		$startDate = gregoriantojd( $dateParts[ 1 ], $dateParts[ 2 ], $dateParts[ 0 ] );
 
-		return $start_date;
+		return $startDate;
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -462,9 +462,9 @@ class Date
 	///	A string in yyyy-mm-dd mysql format.
 	//////////////////////////////////////////////////////////////////////////
 
-	static function julianToDate( $dt1 ): string
+	static function julianToDate( $julianDate ): string
 	{
-		$date = jdtogregorian( $dt1 );
+		$date = jdtogregorian( $julianDate );
 
 		$date = strtotime( $date );
 
@@ -473,22 +473,22 @@ class Date
 
 	static function diff( $endDate, $beginDate ) : int
 	{
-		$start_date = Date::dateToJulian( $beginDate );
-		$end_date   = Date::dateToJulian( $endDate );
+		$startDate = Date::dateToJulian( $beginDate );
+		$endDate   = Date::dateToJulian( $endDate );
 
-		return $end_date - $start_date;
+		return $endDate - $startDate;
 	}
 
 	/**
-	 * @param string $First
-	 * @param string $Second
+	 * @param string $first
+	 * @param string $second
 	 * @return int
 	 */
-	static function compare(  string $First, string $Second ) : int
+	static function compare(  string $first, string $second ) : int
 	{
-		$FirstTs  = strtotime( $First );
-		$SecondTs = strtotime( $Second );
+		$firstTimestamp  = strtotime( $first );
+		$secondTimestamp = strtotime( $second );
 
-		return $FirstTs <=> $SecondTs;
+		return $firstTimestamp <=> $secondTimestamp;
 	}
 }

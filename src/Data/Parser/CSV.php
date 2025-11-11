@@ -7,34 +7,34 @@ namespace Neuron\Data\Parser;
  */
 class CSV implements IParser
 {
-	public array $_Results;
+	public array $results;
 
 	/**
-	 * @param $Text
-	 * @param array $Columns
+	 * @param $text
+	 * @param array $columns
 	 * @return ?array
 	 */
 
-	public function parse( $Text, $Columns = array() ) : ?array
+	public function parse( $text, $columns = array() ) : ?array
 	{
-		$Results = array();
-		$Data = str_getcsv($Text, ",", "\"", "\\");
+		$results = array();
+		$data = str_getcsv($text, ",", "\"", "\\");
 
 		$idx = 0;
 
-		foreach( $Columns as $Column )
+		foreach( $columns as $column )
 		{
-			if( !isset( $Data[ $idx ] ) )
+			if( !isset( $data[ $idx ] ) )
 			{
-				$this->_Results = $Results;
+				$this->results = $results;
 				return null;
 			}
 
-			$Results[ $Column ] = $Data[ $idx ];
+			$results[ $column ] = $data[ $idx ];
 			++$idx;
 		}
 
-		return $Results;
+		return $results;
 	}
 }
 
