@@ -9,16 +9,16 @@ use Neuron\Data\Setting\Source\ISettingSource;
  */
 class SettingManager
 {
-	private ISettingSource $_Source;
-	private ?ISettingSource $_Fallback = null;
+	private ISettingSource $source;
+	private ?ISettingSource $fallback = null;
 
 	/**
-	 * @param ISettingSource $Source
+	 * @param ISettingSource $source
 	 */
 
-	public function __construct( ISettingSource $Source )
+	public function __construct( ISettingSource $source )
 	{
-		$this->setSource( $Source );
+		$this->setSource( $source );
 	}
 
 	/**
@@ -27,17 +27,17 @@ class SettingManager
 
 	public function getSource() : ISettingSource
 	{
-		return $this->_Source;
+		return $this->source;
 	}
 
 	/**
-	 * @param ISettingSource $Source
+	 * @param ISettingSource $source
 	 * @return SettingManager
 	 */
 
-	public function setSource( ISettingSource $Source ) : SettingManager
+	public function setSource( ISettingSource $source ) : SettingManager
 	{
-		$this->_Source = $Source;
+		$this->source = $source;
 		return $this;
 	}
 
@@ -47,50 +47,50 @@ class SettingManager
 
 	public function getFallback(): ?ISettingSource
 	{
-		return $this->_Fallback;
+		return $this->fallback;
 	}
 
 	/**
-	 * @param ISettingSource $Fallback
+	 * @param ISettingSource $fallback
 	 * @return SettingManager
 	 */
 
-	public function setFallback( ISettingSource $Fallback ): SettingManager
+	public function setFallback( ISettingSource $fallback ): SettingManager
 	{
-		$this->_Fallback = $Fallback;
+		$this->fallback = $fallback;
 		return $this;
 	}
 
 
 
 	/**
-	 * @param string $Section
-	 * @param string $Name
+	 * @param string $section
+	 * @param string $name
 	 * @return string|null
 	 */
 
-	public function get( string $Section, string $Name )
+	public function get( string $section, string $name )
 	{
-		$Value = $this->getSource()->get( $Section, $Name );
+		$value = $this->getSource()->get( $section, $name );
 
-		if( $Value )
+		if( $value )
 		{
-			return $Value;
+			return $value;
 		}
 
 		return $this->getFallback()
-						?->get( $Section, $Name );
+						?->get( $section, $name );
 	}
 
 	/**
-	 * @param string $Section
-	 * @param string $Name
-	 * @param string $Value
+	 * @param string $section
+	 * @param string $name
+	 * @param string $value
 	 */
 
-	public function set( string $Section, string $Name, string $Value )
+	public function set( string $section, string $name, string $value )
 	{
-		$this->getSource()->set( $Section, $Name, $Value );
+		$this->getSource()->set( $section, $name, $value );
 		$this->getSource()->save();
 	}
 
@@ -104,32 +104,32 @@ class SettingManager
 	}
 
 	/**
-	 * @param string $Section
+	 * @param string $section
 	 * @return array
 	 */
 
-	public function getSectionSettingNames( string $Section ) : array
+	public function getSectionSettingNames( string $section ) : array
 	{
-		return $this->getSource()->getSectionSettingNames( $Section );
+		return $this->getSource()->getSectionSettingNames( $section );
 	}
 
 	/**
 	 * Get entire section as an array
 	 *
-	 * @param string $Section
+	 * @param string $section
 	 * @return array|null
 	 */
 
-	public function getSection( string $Section ) : ?array
+	public function getSection( string $section ) : ?array
 	{
-		$Value = $this->getSource()->getSection( $Section );
+		$value = $this->getSource()->getSection( $section );
 
-		if( $Value )
+		if( $value )
 		{
-			return $Value;
+			return $value;
 		}
 
 		return $this->getFallback()
-						?->getSection( $Section );
+						?->getSection( $section );
 	}
 }

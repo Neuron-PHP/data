@@ -9,16 +9,16 @@ namespace Neuron\Data\Object;
 class GpsPoint
 {
 	/**
-	 * @param float $Latitude
-	 * @param float $Longitude
+	 * @param float $latitude
+	 * @param float $longitude
 	 */
 
-	public function __construct( float $Latitude = 0.0, float $Longitude = 0.0 )
+	public function __construct( float $latitude = 0.0, float $longitude = 0.0 )
 	{
-		$this->Latitude  = $Latitude;
-		$this->Longitude = $Longitude;
+		$this->latitude  = $latitude;
+		$this->longitude = $longitude;
 	}
 
-	public float $Latitude;
-	public float $Longitude;
+	public float $latitude;
+	public float $longitude;
 }

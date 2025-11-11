@@ -11,42 +11,42 @@ class UnitConversion
 	const POUNDS_PER_KILOGRAM   = 2.204623;
 
 	/**
-	 * @param float $Milliliters
+	 * @param float $milliliters
 	 * @return float
 	 */
 
-	public static function millilitersToUsFlOunces( float $Milliliters ) : float
+	public static function millilitersToUsFlOunces( float $milliliters ) : float
 	{
-		return $Milliliters * self::MILLILITERS_PER_OUNCE;
+		return $milliliters * self::MILLILITERS_PER_OUNCE;
 	}
 
 	/**
-	 * @param float $Ounces
+	 * @param float $ounces
 	 * @return float
 	 */
 
-	public static function usFlOuncesToMilliliters( float $Ounces ) : float
+	public static function usFlOuncesToMilliliters( float $ounces ) : float
 	{
-		return $Ounces / self::MILLILITERS_PER_OUNCE;
+		return $ounces / self::MILLILITERS_PER_OUNCE;
 	}
 
 	/**
-	 * @param float $Kilograms
+	 * @param float $kilograms
 	 * @return float
 	 */
 
-	public static function kilogramsToPounds( float $Kilograms ) : float
+	public static function kilogramsToPounds( float $kilograms ) : float
 	{
-		return $Kilograms * self::POUNDS_PER_KILOGRAM;
+		return $kilograms * self::POUNDS_PER_KILOGRAM;
 	}
 
 	/**
-	 * @param float $Pounds
+	 * @param float $pounds
 	 * @return float
 	 */
 
-	public static function poundsToKilograms( float $Pounds ) : float
+	public static function poundsToKilograms( float $pounds ) : float
 	{
-		return $Pounds / self::POUNDS_PER_KILOGRAM;
+		return $pounds / self::POUNDS_PER_KILOGRAM;
 	}
 }

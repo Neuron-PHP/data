@@ -7,10 +7,10 @@ namespace Neuron\Data\Object;
  */
 class Version
 {
-	public int $Major;
-	public int $Minor;
-	public int $Patch;
-	public int $Build;
+	public int $major;
+	public int $minor;
+	public int $patch;
+	public int $build;
 
 	/**
 	 * Version constructor.
@@ -18,53 +18,53 @@ class Version
 
 	public function __construct()
 	{
-		$this->Major = 0;
-		$this->Minor = 0;
-		$this->Patch = 0;
-		$this->Build = 0;
+		$this->major = 0;
+		$this->minor = 0;
+		$this->patch = 0;
+		$this->build = 0;
 	}
 
 	/**
 	 * Parses version information from a json string.
-	 * @param string $Data
+	 * @param string $data
 	 * @throws \Exception
 	 */
 
-	public function loadFromString( string $Data ): void
+	public function loadFromString( string $data ): void
 	{
-		$Json = json_decode( $Data,true );
+		$json = json_decode( $data,true );
 
-		if( $Json === null )
+		if( $json === null )
 		{
-			throw new \Exception( "Unable to parse json from '$Data'" );
+			throw new \Exception( "Unable to parse json from '$data'" );
 		}
 
-		$this->Major = $Json[ 'major' ];
-		$this->Minor = $Json[ 'minor' ];
-		$this->Patch = $Json[ 'patch' ];
+		$this->major = $json[ 'major' ];
+		$this->minor = $json[ 'minor' ];
+		$this->patch = $json[ 'patch' ];
 
-		if( array_key_exists( 'build', $Json ) )
+		if( array_key_exists( 'build', $json ) )
 		{
-			$this->Build = $Json[ 'build' ];
+			$this->build = $json[ 'build' ];
 		}
 	}
 
 	/**
 	 * Loads version information from a json file.
-	 * @param string $File
+	 * @param string $file
 	 * @throws \Exception
 	 */
 
-	public function loadFromFile( string $File = '.version.json' ): void
+	public function loadFromFile( string $file = '.version.json' ): void
 	{
-		if( !file_exists( $File ) )
+		if( !file_exists( $file ) )
 		{
-			throw new \Exception( "Cannot find version file '$File'" );
+			throw new \Exception( "Cannot find version file '$file'" );
 		}
 
-		$Data = file_get_contents( $File );
+		$data = file_get_contents( $file );
 
-		$this->loadFromString( $Data );
+		$this->loadFromString( $data );
 	}
 
 	/**
@@ -74,12 +74,12 @@ class Version
 
 	public function getAsString() : string
 	{
-		$Release = "{$this->Major}.{$this->Minor}.{$this->Patch}";
-		if( $this->Build )
+		$release = "{$this->major}.{$this->minor}.{$this->patch}";
+		if( $this->build )
 		{
-			$Release .= " ({$this->Build})";
+			$release .= " ({$this->build})";
 		}
 
-		return $Release;
+		return $release;
 	}
 }

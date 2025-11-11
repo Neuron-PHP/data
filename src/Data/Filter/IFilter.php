@@ -7,6 +7,6 @@ namespace Neuron\Data\Filter;
  */
 interface IFilter
 {
-	public static function filterScalar( $Data ) : mixed;
-	public static function filterArray( array $Data ) : array | false | null;
+	public static function filterScalar( $data ) : mixed;
+	public static function filterArray( array $data ) : array | false | null;
 }

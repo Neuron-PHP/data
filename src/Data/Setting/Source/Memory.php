@@ -7,23 +7,23 @@ namespace Neuron\Data\Setting\Source;
  */
 class Memory implements ISettingSource
 {
-	private array $_Settings = array();
+	private array $settings = array();
 
 	/**
-	 * @param string $SectionName
-	 * @param string $Name
+	 * @param string $sectionName
+	 * @param string $name
 	 * @return string|null
 	 */
 
-	public function get( string $SectionName, string $Name ) : ?string
+	public function get( string $sectionName, string $name ) : ?string
 	{
-		if( array_key_exists( $SectionName, $this->_Settings ) )
+		if( array_key_exists( $sectionName, $this->settings ) )
 		{
-			$Section = $this->_Settings[ $SectionName ];
+			$section = $this->settings[ $sectionName ];
 
-			if( array_key_exists( $Name, $Section ) )
+			if( array_key_exists( $name, $section ) )
 			{
-				return $Section[ $Name ];
+				return $section[ $name ];
 			}
 		}
 
@@ -31,15 +31,15 @@ class Memory implements ISettingSource
 	}
 
 	/**
-	 * @param string $SectionName
-	 * @param string $Name
-	 * @param string $Value
+	 * @param string $sectionName
+	 * @param string $name
+	 * @param string $value
 	 * @return ISettingSource
 	 */
 
-	public function set( string $SectionName, string $Name, string $Value ) : ISettingSource
+	public function set( string $sectionName, string $name, string $value ) : ISettingSource
 	{
-		$this->_Settings[ $SectionName ][ $Name ] = $Value;
+		$this->settings[ $sectionName ][ $name ] = $value;
 		return $this;
 	}
 
@@ -49,29 +49,29 @@ class Memory implements ISettingSource
 
 	public function getSectionNames() : array
 	{
-		return array_keys( $this->_Settings );
+		return array_keys( $this->settings );
 	}
 
 	/**
-	 * @param string $Section
+	 * @param string $section
 	 * @return array
 	 */
 
-	public function getSectionSettingNames( string $Section ) : array
+	public function getSectionSettingNames( string $section ) : array
 	{
-		return array_keys( $this->_Settings[ $Section ] );
+		return array_keys( $this->settings[ $section ] );
 	}
 
 	/**
 	 * Get entire section as an array
 	 *
-	 * @param string $SectionName
+	 * @param string $sectionName
 	 * @return array|null
 	 */
 
-	public function getSection( string $SectionName ) : ?array
+	public function getSection( string $sectionName ) : ?array
 	{
-		return $this->_Settings[ $SectionName ] ?? null;
+		return $this->settings[ $sectionName ] ?? null;
 	}
 
 	/**

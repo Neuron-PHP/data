@@ -1,4 +1,5 @@
 ## 0.8.2
+* Converted to camelcase.
 
 ## 0.8.1 2025-11-10
 * Env setting source now supports getting entire sections.

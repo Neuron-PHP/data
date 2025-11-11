@@ -8,22 +8,22 @@ namespace Neuron\Data\Filter;
 class Cookie implements IFilter
 {
 	/**
-	 * @param string $Data
+	 * @param string $data
 	 * @return mixed
 	 */
 
-	public static function filterScalar( $Data ) : mixed
+	public static function filterScalar( $data ) : mixed
 	{
-		return filter_input(INPUT_COOKIE, $Data );
+		return filter_input(INPUT_COOKIE, $data );
 	}
 
 	/**
-	 * @param array $Data
+	 * @param array $data
 	 * @return array|false|null
 	 */
 
-	public static function filterArray( array $Data ) : array | false | null
+	public static function filterArray( array $data ) : array | false | null
 	{
-		return filter_input_array(INPUT_COOKIE, $Data,FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+		return filter_input_array(INPUT_COOKIE, $data,FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 	}
 }

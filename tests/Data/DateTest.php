@@ -10,12 +10,12 @@ class DateTest extends PHPUnit\Framework\TestCase
 
 		$this->assertEquals(
 			"2019-12-30",
-			$Range->Start
+			$Range->start
 		);
 
 		$this->assertEquals(
 			"2020-01-05",
-			$Range->End
+			$Range->end
 		);
 
 		$this->assertIsObject( Date::getDateRangeForWeek() );
@@ -28,12 +28,12 @@ class DateTest extends PHPUnit\Framework\TestCase
 
 		$this->assertEquals(
 			"2020-01-01",
-			$Range->Start
+			$Range->start
 		);
 
 		$this->assertEquals(
 			"2020-01-31",
-			$Range->End
+			$Range->end
 		);
 
 		$Range = Date::getDateRangeForMonth();
@@ -66,55 +66,55 @@ class DateTest extends PHPUnit\Framework\TestCase
 
 		$this->assertEquals(
 			"2010-$Month-01",
-			$Q->Start
+			$Q->start
 		);
 
 		$Q1 = Date::getDateRangeForQuarter( 1, '2010' );
 
 		$this->assertEquals(
 			'2010-01-01',
-			$Q1->Start
+			$Q1->start
 		);
 
 		$this->assertEquals(
 			'2010-03-31',
-			$Q1->End
+			$Q1->end
 		);
 
 		$Q2 = Date::getDateRangeForQuarter( 2, '2010' );
 
 		$this->assertEquals(
 			'2010-04-01',
-			$Q2->Start
+			$Q2->start
 		);
 
 		$this->assertEquals(
 			'2010-06-30',
-			$Q2->End
+			$Q2->end
 		);
 
 		$Q3 = Date::getDateRangeForQuarter( 3, '2010' );
 
 		$this->assertEquals(
 			'2010-07-01',
-			$Q3->Start
+			$Q3->start
 		);
 
 		$this->assertEquals(
 			'2010-09-30',
-			$Q3->End
+			$Q3->end
 		);
 
 		$Q4 = Date::getDateRangeForQuarter( 4, '2010' );
 
 		$this->assertEquals(
 			'2010-10-01',
-			$Q4->Start
+			$Q4->start
 		);
 
 		$this->assertEquals(
 			'2010-12-31',
-			$Q4->End
+			$Q4->end
 		);
 
 		$Q4 = Date::getDateRangeForQuarter();

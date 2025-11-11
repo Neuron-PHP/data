@@ -11,35 +11,35 @@ class LastFirstMI implements IParser
 	/**
 	 * Parses Last, First M
 	 *
-	 * @param $Text
-	 * @param array $UserData
+	 * @param $text
+	 * @param array $userData
 	 * @return array first, middle, last
 	 *
 	 * @SuppressWarnings(PHPMD)
 	 */
 
-	public function parse( $Text, $UserData = array() ) : array
+	public function parse( $text, $userData = array() ) : array
 	{
-		$aName = explode( ',', $Text );
+		$name = explode( ',', $text );
 
-		$sFirst  = trim( $aName[ 1 ] );
-		$sMiddle = '';
+		$first  = trim( $name[ 1 ] );
+		$middle = '';
 
-		$aFirstMiddle = explode( ' ', $sFirst );
+		$firstMiddle = explode( ' ', $first );
 
-		if( count( $aFirstMiddle ) > 1 )
+		if( count( $firstMiddle ) > 1 )
 		{
-			$aFirstMiddle[ 1 ] = trim( $aFirstMiddle[ 1 ] );
+			$firstMiddle[ 1 ] = trim( $firstMiddle[ 1 ] );
 
-			if( strlen( $aFirstMiddle[ 1 ] ) == 1 )
+			if( strlen( $firstMiddle[ 1 ] ) == 1 )
 			{
-				$sFirst  = $aFirstMiddle[ 0 ];
-				$sMiddle = $aFirstMiddle[ 1 ];
+				$first  = $firstMiddle[ 0 ];
+				$middle = $firstMiddle[ 1 ];
 			}
 		}
 
-		$sLast = trim( $aName[ 0 ] );
+		$last = trim( $name[ 0 ] );
 
-		return [ $sFirst, $sMiddle, $sLast ];
+		return [ $first, $middle, $last ];
 	}
 }
