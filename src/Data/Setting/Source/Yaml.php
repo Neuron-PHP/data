@@ -37,10 +37,10 @@ class Yaml implements ISettingSource
 	/**
 	 * @param string $sectionName
 	 * @param string $name
-	 * @return string|null
+	 * @return mixed
 	 */
 
-	public function get( string $sectionName, string $name ) : ?string
+	public function get( string $sectionName, string $name ) : mixed
 	{
 		if( array_key_exists( $sectionName, $this->settings ) )
 		{
@@ -58,11 +58,11 @@ class Yaml implements ISettingSource
 	/**
 	 * @param string $sectionName
 	 * @param string $name
-	 * @param string $value
+	 * @param mixed $value
 	 * @return ISettingSource
 	 */
 
-	public function set( string $sectionName, string $name, string $value ) : ISettingSource
+	public function set( string $sectionName, string $name, mixed $value ) : ISettingSource
 	{
 		$this->settings[ $sectionName ][ $name ] = $value;
 		return $this;

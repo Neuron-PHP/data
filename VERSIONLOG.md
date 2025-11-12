@@ -1,3 +1,6 @@
+## 0.8.3 2025-11-12
+* Settings values are now mixed data type instead of just strings.
+
 ## 0.8.2 2025-11-11
 * Converted to camelcase.
 
