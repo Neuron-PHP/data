@@ -7,8 +7,8 @@ namespace Neuron\Data\Setting\Source;
  */
 interface ISettingSource
 {
-	public function get( string $sectionName, string $name ) : ?string;
-	public function set( string $sectionName, string $name, string $value ) : ISettingSource;
+	public function get( string $sectionName, string $name ) : mixed;
+	public function set( string $sectionName, string $name, mixed $value ) : ISettingSource;
 	public function getSectionNames() : array;
 	public function getSectionSettingNames( string $section ) : array;
 	public function getSection( string $sectionName ) : ?array;

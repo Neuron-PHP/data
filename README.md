@@ -109,7 +109,7 @@ use Neuron\Data\Setting\Source\Yaml;
 use Neuron\Data\Setting\Source\Env;
 
 // Create primary source (YAML file)
-$yamlSource = new Yaml('/path/to/config.yaml');
+$yamlSource = new Yaml('/path/to/neuron.yaml');
 $settings = new SettingManager($yamlSource);
 
 // Add fallback to environment variables
@@ -133,7 +133,7 @@ $dbSettings = $settings->getSectionSettingNames('database');
 ### YAML Configuration Example
 
 ```yaml
-# config.yaml
+# neuron.yaml
 database:
   host: localhost
   port: 3306
@@ -482,10 +482,10 @@ tests/
 
 ```php
 // Use fallback chain for flexible configuration
-$settings = new SettingManager(new Yaml('config.yaml'));
+$settings = new SettingManager(new Yaml('neuron.yaml'));
 $settings->setFallback(new Env());
 
-// This checks config.yaml first, then environment variables
+// This checks neuron.yaml first, then environment variables
 $value = $settings->get('section', 'key');
 ```
 

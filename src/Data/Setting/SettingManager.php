@@ -73,7 +73,7 @@ class SettingManager
 	{
 		$value = $this->getSource()->get( $section, $name );
 
-		if( $value )
+		if( $value !== null )
 		{
 			return $value;
 		}
@@ -124,7 +124,7 @@ class SettingManager
 	{
 		$value = $this->getSource()->getSection( $section );
 
-		if( $value )
+		if( $value !== null )
 		{
 			return $value;
 		}
