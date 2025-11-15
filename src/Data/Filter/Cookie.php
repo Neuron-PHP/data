@@ -16,7 +16,7 @@ class Cookie implements IFilter
 	public static function filterScalar( string $data, mixed $default = null ) : mixed
 	{
 		$value = filter_input( INPUT_COOKIE, $data );
-		return $value !== null ? $value : $default;
+		return ($value !== null && $value !== false) ? $value : $default;
 	}
 
 	/**
