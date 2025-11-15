@@ -1,3 +1,6 @@
+## 0.8.4 2025-11-15
+* Updated filter classes.
+
 ## 0.8.3 2025-11-12
 * Settings values are now mixed data type instead of just strings.
 

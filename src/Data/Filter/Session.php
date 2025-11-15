@@ -8,17 +8,18 @@ class Session implements IFilter
 {
 	/**
 	 * @param string $data
+	 * @param mixed|null $default
 	 * @return mixed
 	 */
 
-	public static function filterScalar( $data ) : mixed
+	public static function filterScalar( string $data, mixed $default = null ) : mixed
 	{
 		if( !isset( $_SESSION[ $data ] ) )
 		{
-			return null;
+			return $default;
 		}
 
-		return filter_var( $_SESSION[ $data ]) ;
+		return filter_var( $_SESSION[ $data ] ) ;
 	}
 
 	/**

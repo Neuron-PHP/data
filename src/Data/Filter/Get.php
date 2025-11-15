@@ -9,13 +9,15 @@ class Get implements IFilter
 {
 
 	/**
-	 * @param $data
+	 * @param string $data
+	 * @param mixed|null $default
 	 * @return mixed
 	 */
 
-	public static function filterScalar( $data ) : mixed
+	public static function filterScalar( string $data, mixed $default = null ) : mixed
 	{
-		return filter_input( INPUT_GET, $data );
+		$value = filter_input( INPUT_GET, $data );
+		return $value !== null ? $value : $default;
 	}
 
 	/**
