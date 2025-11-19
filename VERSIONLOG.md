@@ -1,5 +1,7 @@
-## 0.8.5 2025-11-15
+## 0.8.6 2025-11-19
+* Added redis repository.
 
+## 0.8.5 2025-11-15
 ## 0.8.4 2025-11-15
 * Updated filter classes.
 
