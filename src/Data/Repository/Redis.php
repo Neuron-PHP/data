@@ -16,10 +16,25 @@ use RedisException;
  *
  * @example
  * ```php
- * // Connect to Redis
+ * // Connect using URL (recommended)
+ * $repo = new Redis([
+ *     'url' => 'redis://username:password@localhost:6379/0',
+ *     'prefix' => 'myapp:'
+ * ]);
+ *
+ * // Connect using traditional config
  * $repo = new Redis([
  *     'host' => '127.0.0.1',
  *     'port' => 6379,
+ *     'auth' => ['username', 'password'], // ACL auth (Redis 6.0+)
+ *     'database' => 0,
+ *     'prefix' => 'myapp:'
+ * ]);
+ *
+ * // Connect with password-only auth (Redis < 6.0)
+ * $repo = new Redis([
+ *     'host' => '127.0.0.1',
+ *     'auth' => 'mypassword',
  *     'prefix' => 'myapp:'
  * ]);
  *
@@ -40,15 +55,19 @@ class Redis implements IRepository
 	 * Redis repository constructor.
 	 *
 	 * @param array $config Redis configuration with keys:
+	 *                      - url: Redis URL (e.g., redis://user:pass@host:port/db) (optional)
 	 *                      - host: Redis server hostname (default: 127.0.0.1)
 	 *                      - port: Redis server port (default: 6379)
 	 *                      - database: Redis database index (default: 0)
 	 *                      - prefix: Key prefix for all entries (default: '')
 	 *                      - timeout: Connection timeout in seconds (default: 2.0)
-	 *                      - auth: Authentication password (optional)
+	 *                      - auth: Authentication - string for password-only (Redis < 6.0)
+	 *                              or array ['username', 'password'] for ACL (Redis 6.0+) (optional)
 	 *                      - persistent: Use persistent connections (default: false)
+	 *                      - ssl: Use SSL/TLS connection (default: false, auto-detected from rediss:// URL)
 	 * @throws \RuntimeException If Redis extension is not loaded
 	 * @throws \RuntimeException If connection fails
+	 * @throws \InvalidArgumentException If URL format is invalid
 	 */
 	public function __construct( array $config = [] )
 	{
@@ -57,6 +76,15 @@ class Redis implements IRepository
 			throw new \RuntimeException( 'Redis extension is not loaded' );
 		}
 
+		// Parse URL if provided
+		$parsedConfig = [];
+		if( isset( $config['url'] ) )
+		{
+			$parsedConfig = $this->parseRedisUrl( $config['url'] );
+			unset( $config['url'] );
+		}
+
+		// Merge: defaults < parsed URL < explicit config
 		$this->config = array_merge( [
 			'host' => '127.0.0.1',
 			'port' => 6379,
@@ -64,8 +92,9 @@ class Redis implements IRepository
 			'prefix' => '',
 			'timeout' => 2.0,
 			'auth' => null,
-			'persistent' => false
-		], $config );
+			'persistent' => false,
+			'ssl' => false
+		], $parsedConfig, $config );
 
 		$this->prefix = $this->config['prefix'];
 		$this->connect();
@@ -113,10 +142,24 @@ class Redis implements IRepository
 				);
 			}
 
-			// Authenticate if password is provided
+			// Authenticate if credentials are provided
 			if( $this->config['auth'] !== null )
 			{
-				if( !$this->redis->auth( $this->config['auth'] ) )
+				$authResult = false;
+
+				// Support both ACL (username + password) and legacy (password only) authentication
+				if( is_array( $this->config['auth'] ) )
+				{
+					// Redis 6.0+ ACL authentication with username and password
+					$authResult = $this->redis->auth( $this->config['auth'] );
+				}
+				else
+				{
+					// Legacy password-only authentication
+					$authResult = $this->redis->auth( $this->config['auth'] );
+				}
+
+				if( !$authResult )
 				{
 					throw new \RuntimeException( 'Redis authentication failed' );
 				}
@@ -142,6 +185,69 @@ class Redis implements IRepository
 				$e
 			);
 		}
+	}
+
+	/**
+	 * Parse a Redis URL into connection configuration.
+	 *
+	 * Supports both redis:// and rediss:// (SSL/TLS) schemes.
+	 *
+	 * @param string $url Redis URL in format: redis://[username:password@]host[:port][/database]
+	 * @return array Parsed configuration array
+	 * @throws \InvalidArgumentException If URL format is invalid
+	 */
+	private function parseRedisUrl( string $url ): array
+	{
+		$parsed = parse_url( $url );
+
+		if( $parsed === false )
+		{
+			throw new \InvalidArgumentException( 'Invalid Redis URL format' );
+		}
+
+		// Validate scheme
+		if( !isset( $parsed['scheme'] ) || !in_array( $parsed['scheme'], [ 'redis', 'rediss' ] ) )
+		{
+			throw new \InvalidArgumentException( 'Redis URL must use redis:// or rediss:// scheme' );
+		}
+
+		// Extract configuration
+		$config = [
+			'host' => $parsed['host'] ?? '127.0.0.1',
+			'port' => $parsed['port'] ?? 6379,
+			'database' => 0,
+			'ssl' => $parsed['scheme'] === 'rediss'
+		];
+
+		// Extract database from path (e.g., /1 means database 1)
+		if( isset( $parsed['path'] ) && $parsed['path'] !== '/' )
+		{
+			$database = ltrim( $parsed['path'], '/' );
+			if( is_numeric( $database ) )
+			{
+				$config['database'] = (int)$database;
+			}
+		}
+
+		// Extract authentication
+		if( isset( $parsed['user'] ) || isset( $parsed['pass'] ) )
+		{
+			$username = $parsed['user'] ?? null;
+			$password = $parsed['pass'] ?? null;
+
+			// If both username and password are provided, use ACL format
+			if( $username !== null && $password !== null )
+			{
+				$config['auth'] = [ $username, $password ];
+			}
+			// If only password is provided (username is empty), use password-only format
+			elseif( $password !== null )
+			{
+				$config['auth'] = $password;
+			}
+		}
+
+		return $config;
 	}
 
 	/**

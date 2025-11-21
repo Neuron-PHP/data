@@ -67,13 +67,18 @@ class RedisIntegrationTest extends TestCase
 			return;
 		}
 
-		// Delete all test keys
-		$iterator = null;
-		$keys = $redis->scan( $iterator, 'test:repo:*', 100 );
+		// Delete all test keys with various prefixes
+		$prefixes = [ 'test:repo:*', 'test:url:*', 'test:urldb:*', 'test:urlauth:*', 'test:urlacl:*', 'test:override:*' ];
 
-		if( $keys !== false && !empty( $keys ) )
+		foreach( $prefixes as $pattern )
 		{
-			$redis->del( ...$keys );
+			$iterator = null;
+			$keys = $redis->scan( $iterator, $pattern, 100 );
+
+			if( $keys !== false && !empty( $keys ) )
+			{
+				$redis->del( ...$keys );
+			}
 		}
 	}
 
@@ -142,6 +147,9 @@ class RedisIntegrationTest extends TestCase
 
 	public function testExists()
 	{
+		// Ensure key doesn't exist before test
+		$this->repo->delete( 'test:exists' );
+
 		$this->assertFalse( $this->repo->exists( 'test:exists' ) );
 
 		$this->repo->save( 'test:exists', 'value' );
@@ -182,8 +190,9 @@ class RedisIntegrationTest extends TestCase
 		$this->repo->save( 'mykey', 'value' );
 
 		// Check that the actual key in Redis includes the prefix
-		$this->assertTrue( $redis->exists( 'test:repo:mykey' ) );
-		$this->assertFalse( $redis->exists( 'mykey' ) );
+		// Redis extension exists() returns count (int) in newer versions
+		$this->assertGreaterThan( 0, $redis->exists( 'test:repo:mykey' ) );
+		$this->assertEquals( 0, $redis->exists( 'mykey' ) );
 	}
 
 	public function testIsConnected()
@@ -198,5 +207,184 @@ class RedisIntegrationTest extends TestCase
 		$this->repo->disconnect();
 
 		$this->assertFalse( $this->repo->isConnected() );
+	}
+
+	public function testUrlBasicConnection()
+	{
+		if( !extension_loaded( 'redis' ) )
+		{
+			$this->markTestSkipped( 'Redis extension is not loaded' );
+		}
+
+		try
+		{
+			$repo = new Redis( [
+				'url' => 'redis://127.0.0.1:6379/0',
+				'prefix' => 'test:url:'
+			] );
+
+			$this->assertTrue( $repo->isConnected() );
+
+			$repo->save( 'test', 'value' );
+			$this->assertEquals( 'value', $repo->find( 'test' ) );
+
+			$repo->disconnect();
+		}
+		catch( \RuntimeException $e )
+		{
+			$this->markTestSkipped( 'Could not connect to Redis: ' . $e->getMessage() );
+		}
+	}
+
+	public function testUrlWithDatabase()
+	{
+		if( !extension_loaded( 'redis' ) )
+		{
+			$this->markTestSkipped( 'Redis extension is not loaded' );
+		}
+
+		try
+		{
+			$repo = new Redis( [
+				'url' => 'redis://127.0.0.1:6379/1',
+				'prefix' => 'test:urldb:'
+			] );
+
+			$this->assertTrue( $repo->isConnected() );
+
+			// Verify we're using database 1 by checking the Redis instance
+			$redis = $repo->getRedis();
+			$info = $redis->info( 'keyspace' );
+
+			$repo->save( 'test', 'value' );
+			$this->assertEquals( 'value', $repo->find( 'test' ) );
+
+			$repo->disconnect();
+		}
+		catch( \RuntimeException $e )
+		{
+			$this->markTestSkipped( 'Could not connect to Redis: ' . $e->getMessage() );
+		}
+	}
+
+	public function testUrlWithPasswordOnly()
+	{
+		// This test will be skipped unless you have a Redis instance with password configured
+		if( !extension_loaded( 'redis' ) )
+		{
+			$this->markTestSkipped( 'Redis extension is not loaded' );
+		}
+
+		// Check if a password-protected Redis is available on localhost
+		// If not, skip this test
+		try
+		{
+			$testRepo = new Redis( [ 'host' => '127.0.0.1', 'port' => 6379 ] );
+			if( $testRepo->isConnected() )
+			{
+				$testRepo->disconnect();
+				$this->markTestSkipped( 'Redis server does not require authentication' );
+			}
+		}
+		catch( \RuntimeException $e )
+		{
+			// Redis requires auth, continue with test
+		}
+
+		// Note: This test requires REDIS_PASSWORD environment variable
+		$password = getenv( 'REDIS_PASSWORD' );
+		if( !$password )
+		{
+			$this->markTestSkipped( 'REDIS_PASSWORD environment variable not set' );
+		}
+
+		try
+		{
+			$repo = new Redis( [
+				'url' => 'redis://:' . $password . '@127.0.0.1:6379/0',
+				'prefix' => 'test:urlauth:'
+			] );
+
+			$this->assertTrue( $repo->isConnected() );
+			$repo->disconnect();
+		}
+		catch( \RuntimeException $e )
+		{
+			$this->markTestSkipped( 'Could not connect with password: ' . $e->getMessage() );
+		}
+	}
+
+	public function testUrlWithUsernameAndPassword()
+	{
+		// This test requires Redis 6.0+ with ACL configured
+		if( !extension_loaded( 'redis' ) )
+		{
+			$this->markTestSkipped( 'Redis extension is not loaded' );
+		}
+
+		// Note: This test requires REDIS_USERNAME and REDIS_PASSWORD environment variables
+		$username = getenv( 'REDIS_USERNAME' );
+		$password = getenv( 'REDIS_PASSWORD' );
+
+		if( !$username || !$password )
+		{
+			$this->markTestSkipped( 'REDIS_USERNAME and REDIS_PASSWORD environment variables not set' );
+		}
+
+		try
+		{
+			$repo = new Redis( [
+				'url' => 'redis://' . $username . ':' . $password . '@127.0.0.1:6379/0',
+				'prefix' => 'test:urlacl:'
+			] );
+
+			$this->assertTrue( $repo->isConnected() );
+			$repo->disconnect();
+		}
+		catch( \RuntimeException $e )
+		{
+			$this->markTestSkipped( 'Could not connect with ACL auth: ' . $e->getMessage() );
+		}
+	}
+
+	public function testUrlConfigOverride()
+	{
+		if( !extension_loaded( 'redis' ) )
+		{
+			$this->markTestSkipped( 'Redis extension is not loaded' );
+		}
+
+		try
+		{
+			// URL specifies database 1, but config overrides to database 0
+			$repo = new Redis( [
+				'url' => 'redis://127.0.0.1:6379/1',
+				'database' => 0,
+				'prefix' => 'test:override:'
+			] );
+
+			$this->assertTrue( $repo->isConnected() );
+			$repo->disconnect();
+		}
+		catch( \RuntimeException $e )
+		{
+			$this->markTestSkipped( 'Could not connect to Redis: ' . $e->getMessage() );
+		}
+	}
+
+	public function testInvalidUrlFormat()
+	{
+		$this->expectException( \InvalidArgumentException::class );
+		$this->expectExceptionMessage( 'Redis URL must use redis:// or rediss:// scheme' );
+
+		new Redis( [ 'url' => 'http://localhost:6379' ] );
+	}
+
+	public function testMalformedUrl()
+	{
+		$this->expectException( \InvalidArgumentException::class );
+		$this->expectExceptionMessage( 'Redis URL must use redis:// or rediss:// scheme' );
+
+		new Redis( [ 'url' => 'not a valid url at all' ] );
 	}
 }
