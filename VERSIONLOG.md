@@ -1,4 +1,5 @@
 ## 0.8.7
+* Added support for redis url and username.
 
 ## 0.8.6 2025-11-19
 * Added redis repository.
