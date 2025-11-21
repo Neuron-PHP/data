@@ -1,3 +1,5 @@
+## 0.8.8
+
 ## 0.8.7 2025-11-21
 * Added support for redis url and username.
 
