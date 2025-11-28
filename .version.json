@@ -1,12 +1,7 @@
 {
   "strategy": "semver",
   "major": 0,
-<<<<<<< HEAD
   "minor": 9,
   "patch": 0,
-=======
-  "minor": 8,
-  "patch": 8,
->>>>>>> 4ab70b7e4ecf1975f8f86481c37475397aff7e2e
   "build": 0
 }
