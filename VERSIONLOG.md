@@ -1,4 +1,4 @@
-## 0.9.0
+## 0.9.0 2025-11-28
 * Breaking change: refactored namespace names.
 * Refactored version and added a factory.
 
