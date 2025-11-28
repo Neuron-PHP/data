@@ -2,7 +2,7 @@
 
 namespace Data\Repository;
 
-use Neuron\Data\Repository\Memory;
+use Neuron\Data\Repositories\Memory;
 use PHPUnit\Framework\TestCase;
 
 class MemoryTest extends TestCase

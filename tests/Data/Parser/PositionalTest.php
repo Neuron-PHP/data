@@ -1,12 +1,12 @@
 <?php
 
-use Neuron\Data\Parser;
+use Neuron\Data\Parsers;
 
 class PositionalTest extends PHPUnit\Framework\TestCase
 {
 	public function testPass()
 	{
-		$Parser = new Parser\Positional();
+		$Parser = new Parsers\Positional();
 
 		$aRet = $Parser->parse( "text1,text2,text3,text4",
 			[

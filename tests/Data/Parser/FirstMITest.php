@@ -1,6 +1,6 @@
 <?php
 
-use Neuron\Data\Parser;
+use Neuron\Data\Parsers;
 use PHPUnit\Framework\TestCase;
 
 class FirstMITest extends PHPUnit\Framework\TestCase
@@ -8,7 +8,7 @@ class FirstMITest extends PHPUnit\Framework\TestCase
 
 	public function testParse()
 	{
-		$Parser = new Parser\FirstMI();
+		$Parser = new Parsers\FirstMI();
 
 		list( $First, $Middle ) = $Parser->parse( "Alfred E" );
 
@@ -18,7 +18,7 @@ class FirstMITest extends PHPUnit\Framework\TestCase
 
 	public function testParseWithPeriod()
 	{
-		$Parser = new Parser\FirstMI();
+		$Parser = new Parsers\FirstMI();
 
 		list( $First, $Middle ) = $Parser->parse( "Alfred E." );
 
@@ -28,7 +28,7 @@ class FirstMITest extends PHPUnit\Framework\TestCase
 
 	public function testFirstOnly()
 	{
-		$Parser = new Parser\FirstMI();
+		$Parser = new Parsers\FirstMI();
 
 		list( $First, $Middle ) = $Parser->parse( "Alfred" );
 

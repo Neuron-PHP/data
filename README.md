@@ -104,9 +104,9 @@ The `SettingManager` provides a unified interface for configuration from multipl
 ### Basic Usage
 
 ```php
-use Neuron\Data\Setting\SettingManager;
-use Neuron\Data\Setting\Source\Yaml;
-use Neuron\Data\Setting\Source\Env;
+use Neuron\Data\Settings\SettingManager;
+use Neuron\Data\Settings\Source\Yaml;
+use Neuron\Data\Settings\Source\Env;
 
 // Create primary source (YAML file)
 $yamlSource = new Yaml('/path/to/neuron.yaml');
@@ -170,7 +170,7 @@ ttl = 3600
 ### Memory Source
 
 ```php
-use Neuron\Data\Setting\Source\Memory;
+use Neuron\Data\Settings\Source\Memory;
 
 $memory = new Memory();
 $memory->set('app', 'name', 'My Application');
@@ -240,7 +240,7 @@ Specialized objects for common data structures with built-in validation and mani
 Works with semantic versioning and integrates with the [Bump](https://github.com/ljonesfl/bump) utility.
 
 ```php
-use Neuron\Data\Object\Version;
+use Neuron\Data\Objects\Version;
 
 $version = new Version();
 
@@ -271,7 +271,7 @@ $version->saveToFile('.version.json');
 Manage date ranges with validation and comparison.
 
 ```php
-use Neuron\Data\Object\DateRange;
+use Neuron\Data\Objects\DateRange;
 
 $range = new DateRange(
     new DateTime('2024-01-01'),
@@ -297,7 +297,7 @@ echo $range->format('Y-m-d');     // "2024-01-01 to 2024-12-31"
 Handle numeric ranges with validation.
 
 ```php
-use Neuron\Data\Object\NumericRange;
+use Neuron\Data\Objects\NumericRange;
 
 $range = new NumericRange(10, 100);
 
@@ -322,7 +322,7 @@ if ($range->isValid()) {
 Geographic coordinate handling with distance calculations.
 
 ```php
-use Neuron\Data\Object\GpsPoint;
+use Neuron\Data\Objects\GpsPoint;
 
 // Create GPS points
 $point1 = new GpsPoint(40.7128, -74.0060);  // New York
@@ -353,7 +353,7 @@ Data parsing utilities for various formats and structures.
 Parse CSV data with custom delimiters and headers.
 
 ```php
-use Neuron\Data\Parser\CSV;
+use Neuron\Data\Parsers\CSV;
 
 $csv = new CSV();
 
@@ -377,7 +377,7 @@ $data = $csv->parseFile('/path/to/data.csv');
 Parse fixed-width positional data.
 
 ```php
-use Neuron\Data\Parser\Positional;
+use Neuron\Data\Parsers\Positional;
 
 $parser = new Positional([
     'name' => [0, 10],   // Position 0-10
@@ -394,8 +394,8 @@ $data = $parser->parse("John Doe  30 New York  ");
 Parse names in various formats.
 
 ```php
-use Neuron\Data\Parser\FirstMI;
-use Neuron\Data\Parser\LastFirstMI;
+use Neuron\Data\Parsers\FirstMI;
+use Neuron\Data\Parsers\LastFirstMI;
 
 // Parse "First MI Last" format
 $parser = new FirstMI();

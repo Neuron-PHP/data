@@ -2,7 +2,7 @@
 
 namespace Tests\Data\Setting\Source;
 
-use Neuron\Data\Setting\Source\Env;
+use Neuron\Data\Settings\Source\Env;
 use Neuron\Data\Env as RealEnv;
 use PHPUnit\Framework\TestCase;
 

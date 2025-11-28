@@ -1,6 +1,6 @@
 <?php
 
-use Neuron\Data\Parser\CSV;
+use Neuron\Data\Parsers\CSV;
 
 class CSVTest extends PHPUnit\Framework\TestCase
 {

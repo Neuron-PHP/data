@@ -1,7 +1,7 @@
 <?php
 namespace Data\Setting\Source;
 
-use Neuron\Data\Setting\Source\Yaml;
+use Neuron\Data\Settings\Source\Yaml;
 use PHPUnit\Framework\TestCase;
 
 class YamlTest extends TestCase
