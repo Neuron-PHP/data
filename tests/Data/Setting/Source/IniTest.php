@@ -2,7 +2,7 @@
 
 namespace Data\Setting\Source;
 
-use Neuron\Data\Setting\Source\Ini;
+use Neuron\Data\Settings\Source\Ini;
 use PHPUnit\Framework\TestCase;
 
 class IniTest extends TestCase

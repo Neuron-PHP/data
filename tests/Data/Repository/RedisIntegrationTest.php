@@ -2,7 +2,7 @@
 
 namespace Data\Repository;
 
-use Neuron\Data\Repository\Redis;
+use Neuron\Data\Repositories\Redis;
 use PHPUnit\Framework\TestCase;
 
 /**

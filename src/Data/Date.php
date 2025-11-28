@@ -2,7 +2,7 @@
 
 namespace Neuron\Data;
 
-use Neuron\Data\Object\DateRange;
+use Neuron\Data\Objects\DateRange;
 use Neuron\Util;
 
 /**

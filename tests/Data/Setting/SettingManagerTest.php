@@ -2,8 +2,8 @@
 
 namespace Data\Setting;
 
-use Neuron\Data\Setting\SettingManager;
-use Neuron\Data\Setting\Source;
+use Neuron\Data\Settings\SettingManager;
+use Neuron\Data\Settings\Source;
 use Neuron\Data;
 use PHPUnit\Framework\TestCase;
 

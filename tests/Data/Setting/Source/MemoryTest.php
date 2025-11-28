@@ -2,8 +2,8 @@
 
 namespace Data\Setting\Source;
 
-use Neuron\Data\Setting\Source\Env;
-use Neuron\Data\Setting\Source\Memory;
+use Neuron\Data\Settings\Source\Env;
+use Neuron\Data\Settings\Source\Memory;
 use PHPUnit\Framework\TestCase;
 
 class MemoryTest extends TestCase

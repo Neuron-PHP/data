@@ -436,7 +436,7 @@ class DateTest extends PHPUnit\Framework\TestCase
 	{
 		$this->assertEquals(
 			Date::getWorkingDays(
-				new \Neuron\Data\Object\DateRange( '2019-06-01', '2019-06-30' )
+				new \Neuron\Data\Objects\DateRange( '2019-06-01', '2019-06-30' )
 			),
 			20
 		);

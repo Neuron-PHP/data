@@ -1,12 +1,12 @@
 <?php
 
-use Neuron\Data\Parser;
+use Neuron\Data\Parsers;
 
 class LastFirstMITest extends PHPUnit\Framework\TestCase
 {
 	public function testPass()
 	{
-		$Parser = new Parser\LastFirstMI();
+		$Parser = new Parsers\LastFirstMI();
 
 
 		list( $sFirst, $sMiddle, $sLast ) = $Parser->parse( "Newman, Alfred E" );
