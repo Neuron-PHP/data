@@ -20,6 +20,11 @@ class Env implements ISettingSource
 	 * uppercased.
 	 * e.g. get( 'test', 'name' ) will look for the environment variable TEST_NAME.
 	 *
+	 * Supports automatic array parsing:
+	 * - JSON format: '["value1","value2"]' returns array
+	 * - Comma-separated: 'value1,value2,value3' returns array
+	 * - Plain string: 'value' returns string (backward compatible)
+	 *
 	 * @param string $sectionName
 	 * @param string $name
 	 * @return mixed
@@ -28,7 +33,53 @@ class Env implements ISettingSource
 	{
 		$sectionName = strtoupper( $sectionName );
 		$name = strtoupper( $name );
-		return $this->env->get( "{$sectionName}_{$name}" );
+		$value = $this->env->get( "{$sectionName}_{$name}" );
+
+		if( $value === null )
+		{
+			return null;
+		}
+
+		return $this->parseValue( $value );
+	}
+
+	/**
+	 * Parse environment variable value, auto-detecting arrays.
+	 *
+	 * @param string $value
+	 * @return mixed
+	 */
+	private function parseValue( string $value ): mixed
+	{
+		// Trim the value
+		$value = trim( $value );
+
+		// Empty string
+		if( $value === '' )
+		{
+			return $value;
+		}
+
+		// Try JSON parsing if value starts with [ or {
+		if( in_array( $value[0], [ '[', '{' ] ) )
+		{
+			$decoded = json_decode( $value, true );
+			if( json_last_error() === JSON_ERROR_NONE )
+			{
+				return $decoded;
+			}
+			// If JSON parsing fails, fall through to return as string
+		}
+
+		// Try comma-separated parsing
+		if( strpos( $value, ',' ) !== false )
+		{
+			$parts = explode( ',', $value );
+			return array_map( 'trim', $parts );
+		}
+
+		// Return as-is (plain string)
+		return $value;
 	}
 
 	/**
@@ -131,6 +182,7 @@ class Env implements ISettingSource
 	 * Get the entire section as an array.
 	 * For environment variables we scan matching keys and return an associative array
 	 * of name => value. Returns null if a section not present.
+	 * Values are automatically parsed (arrays from JSON/CSV are returned as arrays).
 	 *
 	 * @param string $sectionName
 	 * @return array|null
@@ -149,8 +201,8 @@ class Env implements ISettingSource
 		$config = [];
 		foreach( $names as $name )
 		{
-			$key = strtoupper( $section . '_' . $name );
-			$value = $this->env->get( $key );
+			// Use the class's get() method to leverage value parsing
+			$value = $this->get( $sectionName, $name );
 			if( $value !== null )
 			{
 				$config[$name] = $value;
