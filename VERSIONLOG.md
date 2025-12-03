@@ -1,3 +1,6 @@
+## 0.9.1 2025-12-03
+* Added array support to ENV setting source.
+
 ## 0.9.0 2025-11-28
 * Breaking change: refactored namespace names.
 * Refactored version and added a factory.
