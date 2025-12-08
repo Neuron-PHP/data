@@ -7,3 +7,5 @@ node_modules
 .DS_STORE
 public_html/
 .phpunit.result.cache
+
+coverage.xml

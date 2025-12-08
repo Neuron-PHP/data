@@ -1,4 +1,5 @@
 [![CI](https://github.com/Neuron-PHP/data/actions/workflows/ci.yml/badge.svg)](https://github.com/Neuron-PHP/data/actions)
+[![codecov](https://codecov.io/gh/Neuron-PHP/data/graph/badge.svg)](https://codecov.io/gh/Neuron-PHP/data)
 # Neuron-PHP Data
 
 A comprehensive data handling and utility component for PHP 8.4+ that provides essential data manipulation, filtering, parsing, and configuration management tools for the Neuron framework.
