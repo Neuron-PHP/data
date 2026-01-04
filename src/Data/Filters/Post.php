@@ -16,6 +16,11 @@ class Post implements IFilter
 	public static function filterScalar( string $data, mixed $default = null ): mixed
 	{
 		$value = filter_input( INPUT_POST, $data );
+		// Fallback to $_POST for PHP built-in server compatibility
+		if( $value === null || $value === false )
+		{
+			$value = $_POST[ $data ] ?? null;
+		}
 		return ($value !== null && $value !== false) ? $value : $default;
 	}
 
