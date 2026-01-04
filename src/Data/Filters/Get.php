@@ -20,8 +20,9 @@ class Get implements IFilter
 
 		// Fallback to $_GET for PHP built-in server compatibility
 		// filter_input() reads from original input buffer which doesn't see runtime $_GET modifications
-		if ($value === null || $value === false) {
-			$value = $_GET[$data] ?? null;
+		if( $value === null || $value === false )
+		{
+			$value = $_GET[ $data ] ?? null;
 		}
 
 		return ($value !== null && $value !== false) ? $value : $default;
