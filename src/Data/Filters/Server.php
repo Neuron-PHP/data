@@ -15,7 +15,15 @@ class Server implements IFilter
 	public static function filterScalar( string $data, mixed $default = null ): mixed
 	{
 		$value = filter_input( INPUT_SERVER, $data );
-		return $value !== null ? $value : $default;
+
+		// Fallback to $_SERVER for PHP built-in server compatibility
+		// filter_input() reads from original input buffer which doesn't see runtime $_SERVER modifications
+		if( $value === null || $value === false )
+		{
+			$value = $_SERVER[ $data ] ?? null;
+		}
+
+		return ($value !== null && $value !== false) ? $value : $default;
 	}
 
 	/**
