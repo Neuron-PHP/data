@@ -2,6 +2,8 @@
 
 namespace Neuron\Data\Factories;
 
+use Neuron\Core\System\IFileSystem;
+use Neuron\Core\System\RealFileSystem;
 use Neuron\Data\Objects;
 
 class Version
@@ -9,18 +11,26 @@ class Version
 	/**
 	 * Loads version information from a json file.
 	 * @param string $file
+	 * @param IFileSystem|null $fs File system implementation (null = use real file system)
 	 * @return Objects\Version
 	 * @throws \Exception
 	 */
 
-	static public function fromFile( string $file = '.version.json' ): Objects\Version
+	static public function fromFile( string $file = '.version.json', ?IFileSystem $fs = null ): Objects\Version
 	{
-		if( !file_exists( $file ) )
+		$fs = $fs ?? new RealFileSystem();
+
+		if( !$fs->fileExists( $file ) )
 		{
 			throw new \Exception( "Cannot find version file '$file'" );
 		}
 
-		$data = file_get_contents( $file );
+		$data = $fs->readFile( $file );
+
+		if( $data === false )
+		{
+			throw new \Exception( "Cannot read version file '$file'" );
+		}
 
 		return self::fromString( $data );
 	}

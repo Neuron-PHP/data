@@ -1,3 +1,5 @@
+## 0.9.2 2026-01-04
+
 ## 0.9.1 2025-12-03
 * Added array support to ENV setting source.
 

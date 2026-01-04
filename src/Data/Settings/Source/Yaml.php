@@ -2,6 +2,8 @@
 
 namespace Neuron\Data\Settings\Source;
 
+use Neuron\Core\System\IFileSystem;
+use Neuron\Core\System\RealFileSystem;
 use Neuron\Log\Log;
 use Symfony\Component\Yaml\Yaml as YamlParser;
 use Symfony\Component\Yaml\Exception\ParseException;
@@ -12,21 +14,32 @@ use Symfony\Component\Yaml\Exception\ParseException;
 class Yaml implements ISettingSource
 {
 	private array $settings = array();
+	private IFileSystem $fs;
 
 	/**
+	 * @param string $file Path to YAML file
+	 * @param IFileSystem|null $fs File system implementation (null = use real file system)
 	 * @throws \Exception
 	 */
-
-	public function __construct( $file )
+	public function __construct( string $file, ?IFileSystem $fs = null )
 	{
-		if( !file_exists( $file ) )
+		$this->fs = $fs ?? new RealFileSystem();
+
+		if( !$this->fs->fileExists( $file ) )
 		{
 			throw new \Exception( "Setting\Source\Yaml Cannot find $file" );
 		}
 
+		$content = $this->fs->readFile( $file );
+
+		if( $content === false )
+		{
+			throw new \Exception( "Setting\Source\Yaml Cannot read $file" );
+		}
+
 		try
 		{
-			$this->settings = YamlParser::parseFile( $file );
+			$this->settings = YamlParser::parse( $content );
 		}
 		catch( ParseException $exception )
 		{

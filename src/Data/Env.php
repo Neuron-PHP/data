@@ -2,6 +2,9 @@
 
 namespace Neuron\Data;
 
+use Neuron\Core\System\IFileSystem;
+use Neuron\Core\System\RealFileSystem;
+
 /**
  * Environment variable manager and .env file loader for the Neuron framework.
  * 
@@ -52,14 +55,17 @@ class Env
 {
 	private static ?Env 		$instance = null;
 	private 			?string	$fileName;
+	private IFileSystem $fs;
 
 	/**
 	 * Env constructor.
 	 * @param string|null $fileName
+	 * @param IFileSystem|null $fs File system implementation (null = use real file system)
 	 */
-	private function __construct( ?string $fileName = null )
+	private function __construct( ?string $fileName = null, ?IFileSystem $fs = null )
 	{
 		$this->fileName = $fileName;
+		$this->fs = $fs ?? new RealFileSystem();
 
 		if( is_null( $this->fileName ) )
 		{
@@ -79,15 +85,15 @@ class Env
 	}
 
 	/**
-	 * @param null $envFile
+	 * @param string|null $envFile
+	 * @param IFileSystem|null $fs File system implementation (null = use real file system)
 	 * @return Env|null
 	 */
-
-	public static function getInstance( $envFile = null ): ?Env
+	public static function getInstance( ?string $envFile = null, ?IFileSystem $fs = null ): ?Env
 	{
 		if ( is_null( self::$instance ) )
 		{
-			self::$instance = new self( $envFile );
+			self::$instance = new self( $envFile, $fs );
 		}
 
 		return self::$instance;
@@ -99,16 +105,23 @@ class Env
 
 	public function loadEnvFile(): void
 	{
-		if( !file_exists( $this->fileName ) )
+		if( !$this->fs->fileExists( $this->fileName ) )
 		{
 			return;
 		}
 
-		$configs = file( $this->fileName );
+		$content = $this->fs->readFile( $this->fileName );
+
+		if( $content === false )
+		{
+			return;
+		}
+
+		$configs = explode( "\n", $content );
 
 		foreach( $configs as $config )
 		{
-			$config = trim( str_replace( "\n", "", $config ) );
+			$config = trim( $config );
 
 			if( $config && $config[ 0 ] != '#')
 			{

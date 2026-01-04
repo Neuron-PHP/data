@@ -2,27 +2,40 @@
 
 namespace Neuron\Data\Settings\Source;
 
+use Neuron\Core\System\IFileSystem;
+use Neuron\Core\System\RealFileSystem;
+
 /**
  * .ini file based settings.
  */
 class Ini implements ISettingSource
 {
 	private array $settings = array();
+	private IFileSystem $fs;
 
 	/**
 	 * Ini constructor.
-	 * @param $file
+	 * @param string $file Path to INI file
+	 * @param IFileSystem|null $fs File system implementation (null = use real file system)
 	 * @throws \Exception
 	 */
-
-	public function __construct( $file )
+	public function __construct( string $file, ?IFileSystem $fs = null )
 	{
-		if( !file_exists( $file ) )
+		$this->fs = $fs ?? new RealFileSystem();
+
+		if( !$this->fs->fileExists( $file ) )
 		{
 			throw new \Exception( "Setting\Source\Ini Cannot open $file" );
 		}
 
-		$this->settings = parse_ini_file( $file, true );
+		$content = $this->fs->readFile( $file );
+
+		if( $content === false )
+		{
+			throw new \Exception( "Setting\Source\Ini Cannot read $file" );
+		}
+
+		$this->settings = parse_ini_string( $content, true );
 	}
 
 	/**
