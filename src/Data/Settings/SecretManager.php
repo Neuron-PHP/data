@@ -233,7 +233,11 @@ class SecretManager
 		$oldKey = $this->readKey( $oldKeyPath );
 
 		// Check if we're rotating the key in-place
-		$inPlaceRotation = realpath( $oldKeyPath ) === realpath( $newKeyPath );
+		// We can't use realpath() on newKeyPath as it may not exist yet
+		// Instead, normalize both paths and compare them
+		$normalizedOldPath = $this->normalizePath( $oldKeyPath );
+		$normalizedNewPath = $this->normalizePath( $newKeyPath );
+		$inPlaceRotation = $normalizedOldPath === $normalizedNewPath;
 
 		// Create temporary files for atomic operation with secure tokens
 		$tempKeyFile = sys_get_temp_dir() . '/neuron_key_' . $this->generateSecureToken() . '.tmp';
@@ -463,5 +467,51 @@ class SecretManager
 		{
 			throw new \Exception( 'Failed to generate secure random token: ' . $e->getMessage() );
 		}
+	}
+
+	/**
+	 * Normalize a file path for comparison
+	 *
+	 * This method normalizes a path without requiring the file to exist,
+	 * unlike realpath() which returns false for non-existent files.
+	 *
+	 * @param string $path The path to normalize
+	 * @return string The normalized absolute path
+	 */
+	private function normalizePath( string $path ): string
+	{
+		// If the file exists, use realpath for accurate normalization
+		if( file_exists( $path ) )
+		{
+			return realpath( $path );
+		}
+
+		// For non-existent files, manually normalize the path
+		// Convert to absolute path if relative
+		if( $path[0] !== '/' && $path[0] !== '\\' && !preg_match( '/^[A-Za-z]:/', $path ) )
+		{
+			$path = getcwd() . DIRECTORY_SEPARATOR . $path;
+		}
+
+		// Split into directory and filename
+		$dir = dirname( $path );
+		$file = basename( $path );
+
+		// If the directory exists, use realpath on it
+		if( file_exists( $dir ) )
+		{
+			$dir = realpath( $dir );
+		}
+		else
+		{
+			// Normalize the directory path manually
+			// Remove trailing slashes
+			$dir = rtrim( $dir, '/\\' );
+			// Replace multiple slashes with single ones
+			$dir = preg_replace( '#[/\\\\]+#', DIRECTORY_SEPARATOR, $dir );
+		}
+
+		// Combine normalized directory with filename
+		return $dir . DIRECTORY_SEPARATOR . $file;
 	}
 }

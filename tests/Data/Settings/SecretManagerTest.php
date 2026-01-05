@@ -484,6 +484,122 @@ class SecretManagerTest extends TestCase
 	}
 
 	/**
+	 * Test that in-place rotation is correctly detected with non-existent new key path
+	 */
+	public function testInPlaceRotationDetectionWithNonExistentNewKey(): void
+	{
+		// Use real filesystem for this test
+		$realFs = new \Neuron\Core\System\RealFileSystem();
+		$realEncryptor = $this->createMock( IEncryptor::class );
+		$realSecretManager = new SecretManager( $realEncryptor, $realFs );
+
+		$oldKey = bin2hex( random_bytes( 32 ) );
+		$content = "database:\n  password: secret123";
+		$oldEncrypted = base64_encode( 'old_encrypted_' . $content );
+
+		// Create test files
+		file_put_contents( $this->testCredentialsPath, $oldEncrypted );
+		file_put_contents( $this->testKeyPath, $oldKey );
+
+		// Try to rotate in-place (same path, but new key doesn't exist yet)
+		// This should be detected as in-place rotation
+		$samePath = $this->testKeyPath;
+
+		// Set up mocks for rotation
+		$newKey = bin2hex( random_bytes( 32 ) );
+		$newEncrypted = base64_encode( 'new_encrypted_' . $content );
+
+		$realEncryptor->expects( $this->exactly( 2 ) )
+			->method( 'decrypt' )
+			->withConsecutive(
+				[$oldEncrypted, $oldKey],
+				[$newEncrypted, $newKey]
+			)
+			->willReturnOnConsecutiveCalls( $content, $content );
+
+		$realEncryptor->expects( $this->once() )
+			->method( 'generateKey' )
+			->willReturn( $newKey );
+
+		$realEncryptor->expects( $this->once() )
+			->method( 'encrypt' )
+			->with( $content, $newKey )
+			->willReturn( $newEncrypted );
+
+		$result = $realSecretManager->rotateKey(
+			$this->testCredentialsPath,
+			$this->testKeyPath,
+			$samePath  // Same path as oldKeyPath
+		);
+
+		$this->assertTrue( $result );
+
+		// Verify the key was rotated in-place
+		$this->assertFileExists( $this->testKeyPath );
+		$this->assertEquals( $newKey, trim( file_get_contents( $this->testKeyPath ) ) );
+	}
+
+	/**
+	 * Test that in-place rotation is NOT detected for different paths
+	 */
+	public function testInPlaceRotationNotDetectedForDifferentPaths(): void
+	{
+		// Use real filesystem for this test
+		$realFs = new \Neuron\Core\System\RealFileSystem();
+		$realEncryptor = $this->createMock( IEncryptor::class );
+		$realSecretManager = new SecretManager( $realEncryptor, $realFs );
+
+		$oldKey = bin2hex( random_bytes( 32 ) );
+		$content = "database:\n  password: secret123";
+		$oldEncrypted = base64_encode( 'old_encrypted_' . $content );
+		$newKeyPath = '/tmp/different_key_' . uniqid() . '.key';
+
+		// Create test files
+		file_put_contents( $this->testCredentialsPath, $oldEncrypted );
+		file_put_contents( $this->testKeyPath, $oldKey );
+
+		try {
+			// Set up mocks for rotation
+			$newKey = bin2hex( random_bytes( 32 ) );
+			$newEncrypted = base64_encode( 'new_encrypted_' . $content );
+
+			$realEncryptor->expects( $this->exactly( 2 ) )
+				->method( 'decrypt' )
+				->withConsecutive(
+					[$oldEncrypted, $oldKey],
+					[$newEncrypted, $newKey]
+				)
+				->willReturnOnConsecutiveCalls( $content, $content );
+
+			$realEncryptor->expects( $this->once() )
+				->method( 'generateKey' )
+				->willReturn( $newKey );
+
+			$realEncryptor->expects( $this->once() )
+				->method( 'encrypt' )
+				->with( $content, $newKey )
+				->willReturn( $newEncrypted );
+
+			$result = $realSecretManager->rotateKey(
+				$this->testCredentialsPath,
+				$this->testKeyPath,
+				$newKeyPath  // Different path
+			);
+
+			$this->assertTrue( $result );
+
+			// Verify both keys exist (not in-place)
+			$this->assertFileExists( $this->testKeyPath );
+			$this->assertFileExists( $newKeyPath );
+			$this->assertEquals( $oldKey, trim( file_get_contents( $this->testKeyPath ) ) );
+			$this->assertEquals( $newKey, trim( file_get_contents( $newKeyPath ) ) );
+		} finally {
+			// Clean up
+			@unlink( $newKeyPath );
+		}
+	}
+
+	/**
 	 * Test that temporary files use cryptographically secure tokens
 	 */
 	public function testTempFilesUseSecureTokens(): void

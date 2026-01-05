@@ -93,7 +93,19 @@ class Memory implements ISettingSource
 
 	public function getSection( string $sectionName ) : ?array
 	{
-		return $this->settings[ $sectionName ] ?? null;
+		if( !isset( $this->settings[ $sectionName ] ) )
+		{
+			return null;
+		}
+
+		// Ensure we only return arrays, not scalar values
+		// This shouldn't happen with our constructor, but be defensive
+		if( !is_array( $this->settings[ $sectionName ] ) )
+		{
+			return null;
+		}
+
+		return $this->settings[ $sectionName ];
 	}
 
 	/**
