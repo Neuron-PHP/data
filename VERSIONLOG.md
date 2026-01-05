@@ -1,4 +1,4 @@
-## 0.9.5
+## 0.9.5 2026-01-05
 * Added encrypted environment-specific secrets.
 
 ## 0.9.4 2026-01-04
