@@ -348,6 +348,108 @@ class EncryptedTest extends TestCase
 	}
 
 	/**
+	 * Test that scalar YAML content is handled correctly
+	 */
+	public function testScalarYamlContentIsHandled(): void
+	{
+		$key = 'test_key';
+		$encrypted = 'encrypted_data';
+		$scalarYaml = 'just a string value'; // This will parse as a scalar, not an array
+
+		$this->mockFileSystem->expects( $this->exactly( 2 ) )
+			->method( 'fileExists' )
+			->willReturnMap( [
+				[$this->testCredentialsPath, true],
+				[$this->testKeyPath, true]
+			] );
+
+		$this->mockFileSystem->expects( $this->exactly( 2 ) )
+			->method( 'readFile' )
+			->willReturnMap( [
+				[$this->testKeyPath, $key],
+				[$this->testCredentialsPath, $encrypted]
+			] );
+
+		$this->mockEncryptor->expects( $this->once() )
+			->method( 'decrypt' )
+			->with( $encrypted, trim( $key ) )
+			->willReturn( $scalarYaml );
+
+		$source = new Encrypted(
+			$this->testCredentialsPath,
+			$this->testKeyPath,
+			$this->mockEncryptor,
+			$this->mockFileSystem
+		);
+
+		// getSectionNames should not crash with TypeError
+		$sections = $source->getSectionNames();
+		$this->assertIsArray( $sections );
+		$this->assertContains( 'value', $sections ); // Scalar gets wrapped in 'value' key
+
+		// The scalar value is stored in a 'value' section as an array
+		$section = $source->getSection( 'value' );
+		$this->assertIsArray( $section );
+		$this->assertArrayHasKey( 'data', $section );
+		$this->assertEquals( 'just a string value', $section['data'] );
+
+		// Can also access via get()
+		$value = $source->get( 'value', 'data' );
+		$this->assertEquals( 'just a string value', $value );
+	}
+
+	/**
+	 * Test that numeric YAML content is handled correctly
+	 */
+	public function testNumericYamlContentIsHandled(): void
+	{
+		$key = 'test_key';
+		$encrypted = 'encrypted_data';
+		$numericYaml = '42'; // This will parse as an integer
+
+		$this->mockFileSystem->expects( $this->exactly( 2 ) )
+			->method( 'fileExists' )
+			->willReturnMap( [
+				[$this->testCredentialsPath, true],
+				[$this->testKeyPath, true]
+			] );
+
+		$this->mockFileSystem->expects( $this->exactly( 2 ) )
+			->method( 'readFile' )
+			->willReturnMap( [
+				[$this->testKeyPath, $key],
+				[$this->testCredentialsPath, $encrypted]
+			] );
+
+		$this->mockEncryptor->expects( $this->once() )
+			->method( 'decrypt' )
+			->with( $encrypted, trim( $key ) )
+			->willReturn( $numericYaml );
+
+		$source = new Encrypted(
+			$this->testCredentialsPath,
+			$this->testKeyPath,
+			$this->mockEncryptor,
+			$this->mockFileSystem
+		);
+
+		// Should not crash
+		$sections = $source->getSectionNames();
+		$this->assertIsArray( $sections );
+		$this->assertContains( 'value', $sections );
+
+		// The numeric value is stored in a 'value' section as an array
+		$section = $source->getSection( 'value' );
+		$this->assertIsArray( $section );
+		$this->assertArrayHasKey( 'data', $section );
+		$this->assertEquals( 42, $section['data'] );
+
+		// Can also access via get()
+		$value = $source->get( 'value', 'data' );
+		$this->assertEquals( 42, $value );
+	}
+
+	/**
 	 * Helper method to setup mocks for successful decryption
 	 */
 	private function setupMocksForSuccessfulDecryption( string $key, string $encrypted, string $decrypted ): void

@@ -29,6 +29,9 @@ class EnvRoundTripTest extends TestCase
 		putenv( 'TEST_ARRAY' );
 		putenv( 'TEST_EMPTY_STRING' );
 		putenv( 'TEST_NUMBER' );
+		putenv( 'TEST_MANUAL' );
+		putenv( 'TEST_EMPTY' );
+		putenv( 'TEST_CSV' );
 	}
 
 	/**

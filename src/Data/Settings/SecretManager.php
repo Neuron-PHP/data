@@ -120,12 +120,7 @@ class SecretManager
 			throw new \Exception( "Credentials file not found: $credentialsPath" );
 		}
 
-		if( !$this->fs->fileExists( $keyPath ) )
-		{
-			throw new \Exception( "Key file not found: $keyPath" );
-		}
-
-		$key = trim( $this->fs->readFile( $keyPath ) );
+		$key = $this->readKey( $keyPath );
 		$encrypted = $this->fs->readFile( $credentialsPath );
 
 		return $this->encryptor->decrypt( $encrypted, $key );
@@ -232,13 +227,8 @@ class SecretManager
 			throw new \Exception( "Credentials file not found: $credentialsPath" );
 		}
 
-		if( !$this->fs->fileExists( $oldKeyPath ) )
-		{
-			throw new \Exception( "Old key file not found: $oldKeyPath" );
-		}
-
 		// Read the old key first (don't modify anything yet)
-		$oldKey = trim( $this->fs->readFile( $oldKeyPath ) );
+		$oldKey = $this->readKey( $oldKeyPath );
 
 		// Check if we're rotating the key in-place
 		$inPlaceRotation = realpath( $oldKeyPath ) === realpath( $newKeyPath );
@@ -251,7 +241,7 @@ class SecretManager
 		$backupKeyFile = null;
 		$backupCredentialsFile = $credentialsPath . '.backup_' . $this->generateSecureToken();
 
-		// Track whether credentials have been updated with new key
+		// Track whether credentials have been updated with new key for rollback decisions
 		$credentialsUpdatedWithNewKey = false;
 
 		try
@@ -368,9 +358,8 @@ class SecretManager
 			// Attempt to restore from backups if they exist
 			if( $backupCredentialsFile && $this->fs->fileExists( $backupCredentialsFile ) )
 			{
-				// Only restore if main file was modified
-				if( !$this->fs->fileExists( $credentialsPath ) ||
-				    $this->fs->readFile( $credentialsPath ) !== $encrypted )
+				// Only restore if credentials were updated with the new key
+				if( $credentialsUpdatedWithNewKey )
 				{
 					rename( $backupCredentialsFile, $credentialsPath );
 				}
@@ -399,6 +388,35 @@ class SecretManager
 	}
 
 	/**
+	 * Read a key from file or environment variable
+	 *
+	 * @param string $keyPath Path to key file
+	 * @return string The key content
+	 * @throws \Exception If key not found in file or environment
+	 */
+	private function readKey( string $keyPath ): string
+	{
+		// Try to read from file first
+		if( $this->fs->fileExists( $keyPath ) )
+		{
+			return trim( $this->fs->readFile( $keyPath ) );
+		}
+
+		// Check environment variable as fallback
+		$envKey = 'NEURON_' . strtoupper(
+			str_replace( ['/', '.', '-'], '_', basename( $keyPath, '.key' ) )
+		) . '_KEY';
+
+		$envValue = getenv( $envKey );
+		if( $envValue !== false && $envValue !== '' )
+		{
+			return $envValue;
+		}
+
+		throw new \Exception( "Key not found in file ($keyPath) or environment variable ($envKey)" );
+	}
+
+	/**
 	 * Ensure key exists, create if needed
 	 *
 	 * @param string $keyPath Path to key file
@@ -407,24 +425,15 @@ class SecretManager
 	 */
 	private function ensureKey( string $keyPath ): string
 	{
-		if( !$this->fs->fileExists( $keyPath ) )
+		try
 		{
-			// Check environment variable as fallback
-			$envKey = 'NEURON_' . strtoupper(
-				str_replace( ['/', '.', '-'], '_', basename( $keyPath, '.key' ) )
-			) . '_KEY';
-
-			$envValue = getenv( $envKey );
-			if( $envValue !== false )
-			{
-				return $envValue;
-			}
-
-			// Generate new key
+			return $this->readKey( $keyPath );
+		}
+		catch( \Exception $e )
+		{
+			// Generate new key if not found
 			return $this->generateKey( $keyPath );
 		}
-
-		return trim( $this->fs->readFile( $keyPath ) );
 	}
 
 	/**

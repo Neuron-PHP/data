@@ -17,11 +17,13 @@ class EnvironmentDetectorTest extends TestCase
 		parent::setUp();
 		// Save original environment values
 		$this->originalEnv['APP_ENV'] = getenv( 'APP_ENV' );
+		$this->originalEnv['NEURON_ENV'] = getenv( 'NEURON_ENV' );
 		$this->originalEnv['ENVIRONMENT'] = getenv( 'ENVIRONMENT' );
 		$this->originalEnv['APPLICATION_ENV'] = getenv( 'APPLICATION_ENV' );
 
 		// Clear environment
 		putenv( 'APP_ENV' );
+		putenv( 'NEURON_ENV' );
 		putenv( 'ENVIRONMENT' );
 		putenv( 'APPLICATION_ENV' );
 	}
@@ -49,6 +51,17 @@ class EnvironmentDetectorTest extends TestCase
 	public function testDetectWithAppEnv(): void
 	{
 		putenv( 'APP_ENV=production' );
+
+		$env = EnvironmentDetector::detect();
+		$this->assertEquals( 'production', $env );
+	}
+
+	/**
+	 * Test detection with NEURON_ENV variable
+	 */
+	public function testDetectWithNeuronEnv(): void
+	{
+		putenv( 'NEURON_ENV=production' );
 
 		$env = EnvironmentDetector::detect();
 		$this->assertEquals( 'production', $env );
@@ -83,11 +96,17 @@ class EnvironmentDetectorTest extends TestCase
 	public function testPriorityOrder(): void
 	{
 		putenv( 'APP_ENV=production' );
-		putenv( 'ENVIRONMENT=staging' );
-		putenv( 'APPLICATION_ENV=testing' );
+		putenv( 'NEURON_ENV=staging' );
+		putenv( 'ENVIRONMENT=testing' );
+		putenv( 'APPLICATION_ENV=development' );
 
 		$env = EnvironmentDetector::detect();
 		$this->assertEquals( 'production', $env );
+
+		// Test NEURON_ENV takes precedence when APP_ENV is not set
+		putenv( 'APP_ENV' );
+		$env = EnvironmentDetector::detect();
+		$this->assertEquals( 'staging', $env );
 	}
 
 	/**

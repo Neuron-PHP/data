@@ -76,7 +76,18 @@ class Encrypted implements ISettingSource
 		{
 			$encrypted = $this->fs->readFile( $this->credentialsPath );
 			$decrypted = $this->encryptor->decrypt( $encrypted, $key );
-			$this->settings = YamlParser::parse( $decrypted ) ?? [];
+			$parsed = YamlParser::parse( $decrypted );
+
+			// Ensure parsed result is an array (YAML can contain scalar values)
+			if( !is_array( $parsed ) )
+			{
+				// If it's a scalar or null, wrap it in an array structure
+				$this->settings = $parsed === null ? [] : ['value' => ['data' => $parsed]];
+			}
+			else
+			{
+				$this->settings = $parsed;
+			}
 		}
 		catch( \Exception $e )
 		{

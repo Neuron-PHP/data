@@ -215,10 +215,24 @@ class OpenSSLEncryptorTest extends TestCase
 
 		$encrypted = $this->encryptor->encrypt( $plaintext, $key );
 
-		// The encrypted format is: IV (16 bytes) + encrypted data + MAC (32 bytes)
-		// After base64 decode, first 16 bytes should be the IV
-		$decoded = base64_decode( $encrypted );
-		$this->assertGreaterThanOrEqual( 48, strlen( $decoded ) ); // At least IV + MAC
+		// The encrypted format is JSON: {cipher, encrypted, iv, mac}
+		// Parse the JSON payload
+		$payload = json_decode( $encrypted, true );
+		$this->assertIsArray( $payload, 'Encrypted data should be valid JSON' );
+		$this->assertArrayHasKey( 'iv', $payload, 'Payload should contain IV' );
+		$this->assertArrayHasKey( 'encrypted', $payload, 'Payload should contain encrypted data' );
+		$this->assertArrayHasKey( 'mac', $payload, 'Payload should contain MAC' );
+
+		// Decode and verify the IV
+		$iv = base64_decode( $payload['iv'] );
+		$this->assertEquals( 16, strlen( $iv ), 'IV should be 16 bytes for AES-256-CBC' );
+
+		// Decode and verify the encrypted value
+		$encryptedData = base64_decode( $payload['encrypted'] );
+		$this->assertNotEmpty( $encryptedData, 'Encrypted data should not be empty' );
+
+		// MAC should be a 64-character hex string
+		$this->assertEquals( 64, strlen( $payload['mac'] ), 'MAC should be 64 hex characters (32 bytes)' );
 
 		// Should decrypt successfully
 		$decrypted = $this->encryptor->decrypt( $encrypted, $key );
