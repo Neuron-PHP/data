@@ -57,8 +57,8 @@ class SecretManager
 			$content = $this->encryptor->decrypt( $encrypted, $key );
 		}
 
-		// Create temporary file
-		$tempFile = sys_get_temp_dir() . '/neuron_credentials_' . uniqid() . '.yml';
+		// Create temporary file with cryptographically secure token
+		$tempFile = sys_get_temp_dir() . '/neuron_credentials_' . $this->generateSecureToken() . '.yml';
 		$this->fs->writeFile( $tempFile, $content );
 
 		try
@@ -240,13 +240,13 @@ class SecretManager
 		// Check if we're rotating the key in-place
 		$inPlaceRotation = realpath( $oldKeyPath ) === realpath( $newKeyPath );
 
-		// Create temporary files for atomic operation
-		$tempKeyFile = sys_get_temp_dir() . '/neuron_key_' . uniqid() . '.tmp';
-		$tempCredentialsFile = sys_get_temp_dir() . '/neuron_creds_' . uniqid() . '.tmp';
+		// Create temporary files for atomic operation with secure tokens
+		$tempKeyFile = sys_get_temp_dir() . '/neuron_key_' . $this->generateSecureToken() . '.tmp';
+		$tempCredentialsFile = sys_get_temp_dir() . '/neuron_creds_' . $this->generateSecureToken() . '.tmp';
 
-		// Create backup files for rollback if needed
+		// Create backup files for rollback if needed with secure tokens
 		$backupKeyFile = null;
-		$backupCredentialsFile = $credentialsPath . '.backup_' . uniqid();
+		$backupCredentialsFile = $credentialsPath . '.backup_' . $this->generateSecureToken();
 
 		try
 		{
@@ -279,7 +279,7 @@ class SecretManager
 			// Step 6: If rotating in-place, backup the old key
 			if( $inPlaceRotation )
 			{
-				$backupKeyFile = $oldKeyPath . '.backup_' . uniqid();
+				$backupKeyFile = $oldKeyPath . '.backup_' . $this->generateSecureToken();
 				if( !copy( $oldKeyPath, $backupKeyFile ) )
 				{
 					// Clean up credentials backup since we can't proceed
@@ -378,9 +378,10 @@ class SecretManager
 				str_replace( ['/', '.', '-'], '_', basename( $keyPath, '.key' ) )
 			) . '_KEY';
 
-			if( isset( $_ENV[$envKey] ) )
+			$envValue = getenv( $envKey );
+			if( $envValue !== false )
 			{
-				return $_ENV[$envKey];
+				return $envValue;
 			}
 
 			// Generate new key
@@ -388,5 +389,32 @@ class SecretManager
 		}
 
 		return trim( $this->fs->readFile( $keyPath ) );
+	}
+
+	/**
+	 * Generate a cryptographically secure random token for temporary files
+	 *
+	 * This method generates a secure random token suitable for use in
+	 * temporary file names. The token is URL-safe and filesystem-safe.
+	 *
+	 * @param int $length Number of random bytes (will produce 2x hex characters)
+	 * @return string A secure random hex string
+	 * @throws \Exception If secure random generation fails
+	 */
+	private function generateSecureToken( int $length = 16 ): string
+	{
+		try
+		{
+			// Generate cryptographically secure random bytes
+			$bytes = random_bytes( $length );
+
+			// Convert to hex for filesystem safety
+			// This produces a string of 2 * $length characters
+			return bin2hex( $bytes );
+		}
+		catch( \Exception $e )
+		{
+			throw new \Exception( 'Failed to generate secure random token: ' . $e->getMessage() );
+		}
 	}
 }

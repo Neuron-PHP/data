@@ -88,6 +88,9 @@ class Env implements ISettingSource
 	 * uppercased.
 	 * e.g. set( 'test', 'name', 'value' ) will set the environment variable TEST_NAME=value.
 	 *
+	 * Non-scalar values (arrays, objects) are automatically serialized to JSON format
+	 * to prevent data corruption. The get() method will automatically deserialize them.
+	 *
 	 * @param string $sectionName
 	 * @param string $name
 	 * @param mixed $value
@@ -99,7 +102,35 @@ class Env implements ISettingSource
 		$sectionName = strtoupper( $sectionName );
 		$name = strtoupper( $name );
 
-		$this->env->put( "{$sectionName}_{$name}=$value" );
+		// Serialize non-scalar values to JSON to prevent data corruption
+		if( is_array( $value ) || is_object( $value ) )
+		{
+			$serializedValue = json_encode( $value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+			if( json_last_error() !== JSON_ERROR_NONE )
+			{
+				throw new \RuntimeException(
+					"Cannot serialize value for environment variable {$sectionName}_{$name}: " .
+					json_last_error_msg()
+				);
+			}
+		}
+		elseif( is_bool( $value ) )
+		{
+			// Convert booleans to string representation
+			$serializedValue = $value ? 'true' : 'false';
+		}
+		elseif( is_null( $value ) )
+		{
+			// Convert null to empty string
+			$serializedValue = '';
+		}
+		else
+		{
+			// Scalar values (strings, integers, floats) are used as-is
+			$serializedValue = (string) $value;
+		}
+
+		$this->env->put( "{$sectionName}_{$name}={$serializedValue}" );
 
 		return $this;
 	}

@@ -57,31 +57,21 @@ class EnvironmentDetector
 		// Check environment variables in priority order
 		foreach( self::ENV_VARIABLES as $varName )
 		{
-			// Check $_ENV first
-			if( isset( $_ENV[$varName] ) )
-			{
-				$env = self::normalizeEnvironment( $_ENV[$varName] );
-				if( $env !== null )
-				{
-					return $env;
-				}
-			}
-
-			// Check $_SERVER as fallback
-			if( isset( $_SERVER[$varName] ) )
-			{
-				$env = self::normalizeEnvironment( $_SERVER[$varName] );
-				if( $env !== null )
-				{
-					return $env;
-				}
-			}
-
-			// Check getenv as last resort
+			// Check getenv first (most reliable across PHP configurations)
 			$value = getenv( $varName );
 			if( $value !== false )
 			{
 				$env = self::normalizeEnvironment( $value );
+				if( $env !== null )
+				{
+					return $env;
+				}
+			}
+
+			// Check $_SERVER as fallback (web context)
+			if( isset( $_SERVER[$varName] ) )
+			{
+				$env = self::normalizeEnvironment( $_SERVER[$varName] );
 				if( $env !== null )
 				{
 					return $env;
@@ -165,8 +155,8 @@ class EnvironmentDetector
 
 		// Check for common development tools
 		if( isset( $_SERVER['PHP_IDE_CONFIG'] ) || // PhpStorm
-		    isset( $_ENV['XDEBUG_CONFIG'] ) ||      // Xdebug
-		    isset( $_ENV['PHP_IDE_CONFIG'] ) )
+		    getenv( 'XDEBUG_CONFIG' ) !== false ||  // Xdebug
+		    getenv( 'PHP_IDE_CONFIG' ) !== false )
 		{
 			return true;
 		}

@@ -87,7 +87,7 @@ class SettingManagerFactory
 		}
 
 		// Layer 5: Environment variables (highest priority)
-		$manager->addSource( new Env( new \Neuron\Data\Env() ), 'environment' );
+		$manager->addSource( new Env( \Neuron\Data\Env::getInstance() ), 'environment' );
 
 		return $manager;
 	}
@@ -131,7 +131,7 @@ class SettingManagerFactory
 					break;
 
 				case 'env':
-					$source = new Env( new \Neuron\Data\Env() );
+					$source = new Env( \Neuron\Data\Env::getInstance() );
 					break;
 			}
 

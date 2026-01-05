@@ -104,15 +104,20 @@ class Encrypted implements ISettingSource
 			str_replace( ['/', '.', '-'], '_', basename( $this->keyPath, '.key' ) )
 		) . '_KEY';
 
-		if( isset( $_ENV[$envKey] ) )
+		$envValue = getenv( $envKey );
+		if( $envValue !== false )
 		{
-			return $_ENV[$envKey];
+			return $envValue;
 		}
 
 		// Try RAILS_MASTER_KEY for compatibility
-		if( basename( $this->keyPath ) === 'master.key' && isset( $_ENV['RAILS_MASTER_KEY'] ) )
+		if( basename( $this->keyPath ) === 'master.key' )
 		{
-			return $_ENV['RAILS_MASTER_KEY'];
+			$railsKey = getenv( 'RAILS_MASTER_KEY' );
+			if( $railsKey !== false )
+			{
+				return $railsKey;
+			}
 		}
 
 		return null;
