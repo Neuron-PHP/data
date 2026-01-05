@@ -109,7 +109,18 @@ class Yaml implements ISettingSource
 
 	public function getSection( string $sectionName ) : ?array
 	{
-		return $this->settings[ $sectionName ] ?? null;
+		if( !isset( $this->settings[ $sectionName ] ) )
+		{
+			return null;
+		}
+
+		// Ensure we only return arrays, not scalar values
+		if( !is_array( $this->settings[ $sectionName ] ) )
+		{
+			return null;
+		}
+
+		return $this->settings[ $sectionName ];
 	}
 
 	/**
