@@ -44,14 +44,7 @@ class SettingManagerFactory
 		$envConfigPath = $configPath . '/environments/' . $env . '.yaml';
 		if( file_exists( $envConfigPath ) )
 		{
-			if( $manager->getSource() === null )
-			{
-				$manager->setSource( new Yaml( $envConfigPath ) );
-			}
-			else
-			{
-				$manager->addSource( new Yaml( $envConfigPath ), 'environment:' . $env );
-			}
+			$manager->setSource( new Yaml( $envConfigPath ) );
 		}
 
 		// Layer 3: Base encrypted secrets

@@ -61,6 +61,9 @@ class SecretManager
 		$tempFile = sys_get_temp_dir() . '/neuron_credentials_' . $this->generateSecureToken() . '.yml';
 		$this->fs->writeFile( $tempFile, $content );
 
+		// Set restrictive permissions to protect decrypted secrets (owner read/write only)
+		chmod( $tempFile, 0600 );
+
 		try
 		{
 			// Open in editor
@@ -97,7 +100,7 @@ class SecretManager
 			// Always clean up temp file
 			if( $this->fs->fileExists( $tempFile ) )
 			{
-				$this->fs->deleteFile( $tempFile );
+				$this->fs->unlink( $tempFile );
 			}
 		}
 	}
@@ -248,6 +251,9 @@ class SecretManager
 		$backupKeyFile = null;
 		$backupCredentialsFile = $credentialsPath . '.backup_' . $this->generateSecureToken();
 
+		// Track whether credentials have been updated with new key
+		$credentialsUpdatedWithNewKey = false;
+
 		try
 		{
 			// Step 1: Decrypt with old key (validates we can read the data)
@@ -262,6 +268,7 @@ class SecretManager
 			// Step 3: Re-encrypt with new key to temporary file
 			$newEncrypted = $this->encryptor->encrypt( $content, $newKey );
 			$this->fs->writeFile( $tempCredentialsFile, $newEncrypted );
+			chmod( $tempCredentialsFile, 0600 );
 
 			// Step 4: Verify the new encryption worked (decrypt and compare)
 			$verifyContent = $this->encryptor->decrypt( $newEncrypted, $newKey );
@@ -283,7 +290,7 @@ class SecretManager
 				if( !copy( $oldKeyPath, $backupKeyFile ) )
 				{
 					// Clean up credentials backup since we can't proceed
-					$this->fs->deleteFile( $backupCredentialsFile );
+					$this->fs->unlink( $backupCredentialsFile );
 					throw new \Exception( 'Failed to create backup of key file' );
 				}
 			}
@@ -295,23 +302,52 @@ class SecretManager
 				throw new \Exception( 'Failed to update credentials file' );
 			}
 
+			// Mark that credentials are now encrypted with the new key
+			$credentialsUpdatedWithNewKey = true;
+
 			// Move the new key to its final location
 			if( !rename( $tempKeyFile, $newKeyPath ) )
 			{
 				// Rollback credentials since key update failed
-				rename( $backupCredentialsFile, $credentialsPath );
-				throw new \Exception( 'Failed to update key file' );
+				// CRITICAL: Check if rollback succeeds before losing the new key!
+				if( !rename( $backupCredentialsFile, $credentialsPath ) )
+				{
+					// Rollback failed! The credentials are still encrypted with the new key.
+					// We MUST preserve the new key to prevent data loss.
+					// Try to save the new key to an emergency location
+					$emergencyKeyPath = $newKeyPath . '.emergency_' . $this->generateSecureToken();
+					if( rename( $tempKeyFile, $emergencyKeyPath ) )
+					{
+						throw new \Exception(
+							'CRITICAL: Key rotation partially failed. ' .
+							'Credentials remain encrypted with new key saved at: ' . $emergencyKeyPath . ' ' .
+							'Manual intervention required to complete rotation.'
+						);
+					}
+					else
+					{
+						// Last resort: try to copy the temp key before it might be deleted
+						@copy( $tempKeyFile, $emergencyKeyPath );
+						throw new \Exception(
+							'CRITICAL: Key rotation failed and rollback failed. ' .
+							'Attempting to preserve new key at: ' . $emergencyKeyPath . ' ' .
+							'Data may be at risk. Manual intervention urgently required.'
+						);
+					}
+				}
+				// Rollback succeeded, credentials are back to using old key
+				throw new \Exception( 'Failed to update key file, but credentials successfully rolled back' );
 			}
 
 			// Step 8: Clean up backups on success
 			if( $this->fs->fileExists( $backupCredentialsFile ) )
 			{
-				$this->fs->deleteFile( $backupCredentialsFile );
+				$this->fs->unlink( $backupCredentialsFile );
 			}
 
 			if( $backupKeyFile && $this->fs->fileExists( $backupKeyFile ) )
 			{
-				$this->fs->deleteFile( $backupKeyFile );
+				$this->fs->unlink( $backupKeyFile );
 			}
 
 			return true;
@@ -321,12 +357,12 @@ class SecretManager
 			// Clean up temporary files
 			if( $this->fs->fileExists( $tempKeyFile ) )
 			{
-				$this->fs->deleteFile( $tempKeyFile );
+				$this->fs->unlink( $tempKeyFile );
 			}
 
 			if( $this->fs->fileExists( $tempCredentialsFile ) )
 			{
-				$this->fs->deleteFile( $tempCredentialsFile );
+				$this->fs->unlink( $tempCredentialsFile );
 			}
 
 			// Attempt to restore from backups if they exist
@@ -340,7 +376,7 @@ class SecretManager
 				}
 				else
 				{
-					$this->fs->deleteFile( $backupCredentialsFile );
+					$this->fs->unlink( $backupCredentialsFile );
 				}
 			}
 
@@ -353,7 +389,7 @@ class SecretManager
 				}
 				else
 				{
-					$this->fs->deleteFile( $backupKeyFile );
+					$this->fs->unlink( $backupKeyFile );
 				}
 			}
 

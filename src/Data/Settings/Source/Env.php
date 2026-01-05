@@ -44,7 +44,7 @@ class Env implements ISettingSource
 	}
 
 	/**
-	 * Parse environment variable value, auto-detecting arrays.
+	 * Parse environment variable value, auto-detecting arrays and deserializing special types.
 	 *
 	 * @param string $value
 	 * @return mixed
@@ -54,10 +54,20 @@ class Env implements ISettingSource
 		// Trim the value
 		$value = trim( $value );
 
-		// Empty string
+		// Handle null (empty string is how we serialize null)
 		if( $value === '' )
 		{
-			return $value;
+			return null;
+		}
+
+		// Handle booleans (must check before JSON parsing)
+		if( $value === 'true' )
+		{
+			return true;
+		}
+		if( $value === 'false' )
+		{
+			return false;
 		}
 
 		// Try JSON parsing if value starts with [ or {
