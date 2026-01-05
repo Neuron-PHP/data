@@ -10,6 +10,28 @@ class Memory implements ISettingSource
 	private array $settings = array();
 
 	/**
+	 * Constructor
+	 *
+	 * @param array $config Initial configuration data organized by sections
+	 */
+	public function __construct( array $config = [] )
+	{
+		// Ensure all values are properly structured as section => settings
+		foreach( $config as $section => $settings )
+		{
+			if( is_array( $settings ) )
+			{
+				$this->settings[$section] = $settings;
+			}
+			else
+			{
+				// If a scalar value is provided, wrap it
+				$this->settings[$section] = ['value' => $settings];
+			}
+		}
+	}
+
+	/**
 	 * @param string $sectionName
 	 * @param string $name
 	 * @return mixed
@@ -71,7 +93,19 @@ class Memory implements ISettingSource
 
 	public function getSection( string $sectionName ) : ?array
 	{
-		return $this->settings[ $sectionName ] ?? null;
+		if( !isset( $this->settings[ $sectionName ] ) )
+		{
+			return null;
+		}
+
+		// Ensure we only return arrays, not scalar values
+		// This shouldn't happen with our constructor, but be defensive
+		if( !is_array( $this->settings[ $sectionName ] ) )
+		{
+			return null;
+		}
+
+		return $this->settings[ $sectionName ];
 	}
 
 	/**

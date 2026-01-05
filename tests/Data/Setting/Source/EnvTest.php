@@ -242,7 +242,7 @@ class EnvTest extends TestCase
         $this->assertEquals('[this is not valid json]', $result);
     }
 
-    public function testEmptyStringReturnsEmptyString()
+    public function testEmptyStringReturnsNull()
     {
         $realEnv = RealEnv::getInstance();
         $source = new Env($realEnv);
@@ -252,8 +252,9 @@ class EnvTest extends TestCase
 
         $result = $source->get('test', 'empty');
 
-        $this->assertIsString($result);
-        $this->assertEquals('', $result);
+        // Empty strings are treated as null for proper round-tripping
+        // (since set(null) converts to empty string)
+        $this->assertNull($result);
     }
 
     public function testGetSectionWithMixedTypes()
