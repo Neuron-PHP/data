@@ -36,6 +36,12 @@ class OpenSSLEncryptor implements IEncryptor
 			throw new \Exception( 'Invalid encryption key. Key must be 32 bytes (256 bits) for AES-256.' );
 		}
 
+		// Convert hex key to binary if needed for consistent key format
+		if( preg_match( '/^[a-f0-9]{64}$/i', $key ) )
+		{
+			$key = hex2bin( $key );
+		}
+
 		// Generate a random initialization vector
 		$ivLength = openssl_cipher_iv_length( self::CIPHER );
 		$iv = openssl_random_pseudo_bytes( $ivLength );
@@ -107,6 +113,12 @@ class OpenSSLEncryptor implements IEncryptor
 		if( !$this->verifyMac( $payload, $key ) )
 		{
 			throw new \Exception( 'MAC verification failed. Data may have been tampered with.' );
+		}
+
+		// Convert hex key to binary if needed for consistent key format
+		if( preg_match( '/^[a-f0-9]{64}$/i', $key ) )
+		{
+			$key = hex2bin( $key );
 		}
 
 		// Decrypt the data

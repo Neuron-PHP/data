@@ -10,6 +10,19 @@ namespace Neuron\Data\Settings;
  * to determine if the application is running in development, test,
  * staging, or production.
  *
+ * IMPORTANT: Production environments MUST explicitly set APP_ENV=production
+ * This is especially critical for CLI contexts (cron jobs, queue workers,
+ * artisan commands) which will default to 'development' if no environment
+ * is explicitly configured.
+ *
+ * Priority order for environment detection:
+ * 1. APP_ENV environment variable
+ * 2. NEURON_ENV environment variable
+ * 3. APPLICATION_ENV environment variable
+ * 4. ENVIRONMENT environment variable
+ * 5. Common development indicators (localhost, debug tools)
+ * 6. Default to 'development' (fail-safe)
+ *
  * @package Neuron\Data\Settings
  */
 class EnvironmentDetector
@@ -126,11 +139,16 @@ class EnvironmentDetector
 	/**
 	 * Check for common development environment indicators
 	 *
+	 * NOTE: This method only checks for obvious development indicators.
+	 * Production environments should ALWAYS explicitly set APP_ENV=production
+	 * to avoid any ambiguity, especially for CLI contexts like cron jobs,
+	 * queue workers, and artisan commands.
+	 *
 	 * @return bool
 	 */
 	private static function isDevelopmentEnvironment(): bool
 	{
-		// Check for localhost
+		// Check for localhost (web context only)
 		if( isset( $_SERVER['HTTP_HOST'] ) )
 		{
 			$host = strtolower( $_SERVER['HTTP_HOST'] );
@@ -153,11 +171,9 @@ class EnvironmentDetector
 			return true;
 		}
 
-		// Check if running from CLI (often development/testing)
-		if( PHP_SAPI === 'cli' && !isset( $_ENV['CI'] ) )
-		{
-			return true;
-		}
+		// DO NOT assume CLI means development
+		// Production systems commonly run CLI scripts (cron, queues, etc.)
+		// CLI contexts should explicitly set their environment
 
 		return false;
 	}

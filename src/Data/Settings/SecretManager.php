@@ -211,7 +211,9 @@ class SecretManager
 	/**
 	 * Rotate encryption keys
 	 *
-	 * Re-encrypts credentials with a new key
+	 * Re-encrypts credentials with a new key in an atomic operation to prevent
+	 * data loss if any step fails. The old key and credentials are preserved
+	 * until the entire operation succeeds.
 	 *
 	 * @param string $credentialsPath Path to encrypted credentials file
 	 * @param string $oldKeyPath Path to current encryption key
@@ -221,17 +223,143 @@ class SecretManager
 	 */
 	public function rotateKey( string $credentialsPath, string $oldKeyPath, string $newKeyPath ): bool
 	{
-		// Decrypt with old key
-		$content = $this->show( $credentialsPath, $oldKeyPath );
+		// Validate inputs
+		if( !$this->fs->fileExists( $credentialsPath ) )
+		{
+			throw new \Exception( "Credentials file not found: $credentialsPath" );
+		}
 
-		// Generate new key
-		$newKey = $this->generateKey( $newKeyPath, true );
+		if( !$this->fs->fileExists( $oldKeyPath ) )
+		{
+			throw new \Exception( "Old key file not found: $oldKeyPath" );
+		}
 
-		// Re-encrypt with new key
-		$encrypted = $this->encryptor->encrypt( $content, $newKey );
-		$this->fs->writeFile( $credentialsPath, $encrypted );
+		// Read the old key first (don't modify anything yet)
+		$oldKey = trim( $this->fs->readFile( $oldKeyPath ) );
 
-		return true;
+		// Check if we're rotating the key in-place
+		$inPlaceRotation = realpath( $oldKeyPath ) === realpath( $newKeyPath );
+
+		// Create temporary files for atomic operation
+		$tempKeyFile = sys_get_temp_dir() . '/neuron_key_' . uniqid() . '.tmp';
+		$tempCredentialsFile = sys_get_temp_dir() . '/neuron_creds_' . uniqid() . '.tmp';
+
+		// Create backup files for rollback if needed
+		$backupKeyFile = null;
+		$backupCredentialsFile = $credentialsPath . '.backup_' . uniqid();
+
+		try
+		{
+			// Step 1: Decrypt with old key (validates we can read the data)
+			$encrypted = $this->fs->readFile( $credentialsPath );
+			$content = $this->encryptor->decrypt( $encrypted, $oldKey );
+
+			// Step 2: Generate new key to temporary location (not overwriting anything yet)
+			$newKey = $this->encryptor->generateKey();
+			$this->fs->writeFile( $tempKeyFile, $newKey );
+			chmod( $tempKeyFile, 0600 );
+
+			// Step 3: Re-encrypt with new key to temporary file
+			$newEncrypted = $this->encryptor->encrypt( $content, $newKey );
+			$this->fs->writeFile( $tempCredentialsFile, $newEncrypted );
+
+			// Step 4: Verify the new encryption worked (decrypt and compare)
+			$verifyContent = $this->encryptor->decrypt( $newEncrypted, $newKey );
+			if( $verifyContent !== $content )
+			{
+				throw new \Exception( 'Verification failed: Re-encrypted content does not match original' );
+			}
+
+			// Step 5: Create backup of current credentials
+			if( !copy( $credentialsPath, $backupCredentialsFile ) )
+			{
+				throw new \Exception( 'Failed to create backup of credentials file' );
+			}
+
+			// Step 6: If rotating in-place, backup the old key
+			if( $inPlaceRotation )
+			{
+				$backupKeyFile = $oldKeyPath . '.backup_' . uniqid();
+				if( !copy( $oldKeyPath, $backupKeyFile ) )
+				{
+					// Clean up credentials backup since we can't proceed
+					$this->fs->deleteFile( $backupCredentialsFile );
+					throw new \Exception( 'Failed to create backup of key file' );
+				}
+			}
+
+			// Step 7: Atomically move the new files to their final locations
+			// Move credentials first (we still have the old key if this fails)
+			if( !rename( $tempCredentialsFile, $credentialsPath ) )
+			{
+				throw new \Exception( 'Failed to update credentials file' );
+			}
+
+			// Move the new key to its final location
+			if( !rename( $tempKeyFile, $newKeyPath ) )
+			{
+				// Rollback credentials since key update failed
+				rename( $backupCredentialsFile, $credentialsPath );
+				throw new \Exception( 'Failed to update key file' );
+			}
+
+			// Step 8: Clean up backups on success
+			if( $this->fs->fileExists( $backupCredentialsFile ) )
+			{
+				$this->fs->deleteFile( $backupCredentialsFile );
+			}
+
+			if( $backupKeyFile && $this->fs->fileExists( $backupKeyFile ) )
+			{
+				$this->fs->deleteFile( $backupKeyFile );
+			}
+
+			return true;
+		}
+		catch( \Exception $e )
+		{
+			// Clean up temporary files
+			if( $this->fs->fileExists( $tempKeyFile ) )
+			{
+				$this->fs->deleteFile( $tempKeyFile );
+			}
+
+			if( $this->fs->fileExists( $tempCredentialsFile ) )
+			{
+				$this->fs->deleteFile( $tempCredentialsFile );
+			}
+
+			// Attempt to restore from backups if they exist
+			if( $backupCredentialsFile && $this->fs->fileExists( $backupCredentialsFile ) )
+			{
+				// Only restore if main file was modified
+				if( !$this->fs->fileExists( $credentialsPath ) ||
+				    $this->fs->readFile( $credentialsPath ) !== $encrypted )
+				{
+					rename( $backupCredentialsFile, $credentialsPath );
+				}
+				else
+				{
+					$this->fs->deleteFile( $backupCredentialsFile );
+				}
+			}
+
+			if( $backupKeyFile && $this->fs->fileExists( $backupKeyFile ) )
+			{
+				// Restore the old key if we were rotating in-place
+				if( $inPlaceRotation )
+				{
+					rename( $backupKeyFile, $oldKeyPath );
+				}
+				else
+				{
+					$this->fs->deleteFile( $backupKeyFile );
+				}
+			}
+
+			throw new \Exception( 'Key rotation failed: ' . $e->getMessage() .
+			                     '. Original data has been preserved.', 0, $e );
+		}
 	}
 
 	/**

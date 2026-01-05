@@ -159,44 +159,6 @@ class SettingManagerFactory
 	}
 
 	/**
-	 * Find the encryption key for a given path
-	 *
-	 * Checks:
-	 * 1. File at specified path
-	 * 2. Environment variable based on filename
-	 * 3. RAILS_MASTER_KEY for master.key compatibility
-	 *
-	 * @param string $keyPath Path to key file
-	 * @return string|null The key or null if not found
-	 */
-	private static function findKey( string $keyPath ): ?string
-	{
-		// Check file
-		if( file_exists( $keyPath ) )
-		{
-			return trim( file_get_contents( $keyPath ) );
-		}
-
-		// Check environment variable
-		$envKey = 'NEURON_' . strtoupper(
-			str_replace( ['/', '.', '-'], '_', basename( $keyPath, '.key' ) )
-		) . '_KEY';
-
-		if( isset( $_ENV[$envKey] ) )
-		{
-			return $_ENV[$envKey];
-		}
-
-		// Rails compatibility for master key
-		if( basename( $keyPath ) === 'master.key' && isset( $_ENV['RAILS_MASTER_KEY'] ) )
-		{
-			return $_ENV['RAILS_MASTER_KEY'];
-		}
-
-		return null;
-	}
-
-	/**
 	 * Get the standard configuration directory structure
 	 *
 	 * @param string $basePath Base path for configuration
