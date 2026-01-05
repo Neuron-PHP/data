@@ -410,6 +410,39 @@ class SecretManagerTest extends TestCase
 	}
 
 	/**
+	 * Test that empty environment variable is properly rejected
+	 */
+	public function testEmptyEnvironmentKeyIsRejected(): void
+	{
+		// Set environment variable to empty string
+		putenv( 'NEURON_TEST_KEY=' );
+
+		$this->mockFileSystem->expects( $this->any() )
+			->method( 'fileExists' )
+			->willReturnCallback( function( $path ) {
+				if( $path === $this->testCredentialsPath ) {
+					return true;
+				}
+				if( $path === $this->testKeyPath ) {
+					return false; // Key file doesn't exist
+				}
+				return false;
+			} );
+
+		// Don't expect readFile to be called since exception is thrown early
+		$this->mockFileSystem->expects( $this->never() )
+			->method( 'readFile' );
+
+		$this->expectException( \Exception::class );
+		$this->expectExceptionMessage( 'Key not found in file' );
+
+		$this->secretManager->show( $this->testCredentialsPath, $this->testKeyPath );
+
+		// Clean up
+		putenv( 'NEURON_TEST_KEY' );
+	}
+
+	/**
 	 * Test that show() works with key from environment variable
 	 */
 	public function testShowWorksWithEnvironmentKey(): void

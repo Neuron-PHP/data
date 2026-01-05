@@ -163,6 +163,68 @@ class EncryptedTest extends TestCase
 	}
 
 	/**
+	 * Test that empty environment variable is treated as no key
+	 */
+	public function testEmptyEnvironmentVariableIsRejected(): void
+	{
+		// Set environment variable to empty string
+		putenv( 'NEURON_TEST_KEY=' );
+
+		$this->mockFileSystem->expects( $this->exactly( 2 ) )
+			->method( 'fileExists' )
+			->willReturnMap( [
+				[$this->testCredentialsPath, true],
+				[$this->testKeyPath, false] // Key file doesn't exist
+			] );
+
+		$source = new Encrypted(
+			$this->testCredentialsPath,
+			$this->testKeyPath,
+			$this->mockEncryptor,
+			$this->mockFileSystem
+		);
+
+		// Should return null for any setting when key is empty
+		$this->assertNull( $source->get( 'any', 'setting' ) );
+		$this->assertEmpty( $source->getSectionNames() );
+
+		// Clean up
+		putenv( 'NEURON_TEST_KEY' );
+	}
+
+	/**
+	 * Test that empty RAILS_MASTER_KEY is also rejected
+	 */
+	public function testEmptyRailsMasterKeyIsRejected(): void
+	{
+		// Set RAILS_MASTER_KEY to empty string
+		putenv( 'RAILS_MASTER_KEY=' );
+
+		$masterKeyPath = '/some/path/master.key';
+
+		$this->mockFileSystem->expects( $this->exactly( 2 ) )
+			->method( 'fileExists' )
+			->willReturnMap( [
+				[$this->testCredentialsPath, true],
+				[$masterKeyPath, false] // Key file doesn't exist
+			] );
+
+		$source = new Encrypted(
+			$this->testCredentialsPath,
+			$masterKeyPath,
+			$this->mockEncryptor,
+			$this->mockFileSystem
+		);
+
+		// Should return null for any setting when key is empty
+		$this->assertNull( $source->get( 'any', 'setting' ) );
+		$this->assertEmpty( $source->getSectionNames() );
+
+		// Clean up
+		putenv( 'RAILS_MASTER_KEY' );
+	}
+
+	/**
 	 * Test that missing key results in empty settings (no exception)
 	 */
 	public function testMissingKeyResultsInEmptySettings(): void

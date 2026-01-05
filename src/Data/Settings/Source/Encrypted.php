@@ -116,7 +116,8 @@ class Encrypted implements ISettingSource
 		) . '_KEY';
 
 		$envValue = getenv( $envKey );
-		if( $envValue !== false )
+		// Reject empty strings to avoid silent failures
+		if( $envValue !== false && $envValue !== '' )
 		{
 			return $envValue;
 		}
@@ -125,7 +126,8 @@ class Encrypted implements ISettingSource
 		if( basename( $this->keyPath ) === 'master.key' )
 		{
 			$railsKey = getenv( 'RAILS_MASTER_KEY' );
-			if( $railsKey !== false )
+			// Also reject empty strings here for consistency
+			if( $railsKey !== false && $railsKey !== '' )
 			{
 				return $railsKey;
 			}
