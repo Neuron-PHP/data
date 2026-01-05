@@ -190,8 +190,41 @@ class SettingManagerFactoryTest extends TestCase
 
 		$manager = SettingManagerFactory::createForTesting( $config );
 
-		// Memory source needs flattened keys
+		// Now that Memory constructor accepts config, settings should be available
 		$this->assertInstanceOf( SettingManager::class, $manager );
+		$this->assertEquals( 'value1', $manager->get( 'test', 'key1' ) );
+		$this->assertEquals( 'value2', $manager->get( 'test', 'key2' ) );
+		$this->assertEquals( 'value', $manager->get( 'another', 'setting' ) );
+
+		// Test getSectionNames returns the correct sections
+		$sectionNames = $manager->getSectionNames();
+		$this->assertContains( 'test', $sectionNames );
+		$this->assertContains( 'another', $sectionNames );
+	}
+
+	/**
+	 * Test createForTesting with scalar values in configuration
+	 */
+	public function testCreateForTestingWithScalarValues(): void
+	{
+		$config = [
+			'database' => [
+				'host' => 'localhost',
+				'port' => 3306
+			],
+			'api_key' => 'secret123', // Scalar value instead of array
+			'debug' => true // Boolean scalar
+		];
+
+		$manager = SettingManagerFactory::createForTesting( $config );
+
+		// Regular array sections should work as expected
+		$this->assertEquals( 'localhost', $manager->get( 'database', 'host' ) );
+		$this->assertEquals( 3306, $manager->get( 'database', 'port' ) );
+
+		// Scalar values should be wrapped and accessible via 'value' key
+		$this->assertEquals( 'secret123', $manager->get( 'api_key', 'value' ) );
+		$this->assertEquals( true, $manager->get( 'debug', 'value' ) );
 	}
 
 	/**

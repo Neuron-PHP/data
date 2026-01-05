@@ -57,15 +57,17 @@ class SecretManager
 			$content = $this->encryptor->decrypt( $encrypted, $key );
 		}
 
-		// Create temporary file with cryptographically secure token
+		// Generate temp file path
 		$tempFile = sys_get_temp_dir() . '/neuron_credentials_' . $this->generateSecureToken() . '.yml';
-		$this->fs->writeFile( $tempFile, $content );
-
-		// Set restrictive permissions to protect decrypted secrets (owner read/write only)
-		chmod( $tempFile, 0600 );
 
 		try
 		{
+			// Create temporary file with decrypted content
+			$this->fs->writeFile( $tempFile, $content );
+
+			// Set restrictive permissions to protect decrypted secrets (owner read/write only)
+			chmod( $tempFile, 0600 );
+
 			// Open in editor
 			$command = escapeshellcmd( $editor ) . ' ' . escapeshellarg( $tempFile );
 			$returnCode = 0;

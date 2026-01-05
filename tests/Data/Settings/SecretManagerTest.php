@@ -242,7 +242,6 @@ class SecretManagerTest extends TestCase
 	public function testRotateKeyHandlesErrors(): void
 	{
 		// Create a simple test that verifies proper error handling
-		$oldKey = bin2hex( random_bytes( 32 ) );
 
 		// Setup mocks to cause an early failure
 		$this->mockFileSystem->expects( $this->any() )

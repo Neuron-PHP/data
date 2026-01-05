@@ -450,6 +450,52 @@ class EncryptedTest extends TestCase
 	}
 
 	/**
+	 * Test that getSection returns null for scalar section values (type safety)
+	 */
+	public function testGetSectionReturnsNullForScalarSectionValue(): void
+	{
+		$key = 'test_key';
+		$encrypted = 'encrypted_data';
+		// YAML with a section that has a scalar value directly
+		$malformedYaml = "database:\n  host: localhost\napi_key: just_a_string_not_an_object";
+
+		$this->mockFileSystem->expects( $this->exactly( 2 ) )
+			->method( 'fileExists' )
+			->willReturnMap( [
+				[$this->testCredentialsPath, true],
+				[$this->testKeyPath, true]
+			] );
+
+		$this->mockFileSystem->expects( $this->exactly( 2 ) )
+			->method( 'readFile' )
+			->willReturnMap( [
+				[$this->testKeyPath, $key],
+				[$this->testCredentialsPath, $encrypted]
+			] );
+
+		$this->mockEncryptor->expects( $this->once() )
+			->method( 'decrypt' )
+			->with( $encrypted, trim( $key ) )
+			->willReturn( $malformedYaml );
+
+		$source = new Encrypted(
+			$this->testCredentialsPath,
+			$this->testKeyPath,
+			$this->mockEncryptor,
+			$this->mockFileSystem
+		);
+
+		// database section should work normally
+		$dbSection = $source->getSection( 'database' );
+		$this->assertIsArray( $dbSection );
+		$this->assertArrayHasKey( 'host', $dbSection );
+
+		// api_key section has a scalar value, getSection should return null (not the string)
+		$apiSection = $source->getSection( 'api_key' );
+		$this->assertNull( $apiSection, 'getSection should return null for scalar section values' );
+	}
+
+	/**
 	 * Helper method to setup mocks for successful decryption
 	 */
 	private function setupMocksForSuccessfulDecryption( string $key, string $encrypted, string $decrypted ): void
