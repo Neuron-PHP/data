@@ -27,7 +27,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Neuron\\Core\\": "../core/src/Core/"
+            "Neuron\\Core\\": "../core/src/Core/",
+            "Neuron\\Cli\\": "../cli/src/Cli/"
         }
     }
 }

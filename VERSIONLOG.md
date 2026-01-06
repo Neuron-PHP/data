@@ -1,7 +1,6 @@
 ## 0.9.7
 
 ## 0.9.6 2026-01-05
-
 ## 0.9.5 2026-01-05
 * Added encrypted environment-specific secrets.
 
