@@ -24,10 +24,5 @@
         "psr-4": {
             "Neuron\\": "src/"
         }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Neuron\\Core\\": "../core/src/Core/"
-        }
     }
 }
