@@ -78,7 +78,7 @@ class SettingManagerFactoryTest extends TestCase
 		try {
 			// Create a test config file
 			file_put_contents(
-				$customPath . '/application.yaml',
+				$customPath . '/neuron.yaml',
 				"test:\n  value: from_yaml"
 			);
 
@@ -89,7 +89,7 @@ class SettingManagerFactoryTest extends TestCase
 		}
 		finally {
 			// Clean up
-			@unlink( $customPath . '/application.yaml' );
+			@unlink( $customPath . '/neuron.yaml' );
 			@rmdir( $customPath );
 		}
 	}
@@ -243,12 +243,12 @@ class SettingManagerFactoryTest extends TestCase
 		$this->assertArrayHasKey( 'environment_secrets', $structure );
 		$this->assertArrayHasKey( 'environment_key', $structure );
 
-		$this->assertEquals( 'config/application.yaml', $structure['base_config'] );
+		$this->assertEquals( 'config/neuron.yaml', $structure['base_config'] );
 		$this->assertEquals( 'config/environments/test.yaml', $structure['environment_config'] );
 		$this->assertEquals( 'config/secrets.yml.enc', $structure['base_secrets'] );
 		$this->assertEquals( 'config/master.key', $structure['master_key'] );
-		$this->assertEquals( 'config/secrets/test.yml.enc', $structure['environment_secrets'] );
-		$this->assertEquals( 'config/secrets/test.key', $structure['environment_key'] );
+		$this->assertEquals( 'config/environments/test.secrets.yml.enc', $structure['environment_secrets'] );
+		$this->assertEquals( 'config/environments/test.key', $structure['environment_key'] );
 	}
 
 	/**
@@ -260,7 +260,7 @@ class SettingManagerFactoryTest extends TestCase
 
 		$structure = SettingManagerFactory::getExpectedStructure( '/custom/config' );
 
-		$this->assertEquals( '/custom/config/application.yaml', $structure['base_config'] );
+		$this->assertEquals( '/custom/config/neuron.yaml', $structure['base_config'] );
 		$this->assertEquals( '/custom/config/environments/production.yaml', $structure['environment_config'] );
 	}
 

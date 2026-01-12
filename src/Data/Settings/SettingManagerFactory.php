@@ -34,7 +34,7 @@ class SettingManagerFactory
 		$manager = new SettingManager();
 
 		// Layer 1: Base application configuration (lowest priority)
-		$appConfigPath = $configPath . '/application.yaml';
+		$appConfigPath = $configPath . '/neuron.yaml';
 		if( file_exists( $appConfigPath ) )
 		{
 			$manager->setFallback( new Yaml( $appConfigPath ) );
@@ -64,8 +64,8 @@ class SettingManagerFactory
 		}
 
 		// Layer 4: Environment-specific encrypted secrets
-		$envSecretsPath = $configPath . '/secrets/' . $env . '.yml.enc';
-		$envKeyPath = $configPath . '/secrets/' . $env . '.key';
+		$envSecretsPath = $configPath . '/environments/' . $env . '.secrets.yml.enc';
+		$envKeyPath = $configPath . '/environments/' . $env . '.key';
 		if( file_exists( $envSecretsPath ) )
 		{
 			try
@@ -162,12 +162,12 @@ class SettingManagerFactory
 		$env = EnvironmentDetector::detect();
 
 		return [
-			'base_config' => $basePath . '/application.yaml',
+			'base_config' => $basePath . '/neuron.yaml',
 			'environment_config' => $basePath . '/environments/' . $env . '.yaml',
 			'base_secrets' => $basePath . '/secrets.yml.enc',
 			'master_key' => $basePath . '/master.key',
-			'environment_secrets' => $basePath . '/secrets/' . $env . '.yml.enc',
-			'environment_key' => $basePath . '/secrets/' . $env . '.key',
+			'environment_secrets' => $basePath . '/environments/' . $env . '.secrets.yml.enc',
+			'environment_key' => $basePath . '/environments/' . $env . '.key',
 		];
 	}
 }
