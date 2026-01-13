@@ -123,6 +123,35 @@ class SettingManager implements ISettingSource
 	}
 
 	/**
+	 * Recursively merge two arrays (deep merge)
+	 * Values from $override replace values from $base
+	 *
+	 * @param array $base Base array
+	 * @param array $override Array to merge over base
+	 * @return array Merged result
+	 */
+	private static function deepMerge( array $base, array $override ): array
+	{
+		$result = $base;
+
+		foreach( $override as $key => $value )
+		{
+			if( is_array( $value ) && isset( $result[$key] ) && is_array( $result[$key] ) )
+			{
+				// Both are arrays - recursively merge
+				$result[$key] = self::deepMerge( $result[$key], $value );
+			}
+			else
+			{
+				// Override takes precedence
+				$result[$key] = $value;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Get a setting value from the highest priority source that has it
 	 *
 	 * @param string $section Section name
@@ -251,8 +280,8 @@ class SettingManager implements ISettingSource
 				}
 				else
 				{
-					// Merge arrays, with later sources overriding earlier ones
-					$merged = array_merge( $merged, $sourceSection );
+					// Deep merge arrays, with later sources overriding earlier ones
+					$merged = self::deepMerge( $merged, $sourceSection );
 				}
 			}
 		}
