@@ -5,6 +5,7 @@ namespace Neuron\Data\Settings;
 use Neuron\Data\Settings\Source\Yaml;
 use Neuron\Data\Settings\Source\Env;
 use Neuron\Data\Settings\Source\Encrypted;
+use Neuron\Data\Settings\Source\Memory;
 
 /**
  * Factory for creating configured SettingManager instances
@@ -24,6 +25,9 @@ class SettingManagerFactory
 	/**
 	 * Create a fully configured SettingManager
 	 *
+	 * Deep merges all YAML sources into a single Memory source.
+	 * Environment variables are kept as fallback only (not merged).
+	 *
 	 * @param string|null $environment Force a specific environment (null = auto-detect)
 	 * @param string $configPath Base path for configuration files
 	 * @return SettingManager
@@ -31,23 +35,28 @@ class SettingManagerFactory
 	public static function create( ?string $environment = null, string $configPath = 'config' ): SettingManager
 	{
 		$env = $environment ?? EnvironmentDetector::detect();
-		$manager = new SettingManager();
 
-		// Layer 1: Base application configuration (lowest priority)
+		// Start with empty config
+		$mergedConfig = [];
+
+		// Layer 1: Base application configuration
 		$appConfigPath = $configPath . '/neuron.yaml';
 		if( file_exists( $appConfigPath ) )
 		{
-			$manager->setFallback( new Yaml( $appConfigPath ) );
+			$baseYaml = new Yaml( $appConfigPath );
+			$mergedConfig = self::extractAllData( $baseYaml );
 		}
 
-		// Layer 2: Environment-specific configuration
+		// Layer 2: Environment-specific configuration (deep merge)
 		$envConfigPath = $configPath . '/environments/' . $env . '.yaml';
 		if( file_exists( $envConfigPath ) )
 		{
-			$manager->setSource( new Yaml( $envConfigPath ) );
+			$envYaml = new Yaml( $envConfigPath );
+			$envData = self::extractAllData( $envYaml );
+			$mergedConfig = SettingManager::deepMerge( $mergedConfig, $envData );
 		}
 
-		// Layer 3: Base encrypted secrets
+		// Layer 3: Base encrypted secrets (deep merge)
 		$secretsPath = $configPath . '/secrets.yml.enc';
 		$masterKeyPath = $configPath . '/master.key';
 		if( file_exists( $secretsPath ) )
@@ -55,15 +64,16 @@ class SettingManagerFactory
 			try
 			{
 				$encrypted = new Encrypted( $secretsPath, $masterKeyPath );
-				$manager->addSource( $encrypted, 'secrets' );
+				$secretsData = self::extractAllData( $encrypted );
+				$mergedConfig = SettingManager::deepMerge( $mergedConfig, $secretsData );
 			}
 			catch( \Exception $e )
 			{
-				// Silently skip if secrets can't be loaded (key might be in env var)
+				// Silently skip if secrets can't be loaded
 			}
 		}
 
-		// Layer 4: Environment-specific encrypted secrets
+		// Layer 4: Environment-specific encrypted secrets (deep merge)
 		$envSecretsPath = $configPath . '/environments/' . $env . '.secrets.yml.enc';
 		$envKeyPath = $configPath . '/environments/' . $env . '.key';
 		if( file_exists( $envSecretsPath ) )
@@ -71,7 +81,8 @@ class SettingManagerFactory
 			try
 			{
 				$encrypted = new Encrypted( $envSecretsPath, $envKeyPath );
-				$manager->addSource( $encrypted, 'secrets:' . $env );
+				$envSecretsData = self::extractAllData( $encrypted );
+				$mergedConfig = SettingManager::deepMerge( $mergedConfig, $envSecretsData );
 			}
 			catch( \Exception $e )
 			{
@@ -79,10 +90,34 @@ class SettingManagerFactory
 			}
 		}
 
-		// Layer 5: Environment variables (highest priority)
-		$manager->addSource( new Env( \Neuron\Data\Env::getInstance() ), 'environment' );
+		// Create manager with single merged source
+		$manager = new SettingManager();
+		$manager->setSource( new Memory( $mergedConfig ) );
+
+		// Environment variables as fallback only (not merged, checked dynamically)
+		$manager->setFallback( new Env( \Neuron\Data\Env::getInstance() ) );
 
 		return $manager;
+	}
+
+	/**
+	 * Extract all data from a source as array
+	 *
+	 * @param Source\ISettingSource $source
+	 * @return array
+	 */
+	private static function extractAllData( Source\ISettingSource $source ): array
+	{
+		$data = [];
+		foreach( $source->getSectionNames() as $section )
+		{
+			$sectionData = $source->getSection( $section );
+			if( $sectionData !== null )
+			{
+				$data[$section] = $sectionData;
+			}
+		}
+		return $data;
 	}
 
 	/**

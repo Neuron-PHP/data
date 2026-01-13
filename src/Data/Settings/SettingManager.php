@@ -130,7 +130,7 @@ class SettingManager implements ISettingSource
 	 * @param array $override Array to merge over base
 	 * @return array Merged result
 	 */
-	private static function deepMerge( array $base, array $override ): array
+	public static function deepMerge( array $base, array $override ): array
 	{
 		$result = $base;
 
@@ -152,7 +152,8 @@ class SettingManager implements ISettingSource
 	}
 
 	/**
-	 * Get a setting value from the highest priority source that has it
+	 * Get a setting value
+	 * Checks primary source first, then additional sources, then fallback
 	 *
 	 * @param string $section Section name
 	 * @param string $name Setting name
@@ -160,11 +161,30 @@ class SettingManager implements ISettingSource
 	 */
 	public function get( string $section, string $name ): mixed
 	{
-		// Check sources in reverse order (highest priority first)
-		$sources = $this->getAllSources();
-		foreach( array_reverse( $sources ) as $source )
+		// Check primary source first (merged configuration or manually set)
+		if( $this->source !== null )
 		{
-			$value = $source->get( $section, $name );
+			$value = $this->source->get( $section, $name );
+			if( $value !== null )
+			{
+				return $value;
+			}
+		}
+
+		// Check additional sources (for backward compatibility with createCustom)
+		foreach( $this->additionalSources as $sourceInfo )
+		{
+			$value = $sourceInfo['source']->get( $section, $name );
+			if( $value !== null )
+			{
+				return $value;
+			}
+		}
+
+		// Fallback (typically environment variables)
+		if( $this->fallback !== null )
+		{
+			$value = $this->fallback->get( $section, $name );
 			if( $value !== null )
 			{
 				return $value;
@@ -258,35 +278,21 @@ class SettingManager implements ISettingSource
 	}
 
 	/**
-	 * Get entire section as an array, merging from all sources
+	 * Get entire section as an array from primary source only
+	 * (Primary source contains all merged configuration)
 	 *
 	 * @param string $section Section name
-	 * @return array|null Merged section data or null if section doesn't exist
+	 * @return array|null Section data or null if section doesn't exist
 	 */
 	public function getSection( string $section ): ?array
 	{
-		$merged = null;
-		$sources = $this->getAllSources();
-
-		// Merge sections from all sources (lowest to highest priority)
-		foreach( $sources as $source )
+		// Get from primary source only (contains merged config)
+		if( $this->source !== null )
 		{
-			$sourceSection = $source->getSection( $section );
-			if( $sourceSection !== null )
-			{
-				if( $merged === null )
-				{
-					$merged = $sourceSection;
-				}
-				else
-				{
-					// Deep merge arrays, with later sources overriding earlier ones
-					$merged = self::deepMerge( $merged, $sourceSection );
-				}
-			}
+			return $this->source->getSection( $section );
 		}
 
-		return $merged;
+		return null;
 	}
 
 	/**

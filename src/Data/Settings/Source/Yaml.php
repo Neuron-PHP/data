@@ -97,6 +97,11 @@ class Yaml implements ISettingSource
 
 	public function getSectionSettingNames( string $section ) : array
 	{
+		if( !array_key_exists( $section, $this->settings ) )
+		{
+			return [];
+		}
+
 		return array_keys( $this->settings[ $section ] );
 	}
 
