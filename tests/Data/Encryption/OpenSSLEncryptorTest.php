@@ -116,11 +116,19 @@ class OpenSSLEncryptorTest extends TestCase
 
 		$encrypted = $this->encryptor->encrypt( $plaintext, $key );
 
-		// Tamper with the encrypted data
-		$tampered = $encrypted;
-		// Change a character in the middle
-		$midpoint = intval( strlen( $tampered ) / 2 );
-		$tampered[$midpoint] = ( $tampered[$midpoint] === 'A' ) ? 'B' : 'A';
+		// Parse the JSON payload
+		$payload = json_decode( $encrypted, true );
+
+		// Tamper with the encrypted data value (keeping JSON valid)
+		$payload['encrypted'] = str_replace( 'A', 'B', $payload['encrypted'], $count );
+		if( $count === 0 )
+		{
+			// If no 'A' found, just modify first character
+			$payload['encrypted'] = 'X' . substr( $payload['encrypted'], 1 );
+		}
+
+		// Re-encode as JSON
+		$tampered = json_encode( $payload );
 
 		$this->expectException( \Exception::class );
 		$this->expectExceptionMessage( 'MAC verification failed' );
