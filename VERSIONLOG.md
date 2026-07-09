@@ -1,3 +1,7 @@
+## 0.9.15 2026-07-09
+
+* Fixed an issue with variable requests being passed through to env.
+
 ## 0.9.14 2026-01-13
 
 ## 0.9.13 2026-01-13

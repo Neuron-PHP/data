@@ -640,7 +640,6 @@ class SecretManagerTest extends TestCase
 		// Use reflection to directly test the generateSecureToken method
 		$reflection = new \ReflectionClass( $this->secretManager );
 		$method = $reflection->getMethod( 'generateSecureToken' );
-		$method->setAccessible( true );
 
 		// Test multiple token generations
 		for( $i = 0; $i < 10; $i++ )
