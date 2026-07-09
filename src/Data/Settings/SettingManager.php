@@ -155,43 +155,53 @@ class SettingManager implements ISettingSource
 	 * Get a setting value
 	 * Checks primary source first, then additional sources, then fallback
 	 *
+	 * Empty-string values are treated as unset placeholders (common in shipped
+	 * config files, e.g. `secret_key: ""`): lookup continues to lower-priority
+	 * sources such as environment variables. The empty string is only returned
+	 * when no source provides a meaningful value.
+	 *
 	 * @param string $section Section name
 	 * @param string $name Setting name
 	 * @return mixed The setting value or null if not found
 	 */
 	public function get( string $section, string $name ): mixed
 	{
+		$foundEmpty = false;
+
 		// Check primary source first (merged configuration or manually set)
 		if( $this->source !== null )
 		{
 			$value = $this->source->get( $section, $name );
-			if( $value !== null )
+			if( $value !== null && $value !== '' )
 			{
 				return $value;
 			}
+			$foundEmpty = $foundEmpty || $value === '';
 		}
 
 		// Check additional sources (for backward compatibility with createCustom)
 		foreach( $this->additionalSources as $sourceInfo )
 		{
 			$value = $sourceInfo['source']->get( $section, $name );
-			if( $value !== null )
+			if( $value !== null && $value !== '' )
 			{
 				return $value;
 			}
+			$foundEmpty = $foundEmpty || $value === '';
 		}
 
 		// Fallback (typically environment variables)
 		if( $this->fallback !== null )
 		{
 			$value = $this->fallback->get( $section, $name );
-			if( $value !== null )
+			if( $value !== null && $value !== '' )
 			{
 				return $value;
 			}
+			$foundEmpty = $foundEmpty || $value === '';
 		}
 
-		return null;
+		return $foundEmpty ? '' : null;
 	}
 
 	/**
@@ -278,21 +288,67 @@ class SettingManager implements ISettingSource
 	}
 
 	/**
-	 * Get entire section as an array from primary source only
-	 * (Primary source contains all merged configuration)
+	 * Get entire section as an array, merged across all sources
+	 *
+	 * Sources are merged in the same priority order as get(): fallback
+	 * (typically environment variables) lowest, then primary, then additional
+	 * sources. Empty-string values never override a meaningful value from a
+	 * lower-priority source, mirroring get()'s placeholder handling.
 	 *
 	 * @param string $section Section name
-	 * @return array|null Section data or null if section doesn't exist
+	 * @return array|null Section data or null if section doesn't exist in any source
 	 */
 	public function getSection( string $section ): ?array
 	{
-		// Get from primary source only (contains merged config)
-		if( $this->source !== null )
+		$result = null;
+
+		// getAllSources() returns lowest to highest priority
+		foreach( $this->getAllSources() as $source )
 		{
-			return $this->source->getSection( $section );
+			$data = $source->getSection( $section );
+
+			if( $data === null )
+			{
+				continue;
+			}
+
+			$result = $result === null ? $data : self::overlaySection( $result, $data );
 		}
 
-		return null;
+		return $result;
+	}
+
+	/**
+	 * Overlay a higher-priority section over a lower-priority one.
+	 * Like deepMerge(), but empty-string values do not clobber meaningful
+	 * lower-priority values (they are placeholders, see get()).
+	 *
+	 * @param array $base Lower-priority section data
+	 * @param array $override Higher-priority section data
+	 * @return array Merged result
+	 */
+	private static function overlaySection( array $base, array $override ): array
+	{
+		$result = $base;
+
+		foreach( $override as $key => $value )
+		{
+			if( is_array( $value ) && isset( $result[$key] ) && is_array( $result[$key] ) )
+			{
+				$result[$key] = self::overlaySection( $result[$key], $value );
+			}
+			elseif( $value === '' && isset( $result[$key] ) && $result[$key] !== '' )
+			{
+				// Keep the meaningful lower-priority value
+				continue;
+			}
+			else
+			{
+				$result[$key] = $value;
+			}
+		}
+
+		return $result;
 	}
 
 	/**

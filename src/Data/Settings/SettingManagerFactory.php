@@ -16,7 +16,8 @@ use Neuron\Data\Settings\Source\Memory;
  * 2. Environment-specific configuration
  * 3. Base encrypted secrets
  * 4. Environment-specific encrypted secrets
- * 5. Environment variables (highest priority)
+ * 5. Environment variables (fallback for settings the files leave unset or
+ *    empty)
  *
  * @package Neuron\Data\Settings
  */
