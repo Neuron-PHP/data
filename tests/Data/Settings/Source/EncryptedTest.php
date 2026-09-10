@@ -163,7 +163,9 @@ class EncryptedTest extends TestCase
 	}
 
 	/**
-	 * Test that empty environment variable is treated as no key
+	 * Test that empty environment variable is treated as no key, and that a
+	 * credentials file existing with no usable key is a loud failure rather
+	 * than silently proceeding with no settings.
 	 */
 	public function testEmptyEnvironmentVariableIsRejected(): void
 	{
@@ -177,19 +179,23 @@ class EncryptedTest extends TestCase
 				[$this->testKeyPath, false] // Key file doesn't exist
 			] );
 
-		$source = new Encrypted(
-			$this->testCredentialsPath,
-			$this->testKeyPath,
-			$this->mockEncryptor,
-			$this->mockFileSystem
-		);
+		try
+		{
+			$this->expectException( \Exception::class );
+			$this->expectExceptionMessageMatches( '/No decryption key found/' );
 
-		// Should return null for any setting when key is empty
-		$this->assertNull( $source->get( 'any', 'setting' ) );
-		$this->assertEmpty( $source->getSectionNames() );
-
-		// Clean up
-		putenv( 'NEURON_TEST_KEY' );
+			new Encrypted(
+				$this->testCredentialsPath,
+				$this->testKeyPath,
+				$this->mockEncryptor,
+				$this->mockFileSystem
+			);
+		}
+		finally
+		{
+			// Clean up
+			putenv( 'NEURON_TEST_KEY' );
+		}
 	}
 
 	/**
@@ -209,25 +215,32 @@ class EncryptedTest extends TestCase
 				[$masterKeyPath, false] // Key file doesn't exist
 			] );
 
-		$source = new Encrypted(
-			$this->testCredentialsPath,
-			$masterKeyPath,
-			$this->mockEncryptor,
-			$this->mockFileSystem
-		);
+		try
+		{
+			$this->expectException( \Exception::class );
+			$this->expectExceptionMessageMatches( '/No decryption key found/' );
 
-		// Should return null for any setting when key is empty
-		$this->assertNull( $source->get( 'any', 'setting' ) );
-		$this->assertEmpty( $source->getSectionNames() );
-
-		// Clean up
-		putenv( 'RAILS_MASTER_KEY' );
+			new Encrypted(
+				$this->testCredentialsPath,
+				$masterKeyPath,
+				$this->mockEncryptor,
+				$this->mockFileSystem
+			);
+		}
+		finally
+		{
+			// Clean up
+			putenv( 'RAILS_MASTER_KEY' );
+		}
 	}
 
 	/**
-	 * Test that missing key results in empty settings (no exception)
+	 * A credentials file existing with genuinely no key available anywhere
+	 * (no file, no env var) must fail loudly - silently continuing with
+	 * empty settings hides real misconfiguration (e.g. a wrongly-named
+	 * environment variable) behind confusing downstream errors instead.
 	 */
-	public function testMissingKeyResultsInEmptySettings(): void
+	public function testMissingKeyThrowsException(): void
 	{
 		$this->mockFileSystem->expects( $this->exactly( 2 ) )
 			->method( 'fileExists' )
@@ -238,16 +251,15 @@ class EncryptedTest extends TestCase
 
 		// No environment variable set
 
-		$source = new Encrypted(
+		$this->expectException( \Exception::class );
+		$this->expectExceptionMessageMatches( '/No decryption key found/' );
+
+		new Encrypted(
 			$this->testCredentialsPath,
 			$this->testKeyPath,
 			$this->mockEncryptor,
 			$this->mockFileSystem
 		);
-
-		// Should return null for any setting when key is missing
-		$this->assertNull( $source->get( 'any', 'setting' ) );
-		$this->assertEmpty( $source->getSectionNames() );
 	}
 
 	/**

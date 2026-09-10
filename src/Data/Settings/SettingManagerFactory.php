@@ -32,6 +32,10 @@ class SettingManagerFactory
 	 * @param string|null $environment Force a specific environment (null = auto-detect)
 	 * @param string $configPath Base path for configuration files
 	 * @return SettingManager
+	 * @throws \Exception If an encrypted secrets file exists but can't be
+	 *                     decrypted (wrong/missing key, corrupted file).
+	 *                     A secrets file simply not existing for the current
+	 *                     environment is fine and not an error.
 	 */
 	public static function create( ?string $environment = null, string $configPath = 'config' ): SettingManager
 	{
@@ -62,16 +66,13 @@ class SettingManagerFactory
 		$masterKeyPath = $configPath . '/master.key';
 		if( file_exists( $secretsPath ) )
 		{
-			try
-			{
-				$encrypted = new Encrypted( $secretsPath, $masterKeyPath );
-				$secretsData = self::extractAllData( $encrypted );
-				$mergedConfig = SettingManager::deepMerge( $mergedConfig, $secretsData );
-			}
-			catch( \Exception $e )
-			{
-				// Silently skip if secrets can't be loaded
-			}
+			// Note: no try/catch here. The file existing means these secrets
+			// were meant to be loaded - if that fails (bad/missing key,
+			// corrupted file), that's a real configuration error and should
+			// stop startup loudly rather than silently running without them.
+			$encrypted = new Encrypted( $secretsPath, $masterKeyPath );
+			$secretsData = self::extractAllData( $encrypted );
+			$mergedConfig = SettingManager::deepMerge( $mergedConfig, $secretsData );
 		}
 
 		// Layer 4: Environment-specific encrypted secrets (deep merge)
@@ -79,16 +80,9 @@ class SettingManagerFactory
 		$envKeyPath = $configPath . '/environments/' . $env . '.key';
 		if( file_exists( $envSecretsPath ) )
 		{
-			try
-			{
-				$encrypted = new Encrypted( $envSecretsPath, $envKeyPath );
-				$envSecretsData = self::extractAllData( $encrypted );
-				$mergedConfig = SettingManager::deepMerge( $mergedConfig, $envSecretsData );
-			}
-			catch( \Exception $e )
-			{
-				// Silently skip if environment secrets can't be loaded
-			}
+			$encrypted = new Encrypted( $envSecretsPath, $envKeyPath );
+			$envSecretsData = self::extractAllData( $encrypted );
+			$mergedConfig = SettingManager::deepMerge( $mergedConfig, $envSecretsData );
 		}
 
 		// Create manager with single merged source

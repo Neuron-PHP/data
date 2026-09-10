@@ -283,22 +283,28 @@ class SettingManagerFactoryTest extends TestCase
 	/**
 	 * Test that encrypted sources are skipped if decryption fails
 	 */
-	public function testEncryptedSourcesSkippedOnFailure(): void
+	/**
+	 * A secrets file existing at all means it was meant to be loaded - if it
+	 * can't be (no key available here, invalid content, whatever), that's a
+	 * real configuration error and create() must fail loudly instead of
+	 * silently returning a SettingManager that's quietly missing secrets.
+	 */
+	public function testEncryptedSourcesThrowOnFailure(): void
 	{
 		$configPath = '/tmp/test_config_' . uniqid();
 		mkdir( $configPath );
 
 		try {
-			// Create an invalid encrypted file
+			// Create an invalid encrypted file, with no key available
+			// anywhere to decrypt it
 			file_put_contents(
 				$configPath . '/secrets.yml.enc',
 				'invalid encrypted content'
 			);
 
-			// This should not throw, encrypted source should be skipped
-			$manager = SettingManagerFactory::create( null, $configPath );
+			$this->expectException( \Exception::class );
 
-			$this->assertInstanceOf( SettingManager::class, $manager );
+			SettingManagerFactory::create( null, $configPath );
 		}
 		finally {
 			// Clean up

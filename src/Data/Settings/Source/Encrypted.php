@@ -67,9 +67,15 @@ class Encrypted implements ISettingSource
 
 		if( !$key )
 		{
-			// No key available, return empty settings
-			$this->settings = [];
-			return;
+			// The credentials file exists but we have no way to decrypt it -
+			// this is a real configuration error (not the "no secrets file
+			// for this environment at all" case above), so fail loudly
+			// instead of silently proceeding with empty settings.
+			throw new \Exception(
+				"No decryption key found for {$this->credentialsPath} " .
+				"(checked key file {$this->keyPath} and environment variable " .
+				"{$this->expectedEnvVarName()})"
+			);
 		}
 
 		try
@@ -111,11 +117,7 @@ class Encrypted implements ISettingSource
 		}
 
 		// Try environment variable
-		$envKey = 'NEURON_' . strtoupper(
-			str_replace( ['/', '.', '-'], '_', basename( $this->keyPath, '.key' ) )
-		) . '_KEY';
-
-		$envValue = getenv( $envKey );
+		$envValue = getenv( $this->expectedEnvVarName() );
 		// Reject empty strings to avoid silent failures
 		if( $envValue !== false && $envValue !== '' )
 		{
@@ -134,6 +136,20 @@ class Encrypted implements ISettingSource
 		}
 
 		return null;
+	}
+
+	/**
+	 * Compute the environment variable name checked as a fallback for a
+	 * given key file path (e.g. config/environments/production.key ->
+	 * NEURON_PRODUCTION_KEY).
+	 *
+	 * @return string
+	 */
+	private function expectedEnvVarName(): string
+	{
+		return 'NEURON_' . strtoupper(
+			str_replace( ['/', '.', '-'], '_', basename( $this->keyPath, '.key' ) )
+		) . '_KEY';
 	}
 
 	/**
