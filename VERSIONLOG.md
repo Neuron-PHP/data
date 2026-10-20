@@ -1,3 +1,15 @@
+## 0.9.17 2026-10-20
+
+* Added `Neuron\Data\Database\ConnectionFactory`, the single place a `database:`
+  section becomes a PDO connection: individual keys, a `url`
+  (mysql / postgresql / sqlite, including `sqlite::memory:`), or both, with the
+  `username` / `password` aliases mapped to `user` / `pass`. SQLite connections
+  get WAL, a busy timeout and foreign keys; MySQL and PostgreSQL sessions are
+  set to UTC. The CMS, jobs, ORM and scaffolding factories now delegate here.
+* A `DATABASE_URL` environment variable now overrides the configured database
+  for the components it carries; file keys it does not mention (e.g. `charset`)
+  still apply. `normalize( $config, false )` ignores the environment.
+
 ## 0.9.16 2026-09-10
 
 ## 0.9.15 2026-07-09
