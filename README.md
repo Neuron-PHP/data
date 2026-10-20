@@ -11,6 +11,7 @@ A comprehensive data handling and utility component for PHP 8.4+ that provides e
 - [Input Filtering](#input-filtering)
 - [Settings Management](#settings-management)
 - [Environment Variables](#environment-variables)
+- [Database Connections](#database-connections)
 - [Data Objects](#data-objects)
 - [Parsers](#parsers)
 - [Unit Conversion](#unit-conversion)
@@ -231,6 +232,36 @@ API_TIMEOUT=30
 # Comments are supported
 # DISABLED_SETTING=value
 ```
+
+## Database Connections
+
+`Neuron\Data\Database\ConnectionFactory` is the one place the framework turns
+a `database:` settings section into a PDO connection, so web requests, queue
+workers, the scheduler and `db:migrate` all apply the same rules:
+
+```php
+use Neuron\Data\Database\ConnectionFactory;
+
+$pdo = ConnectionFactory::createFromConfig( $settings->getSection( 'database' ) );
+
+// Or resolve without connecting
+$config = ConnectionFactory::normalize( [ 'url' => 'mysql://app:secret@db/app' ] );
+// [ 'adapter' => 'mysql', 'host' => 'db', 'name' => 'app', 'user' => 'app', 'pass' => 'secret' ]
+```
+
+Configuration may use individual keys (`adapter`, `host`, `port`, `name`,
+`user`/`pass` or `username`/`password`, `charset`), a `url`
+(`mysql://`, `postgresql://`, `sqlite:///path`, `sqlite::memory:`), or both;
+explicit keys win over the file's `url`.
+
+A `DATABASE_URL` environment variable, as injected by Railway, Heroku or
+docker-compose, is applied last and overrides the file for the components it
+carries. Keys it does not mention (for example `charset`) fall through to the
+file, so one image can run against different databases with no config edit.
+Pass `false` as the second argument to `normalize()` to ignore it.
+
+SQLite connections get WAL mode, a busy timeout and foreign keys; MySQL and
+PostgreSQL sessions are set to UTC.
 
 ## Data Objects
 
