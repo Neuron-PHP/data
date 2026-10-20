@@ -1,4 +1,4 @@
-## 0.9.17
+## 0.9.17 2026-10-20
 
 * Added `Neuron\Data\Database\ConnectionFactory`, the single place a `database:`
   section becomes a PDO connection: individual keys, a `url`
