@@ -180,7 +180,12 @@ class SecretManager
 		}
 
 		$key = $this->encryptor->generateKey();
-		$this->fs->writeFile( $keyPath, $key );
+		$written = $this->fs->writeFile( $keyPath, $key );
+
+		if( $written === false )
+		{
+			throw new \Exception( "Failed to write key file: {$keyPath}" );
+		}
 
 		// Ensure restrictive permissions (owner read/write only)
 		chmod( $keyPath, 0600 );

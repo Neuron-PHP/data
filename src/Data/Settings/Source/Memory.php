@@ -81,6 +81,11 @@ class Memory implements ISettingSource
 
 	public function getSectionSettingNames( string $section ) : array
 	{
+		if( !array_key_exists( $section, $this->settings ) || !is_array( $this->settings[ $section ] ) )
+		{
+			return [];
+		}
+
 		return array_keys( $this->settings[ $section ] );
 	}
 

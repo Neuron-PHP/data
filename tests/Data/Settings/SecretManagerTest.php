@@ -99,6 +99,28 @@ class SecretManagerTest extends TestCase
 		$this->secretManager->generateKey( $this->testKeyPath, false );
 	}
 
+	public function testGenerateKeyThrowsWhenWriteFails(): void
+	{
+		$this->mockFileSystem->expects( $this->once() )
+			->method( 'fileExists' )
+			->with( $this->testKeyPath )
+			->willReturn( false );
+
+		$this->mockEncryptor->expects( $this->once() )
+			->method( 'generateKey' )
+			->willReturn( 'key' );
+
+		$this->mockFileSystem->expects( $this->once() )
+			->method( 'writeFile' )
+			->with( $this->testKeyPath, 'key' )
+			->willReturn( false );
+
+		$this->expectException( \Exception::class );
+		$this->expectExceptionMessage( 'Failed to write key file' );
+
+		$this->secretManager->generateKey( $this->testKeyPath );
+	}
+
 	public function testShowDecryptsAndReturnsCredentials(): void
 	{
 		$encryptedContent = 'encrypted_data';
@@ -160,13 +182,20 @@ class SecretManagerTest extends TestCase
 			->with( $yamlContent, $key )
 			->willReturn( $encryptedContent );
 
+		$expectedWrites = [
+			[ $this->testKeyPath, $key ],
+			[ $this->testCredentialsPath, $encryptedContent ]
+		];
+		$writeCall = 0;
+		$writeResults = [ 100, 200 ];
+
 		$this->mockFileSystem->expects( $this->exactly( 2 ) )
 			->method( 'writeFile' )
-			->withConsecutive(
-				[$this->testKeyPath, $key],
-				[$this->testCredentialsPath, $encryptedContent]
-			)
-			->willReturn( 100, 200 );
+			->willReturnCallback( function( $path, $contents ) use ( &$writeCall, $expectedWrites, $writeResults ) {
+				$this->assertSame( $expectedWrites[ $writeCall ], [ $path, $contents ] );
+
+				return $writeResults[ $writeCall++ ];
+			} );
 
 		$result = @$this->secretManager->encrypt(
 			$plaintextPath,
@@ -289,13 +318,20 @@ class SecretManagerTest extends TestCase
 		file_put_contents( $this->testCredentialsPath, $oldEncrypted );
 
 		// Mock encryptor behavior - decrypt is called twice
+		$expectedDecrypts = [
+			[ $oldEncrypted, $oldKey ],
+			[ $newEncrypted, $newKey ]
+		];
+		$decryptCall = 0;
+
 		$realEncryptor->expects( $this->exactly( 2 ) )
 			->method( 'decrypt' )
-			->withConsecutive(
-				[$oldEncrypted, $oldKey],
-				[$newEncrypted, $newKey]
-			)
-			->willReturnOnConsecutiveCalls( $content, $content );
+			->willReturnCallback( function( $payload, $decryptKey ) use ( &$decryptCall, $expectedDecrypts, $content ) {
+				$this->assertSame( $expectedDecrypts[ $decryptCall ], [ $payload, $decryptKey ] );
+				$decryptCall++;
+
+				return $content;
+			} );
 
 		$realEncryptor->expects( $this->once() )
 			->method( 'generateKey' )
@@ -542,13 +578,20 @@ class SecretManagerTest extends TestCase
 		$newKey = bin2hex( random_bytes( 32 ) );
 		$newEncrypted = base64_encode( 'new_encrypted_' . $content );
 
+		$expectedDecrypts = [
+			[ $oldEncrypted, $oldKey ],
+			[ $newEncrypted, $newKey ]
+		];
+		$decryptCall = 0;
+
 		$realEncryptor->expects( $this->exactly( 2 ) )
 			->method( 'decrypt' )
-			->withConsecutive(
-				[$oldEncrypted, $oldKey],
-				[$newEncrypted, $newKey]
-			)
-			->willReturnOnConsecutiveCalls( $content, $content );
+			->willReturnCallback( function( $payload, $decryptKey ) use ( &$decryptCall, $expectedDecrypts, $content ) {
+				$this->assertSame( $expectedDecrypts[ $decryptCall ], [ $payload, $decryptKey ] );
+				$decryptCall++;
+
+				return $content;
+			} );
 
 		$realEncryptor->expects( $this->once() )
 			->method( 'generateKey' )
@@ -596,13 +639,20 @@ class SecretManagerTest extends TestCase
 			$newKey = bin2hex( random_bytes( 32 ) );
 			$newEncrypted = base64_encode( 'new_encrypted_' . $content );
 
+			$expectedDecrypts = [
+				[ $oldEncrypted, $oldKey ],
+				[ $newEncrypted, $newKey ]
+			];
+			$decryptCall = 0;
+
 			$realEncryptor->expects( $this->exactly( 2 ) )
 				->method( 'decrypt' )
-				->withConsecutive(
-					[$oldEncrypted, $oldKey],
-					[$newEncrypted, $newKey]
-				)
-				->willReturnOnConsecutiveCalls( $content, $content );
+				->willReturnCallback( function( $payload, $decryptKey ) use ( &$decryptCall, $expectedDecrypts, $content ) {
+					$this->assertSame( $expectedDecrypts[ $decryptCall ], [ $payload, $decryptKey ] );
+					$decryptCall++;
+
+					return $content;
+				} );
 
 			$realEncryptor->expects( $this->once() )
 				->method( 'generateKey' )
