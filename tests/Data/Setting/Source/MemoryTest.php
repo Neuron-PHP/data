@@ -56,4 +56,11 @@ class MemoryTest extends TestCase
 
 		$this->assertIsArray( $Sections );
 	}
+
+	public function testGetSectionSettingNamesForMissingSection()
+	{
+		$Memory = new Memory();
+
+		$this->assertSame( [], $Memory->getSectionSettingNames( 'missing' ) );
+	}
 }
